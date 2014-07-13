@@ -23,7 +23,11 @@ use POE;
 
 
 use Moo::Role;
+
 with 'MooX::Role::POE::Emitter';
+has '+event_prefix'    => ( default => sub { 'zmq_' } );
+has '+register_prefix' => ( default => sub { 'ZMQ_' } );
+has '+shutdown_signal' => ( default => sub { 'SHUTDOWN_ZMQ' } );
 
 
 has zeromq => (
@@ -64,6 +68,7 @@ has _zsock_fd => (
   is        => 'ro',
   isa       => Int,
   clearer   => '_clear_zsock_fd',
+  predicate => '_has_zsock_fd',
   builder   => sub {
     my ($self) = @_;
     $self->zsock->get_fd
@@ -73,7 +78,9 @@ has _zsock_fd => (
 has _zsock_fh => (
   lazy      => 1,
   is        => 'ro',
+  isa       => FileHandle,
   clearer   => '_clear_zsock_fh',
+  predicate => '_has_zsock_fh',
   builder   => sub {
     my ($self) = @_;
     fdopen( $self->_zsock_fd, 'r' )
@@ -86,11 +93,6 @@ has [qw/_zsock_connects _zsock_binds/] => (
   isa       => ArrayRef,
   builder   => sub { [] },
 );
-
-
-has '+event_prefix'    => ( default => sub { 'zmq_' } );
-has '+register_prefix' => ( default => sub { 'ZMQ_' } );
-has '+shutdown_signal' => ( default => sub { 'SHUTDOWN_ZMQ' } );
 
 # FIXME default pluggable_type_prefixes?
 #       or do we not really care?
@@ -200,15 +202,14 @@ sub _pxz_sock_watch {
 
 sub _pxz_sock_unwatch {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
-  $self->yield(sub { $_[KERNEL]->select( $self->_zsock_fh ) });
-  $self->yield(sub { 
-    $_[OBJECT]->_clear_zsock_fh;
-    $_[OBJECT]->_clear_zsock_fd;
-  });
+  $kernel->select( $self->_zsock_fh );
+  $self->_clear_zsock_fh;
+  $self->_clear_zsock_fd;
 }
 
 sub _pxz_ready {
   # FIXME nonblocking recv
+  # FIXME check has_pollin/has_pollout
   # FIXME deserialize input if $self->filter
 }
 
