@@ -12,8 +12,9 @@ sub fdopen {
 
 use Scalar::Util 'blessed';
 
-use Types::Standard  -types;
-use POEx::ZMQ::Types -types;
+use List::Objects::Types -types;
+use POEx::ZMQ::Types     -types;
+use Types::Standard      -types;
 
 use ZMQ::FFI;
 # FIXME grab constants directly or via an importer pkg?
@@ -22,7 +23,7 @@ use ZMQ::FFI;
 use POE;
 
 
-use Moo::Role;
+use Moo::Role; use MooX::late;
 
 with 'MooX::Role::POE::Emitter';
 has '+event_prefix'    => ( default => sub { 'zmq_' } );
@@ -87,10 +88,20 @@ has _zsock_fh => (
   },
 );
 
+has _zsock_buf => (
+  lazy      => 1,
+  is        => 'ro',
+  isa       => ArrayObj,
+  coerce    => 1,
+  writer    => '_set_zsock_buf',
+  builder   => sub { [] },
+);
+
 has [qw/_zsock_connects _zsock_binds/] => (
   lazy      => 1,
   is        => 'ro',
-  isa       => ArrayRef,
+  isa       => ArrayObj,
+  coerce    => 1,
   builder   => sub { [] },
 );
 
@@ -133,6 +144,7 @@ sub _pxz_emitter_started {
 sub _pxz_emitter_stopped {
 
 }
+
 
 sub get_major_vers { (shift->zeromq->version)[0] }
 sub get_minor_vers { (shift->zeromq->version)[1] }
@@ -182,17 +194,15 @@ sub disconnect {
 sub _px_disconnect { $_[OBJECT]->disconnect(@_[ARG0 .. $#_]) }
 
 sub send {
-  # FIXME do we want a separate send_multipart or handle it here?
   # FIXME if $self->filter, use POE::Filter serializer iface
 }
+sub _px_send { $_[OBJECT]->send(@_[ARG0 .. $#_]) }
 
-sub _px_send {
-
-}
-
-sub _pxz_send_multipart {
+sub send_multipart {
 
 }
+sub _px_send_multipart { $_[OBJECT]->send_multipart(@_[ARG0 .. $#_]) }
+
 
 sub _pxz_sock_watch {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
@@ -208,9 +218,32 @@ sub _pxz_sock_unwatch {
 }
 
 sub _pxz_ready {
-  # FIXME nonblocking recv
-  # FIXME check has_pollin/has_pollout
+  my ($kernel, $self) = @_[KERNEL, OBJECT];
+
+  if ($self->zsock->has_pollin) {
+    $self->call('nb_read');
+  }
+
+  if ($self->zsock->has_pollout) {
+    $self->call('nb_write');
+    # FIXME can write (from internal buf? ZMQ_DONTWAIT? check zmq docs)
+    #       can we just use ->send and not worry about it..?
+    #       differs between socket types, should we care or just always
+    #       DONTWAIT and buffer on error? (requires a catch?)
+    #       ZMQ_DONTWAIT will EGAIN if we can't queue...
+    #       pyzmq's event loop integration queues on HWM, wfm
+    #       push [$data, $flags] to ->_zsock_buf
+  }
+
+}
+
+sub _pxz_nb_read {
+  # FIXME can do nb read (ZMQ_DONTWAIT?)
   # FIXME deserialize input if $self->filter
+}
+
+sub _pxz_nb_write {
+  # FIXME serialize if $self->filter
 }
 
 
