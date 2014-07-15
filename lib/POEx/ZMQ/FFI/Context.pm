@@ -11,6 +11,7 @@ use Types::Standard -types;
 
 
 use Moo; use MooX::late;
+with 'POEx::ZMQ::FFI::Role::Throwable';
 
 
 has soname => (
@@ -33,9 +34,6 @@ has max_sockets => (
 );
 
 
-# FIXME create a generic 'ffi' obj,
-#       something to give us convenient AUTOLOAD access to
-#       underlying FFI::Raw objs
 has _ffi => ( 
   lazy      => 1,
   is        => 'ro',
@@ -53,7 +51,7 @@ has _ffi => (
           FFI::Raw::int,   # <- rc
           FFI::Raw::ptr,   # -> ctx ptr
           FFI::Raw::int,   # -> opt (constant)
-          FFI::Raw::int,    # -> opt value
+          FFI::Raw::int,   # -> opt value
       ),
 
       zmq_ctx_get => FFI::Raw->new(
@@ -76,6 +74,7 @@ has _ffi => (
 has _ctx_ptr => (
   lazy      => 1,
   is        => 'ro',
+  writer    => '_set_ctx_ptr',
   builder   => sub { -1 },
 );
 
@@ -86,13 +85,17 @@ sub BUILD {
 
 sub DEMOLISH {
   my ($self) = @_;
-  $self->destroy_ctx unless $self->_ctx_ptr == -1;
+  $self->_destroy_ctx unless $self->_ctx_ptr == -1;
 }
 
 
-sub destroy_ctx {
-
+sub _destroy_ctx {
+  $self->throw_if_error( zmq_ctx_destroy =>
+    $self->_ffi->zmq_ctx_destroy( $self->_ctx_ptr )
+  );
+  $self->_set_ctx_ptr(-1);
 }
+
 
 sub create_socket {
 
