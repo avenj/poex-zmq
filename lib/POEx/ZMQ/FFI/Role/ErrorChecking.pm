@@ -11,7 +11,7 @@ use POEx::ZMQ::FFI::Error;
 use Moo::Role; use MooX::late;
 requires 'soname';
 
-has _err_handler => (
+has err_handler => (
   lazy    => 1,
   is      => 'ro',
   isa     => InstanceOf['POEx::ZMQ::FFI::Callable'],
