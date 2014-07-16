@@ -15,6 +15,15 @@ my @headers = (
 
 my %const;
 
+# FIXME
+#  We maybe want at least some of the E* constants ...
+#  (the zeromq-specific ones, at least)
+#  Need to do the HAUSNUMERO math ourselves.
+#  Not really sure what the correct behavior is wrt maybe-POSIX constants on
+#  platforms that don't have them -- zmq will use ZMQ_HAUSNUMERO plus
+#  whatever, but I'm not sure what the correct way to determine that might
+#  look like.
+
 sub parse_consts {
   my ($lines) = @_;
   die "No data?" unless $lines->has_any;
@@ -23,6 +32,10 @@ sub parse_consts {
   DEF: for my $thisdef ($defs->all) {
     my (undef, $sym, $val) = split /\s+/, $thisdef;
     next DEF if $sym =~ /^ZMQ_VERSION|MAKE_VERSION/;
+    if ($val =~ /^\(/) {
+      warn "Skipping unhandled sym '$sym' ($val)";
+      next DEF
+    }
     if ($val =~ /[A-Z]/i) {
       if (exists $const{$val}) {
         warn "Aliasing $sym to $val\n";
@@ -63,11 +76,7 @@ for my $constant (keys %const) {
 }
 
 $output .= "\n1;\n";
+$output .= " # Generated at " . localtime . "\n";
 
 print $output;
-
-# FIXME constants generator ...
-#  - static links to headers
-#  - grab defines
-#  - some filtering to drop things we don't want
 
