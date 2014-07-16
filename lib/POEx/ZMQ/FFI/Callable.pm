@@ -4,9 +4,18 @@ use Carp ();
 use Scalar::Util ();
 use strictures 1;
 
+=for Pod::Coverage .*
+
+=cut
+
 sub new {
   bless +{ @_[1 .. $#_] }, $_[0]
 }
+
+sub METHODS { keys %{ $_[0] } }
+sub FETCH   { $_[0]->{ $_[1] } }
+sub EXPORT  { +{ %{ $_[0] } } }
+
 
 our $AUTOLOAD;
 
