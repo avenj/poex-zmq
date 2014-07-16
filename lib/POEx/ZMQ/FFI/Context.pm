@@ -87,7 +87,7 @@ with 'POEx::ZMQ::FFI::Role::ErrorChecking';
 sub BUILD {
   my ($self) = @_;
   
-  my $ctx = $self->_ffi->zmq_ctx_new // $self->throw('zmq_ctx_new');
+  my $ctx = $self->_ffi->zmq_ctx_new // $self->throw_zmq_error('zmq_ctx_new');
   $self->_set_ctx_ptr($ctx);
 
   $self->set_ctx_opt(ZMQ_IO_THREADS, $self->threads) if $self->has_threads;

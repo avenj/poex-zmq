@@ -44,7 +44,7 @@ sub errstr {
   )
 }
 
-sub throw {
+sub throw_zmq_error {
   my ($self, $call) = @_;
   my $errno  = $self->errno;
   my $errstr = $self->errstr;
@@ -61,7 +61,7 @@ sub throw_if_error {
     unless defined $call and defined $rc;
 
   if ($rc == -1) {
-    $self->throw($call)
+    $self->throw_zmq_error($call)
   }
 
   $self
