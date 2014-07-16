@@ -42,6 +42,7 @@ has type => (
   required  => 1,
   is        => 'ro',
   isa       => ZMQSocketType,
+  coerce    => 1,
 );
 
 has filter => (
