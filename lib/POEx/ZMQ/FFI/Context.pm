@@ -143,3 +143,68 @@ sub set_ctx_opt {
 
 
 1;
+
+=pod
+
+=head1 NAME
+
+POEx::ZMQ::FFI::Context - ZeroMQ backend context object
+
+=head1 SYNOPSIS
+
+FIXME
+
+=head1 DESCRIPTION
+
+FIXME
+
+=head2 ATTRIBUTES
+
+=head3 soname
+
+FIXME
+
+=head3 threads
+
+FIXME
+
+=head3 max_sockets
+
+FIXME
+
+=head2 METHODS
+
+=head3 create_socket
+
+  my $sock = $ctx->create_socket($type);
+
+Returns a new L<POEx::ZMQ::FFI::Socket> for the given type.
+
+=head3 get_ctx_opt
+
+  my $val = $ctx->get_ctx_opt( $option );
+
+Retrieve context options.
+
+See L<zmq_ctx_get(3)>.
+
+=head3 set_ctx_opt
+
+  $ctx->set_ctx_opt( $option, $value );
+
+Set context options.
+
+See L<zmq_ctx_set(3)>.
+
+=head2 CONSUMES
+
+L<POEx::ZMQ::FFI::Role::ErrorChecking>
+
+=head1 AUTHOR
+
+Jon Portnoy <avenj@cobaltirc.org>
+
+Significant portions of this code are inspired by or derived from L<ZMQ::FFI>
+by Dylan Calid (CPAN: CALID).
+
+=cut
