@@ -5,13 +5,14 @@ use strictures 1;
 
 use FFI::Raw;
 
+use POEx::ZMQ::Constants 'ZMQ_IO_THREADS', 'ZMQ_MAX_SOCKETS';
+
 use POEx::ZMQ::FFI::Callable;
 
 use Types::Standard -types;
 
 
 use Moo; use MooX::late;
-with 'POEx::ZMQ::FFI::Role::Throwable';
 
 
 has soname => (
@@ -23,6 +24,7 @@ has threads => (
   lazy      => 1,
   is        => 'ro',
   isa       => Int,
+  predicate => 1,
   builder   => sub { 1 },
 );
 
@@ -30,6 +32,7 @@ has max_sockets => (
   lazy      => 1,
   is        => 'ro',
   isa       => Int,
+  predicate => 1,
   builder   => sub { 1024 },
 );
 
@@ -70,7 +73,6 @@ has _ffi => (
   },
 );
 
-
 has _ctx_ptr => (
   lazy      => 1,
   is        => 'ro',
@@ -79,8 +81,18 @@ has _ctx_ptr => (
 );
 
 
+with 'POEx::ZMQ::FFI::Role::ErrorChecking';
+
+
 sub BUILD {
-  # FIXME set up approp context opts
+  my ($self) = @_;
+  
+  my $ctx = $self->_ffi->zmq_ctx_new // $self->throw('zmq_ctx_new');
+  $self->_set_ctx_ptr($ctx);
+
+  $self->set_ctx_opt(ZMQ_IO_THREADS, $self->threads) if $self->has_threads;
+  $self->set_ctx_opt(ZMQ_MAX_SOCKETS, $self->max_sockets)
+    if $self->has_max_sockets;
 }
 
 sub DEMOLISH {
@@ -90,6 +102,7 @@ sub DEMOLISH {
 
 
 sub _destroy_ctx {
+  my ($self) = @_;
   $self->throw_if_error( zmq_ctx_destroy =>
     $self->_ffi->zmq_ctx_destroy( $self->_ctx_ptr )
   );
@@ -98,14 +111,16 @@ sub _destroy_ctx {
 
 
 sub create_socket {
+  my ($self, $type) = @_;
 
 }
 
 sub get_ctx_opt {
-
+  my ($self, $opt) = @_;
 }
 
 sub set_ctx_opt {
+  my ($self, $opt, $val) = @_;
 
 }
 
