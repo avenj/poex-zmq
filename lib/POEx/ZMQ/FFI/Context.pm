@@ -5,8 +5,11 @@ use strictures 1;
 
 use FFI::Raw;
 
-use POEx::ZMQ::Constants 'ZMQ_IO_THREADS', 'ZMQ_MAX_SOCKETS';
+use POEx::ZMQ::Constants
+  'ZMQ_IO_THREADS',
+  'ZMQ_MAX_SOCKETS';
 
+use POEx::ZMQ::FFI;
 use POEx::ZMQ::FFI::Callable;
 
 use Types::Standard -types;
@@ -16,8 +19,8 @@ use Moo; use MooX::late;
 
 
 has soname => (
-  required  => 1,
-  is        => 'ro',  
+  is        => 'ro',
+  builder   => sub { POEx::ZMQ::FFI->find_soname },
 );
 
 has threads => (
@@ -77,19 +80,22 @@ has _ctx_ptr => (
   lazy      => 1,
   is        => 'ro',
   writer    => '_set_ctx_ptr',
-  builder   => sub { -1 },
+  builder   => sub {
+    my ($self) = @_;
+    $self->_ffi->zmq_ctx_new // $self->throw_zmq_error('zmq_ctx_new');
+  },
 );
 
 
 with 'POEx::ZMQ::FFI::Role::ErrorChecking';
 
 
+=for Pod::Coverage BUILD DEMOLISH
+
+=cut
+
 sub BUILD {
   my ($self) = @_;
-  
-  my $ctx = $self->_ffi->zmq_ctx_new // $self->throw_zmq_error('zmq_ctx_new');
-  $self->_set_ctx_ptr($ctx);
-
   $self->set_ctx_opt(ZMQ_IO_THREADS, $self->threads) if $self->has_threads;
   $self->set_ctx_opt(ZMQ_MAX_SOCKETS, $self->max_sockets)
     if $self->has_max_sockets;
@@ -99,7 +105,6 @@ sub DEMOLISH {
   my ($self) = @_;
   $self->_destroy_ctx unless $self->_ctx_ptr == -1;
 }
-
 
 sub _destroy_ctx {
   my ($self) = @_;
@@ -116,7 +121,7 @@ sub create_socket {
     context     => $self,
     type        => $type,
     soname      => $self->soname,
-    err_handler => $self->err_handler, # FIXME ensure Socket consumes ErrorChecking
+    err_handler => $self->err_handler,
   )
 }
 
