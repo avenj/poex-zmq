@@ -70,3 +70,26 @@ sub get_version {
 
 
 1;
+
+=pod
+
+=head1 NAME
+
+POEx::ZMQ::FFI
+
+=head1 SYNOPSIS
+
+FIXME
+
+=head1 DESCRIPTION
+
+FIXME
+
+=head1 AUTHOR
+
+Jon Portnoy <avenj@cobaltirc.org>
+
+Significant portions of this code are derived from L<ZMQ::FFI> by Dylan Cali
+(CPAN: CALID).
+
+=cut
