@@ -112,16 +112,28 @@ sub _destroy_ctx {
 
 sub create_socket {
   my ($self, $type) = @_;
-
+  ZMQ::FFI::Socket->new(
+    context     => $self,
+    type        => $type,
+    soname      => $self->soname,
+    err_handler => $self->err_handler, # FIXME ensure Socket consumes ErrorChecking
+  )
 }
 
 sub get_ctx_opt {
   my ($self, $opt) = @_;
+  my $val;
+  $self->throw_if_error( zmq_ctx_get =>
+    ( $val = $self->_ffi->zmq_ctx_get( $self->_ctx_ptr, $opt ) )
+  );
+  $val  
 }
 
 sub set_ctx_opt {
   my ($self, $opt, $val) = @_;
-
+  $self->throw_if_error( zmq_ctx_set =>
+    $self->_ffi->zmq_ctx_set( $self->_ctx_ptr, $opt, $val )
+  );
 }
 
 
