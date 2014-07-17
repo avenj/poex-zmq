@@ -143,17 +143,33 @@ FIXME
 
 =head1 DESCRIPTION
 
+
 FIXME
 
 =head2 CLASS METHODS
 
 =head3 find_soname
 
-FIXME
+  my $soname = POEx::ZMQ::FFI->find_soname;
+
+Attempts to find an appropriate C<libzmq> dynamic library; croaks on failure.
 
 =head3 get_version
 
-FIXME
+  my $vstruct = POEx::ZMQ::FFI->get_version;
+  my $version = $vstruct->string;   # 3.2.1
+  my $major = $vstruct->major;      # 3
+  my $minor = $vstruct->minor;      # 2
+  my $patch = $vstruct->patch;      # 1
+
+Returns a struct-like object containing the L<zmq_version(3)> version
+information.
+
+The dynamic library name can be supplied:
+
+  my $vstruct = POEx::ZMQ::FFI->get_version($soname);
+
+... otherwise the library found by L</find_soname> is used.
 
 =head1 AUTHOR
 
