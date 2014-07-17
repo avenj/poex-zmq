@@ -11,7 +11,6 @@ use List::Objects::WithUtils;
 use Try::Tiny;
 
 
-
 sub find_soname {
   my ($class) = @_;
 
@@ -24,7 +23,7 @@ sub find_soname {
   SEARCH: for my $maybe ($search->all) {
     try {
       FFI::Raw->new(
-        $soname, zmq_version =>
+        $maybe, zmq_version =>
           FFI::Raw::void,
           FFI::Raw::ptr,
           FFI::Raw::ptr,
@@ -75,13 +74,23 @@ sub get_version {
 
 =head1 NAME
 
-POEx::ZMQ::FFI
+POEx::ZMQ::FFI - FFI backend for the POEx::ZMQ ZeroMQ component
 
 =head1 SYNOPSIS
 
 FIXME
 
 =head1 DESCRIPTION
+
+FIXME
+
+=head2 CLASS METHODS
+
+=head3 find_soname
+
+FIXME
+
+=head3 get_version
 
 FIXME
 
