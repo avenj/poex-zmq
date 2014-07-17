@@ -8,6 +8,11 @@ use FFI::Raw;
 
 use List::Objects::WithUtils;
 
+use Math::Int64 qw/
+  int64_to_native uint64_to_native
+  native_to_int64 native_to_uint64
+/;
+
 use Try::Tiny;
 
 
@@ -63,8 +68,64 @@ sub get_version {
   );
   ($maj, $min, $pat) = map {; unpack 'i!', $_ } ($maj, $min, $pat);
   hash(
-    major => $maj, minor => $min, patch => $pat
+    major  => $maj,
+    minor  => $min,
+    patch  => $pat,
+    string => join('.', $maj, $min, $pat)
   )->inflate
+}
+
+
+sub _begins { ! index($_[0], $_[1]) }
+
+sub zpack {
+  my ($class, $type, $val) = @_;
+
+  # See zmq_getsockopt(3) for more on types ->
+  PTYPE: {
+    if ($type eq 'int') {
+      return pack 'i!', $val
+    }
+
+    if ( _begins($type => 'int64') ) {
+      return int64_to_native($val)
+    }
+
+    if ( _begins($type => 'uint64') ) {
+      return uint64_to_native($val)
+    }
+
+    confess "Unknown type: $type"
+  } # PTYPE
+}
+
+sub zunpack {
+  my ($class, $type, $val, $ptr, $len) = @_;
+  UTYPE: {
+    if ($type eq 'int') {
+      return unpack 'i!', $val
+    }
+
+    if ($type eq 'binary') {
+      $len = unpack 'L!', $len;
+      return if $len == 0;
+      return $ptr->tostr($len)
+    }
+
+    if ($type eq 'string') {
+      return $ptr->tostr
+    }
+
+    if ( _begins($type => 'int64') ) {
+      return native_to_int64($val)
+    }
+
+    if ( _begins($type => 'uint64') ) {
+      return native_to_uint64($val)
+    }
+
+    confess "Unknown type: $type"
+  } # UTYPE
 }
 
 
