@@ -9,25 +9,10 @@ use Types::Standard -types;
 use POEx::ZMQ::Constants ();
 
 declare ZMQContext =>
-  as HasMethods[ qw/
-    get set
-    socket
-    destroy
-  / ];
-
+  as InstanceOf['POEx::ZMQ::FFI::Context'];
 
 declare ZMQSocket =>
-  as HasMethods[ qw/
-    get set
-    get_fd
-    has_pollin has_pollout
-    send send_multipart
-    recv recv_multipart
-    connect disconnect
-    bind unbind
-    close
-  / ];
-
+  as InstanceOf['POEx::ZMQ::FFI::Socket'];
 
 declare ZMQSocketType => as Int;
 coerce  ZMQSocketType => 
