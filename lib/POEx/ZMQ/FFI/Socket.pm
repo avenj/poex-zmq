@@ -5,6 +5,8 @@ use strictures 1;
 
 use IO::Handle ();
 
+use List::Objects::WithUtils;
+
 use Types::Standard  -types;
 use POEx::ZMQ::Types -types;
 
@@ -14,6 +16,7 @@ use POEx::ZMQ::FFI;
 use FFI::Raw;
 
 
+# Large enough to hold ZMQ_IDENTITY / ZMQ_LAST_ENDPOINT:
 sub OPTVAL_MAXLEN () { 256 }
 
 
@@ -184,10 +187,51 @@ has _socket_ptr => (
 with 'POEx::ZMQ::FFI::Role::ErrorChecking';
 
 
+# Incomplete, but common-ish constant => type pairs:
+our $KnownTypes = hash;
+$KnownTypes->set( $_ => 'int' ) for (
+  ZMQ_EVENTS,             #
+  ZMQ_FD,                 #
+  ZMQ_IMMEDIATE,          # 3.3
+  ZMQ_IPV4ONLY,           # deprecated by ZMQ_IPV6
+  ZMQ_IPV6,               # 3.3
+  ZMQ_LINGER,             #
+  ZMQ_PLAIN_SERVER,       # 4.0
+  ZMQ_CURVE_SERVER,       # 4.0
+  ZMQ_PROBE_ROUTER,       # 4.0
+  ZMQ_ROUTER_MANDATORY,   #
+  ZMQ_ROUTER_RAW,         # 3.3
+  ZMQ_RCVMORE,            #
+  ZMQ_RCVHWM,             #
+  ZMQ_SNDHWM,             #
+  ZMQ_RCVTIMEO,           #
+  ZMQ_SNDTIMEO,           #
+);
+$KnownTypes->set( $_ => 'binary' ) for (
+  ZMQ_IDENTITY,           #
+  ZMQ_SUBSCRIBE,          #
+  ZMQ_UNSUBSCRIBE,        #
+  ZMQ_CURVE_PUBLICKEY,    # 4.0
+  ZMQ_CURVE_SECRETKEY,    # 4.0
+  ZMQ_CURVE_SERVERKEY,    # 4.0
+);
+$KnownTypes->set( $_ => 'string' ) for (
+  ZMQ_LAST_ENDPOINT,      #
+  ZMQ_PLAIN_USERNAME,     # 4.0
+  ZMQ_PLAIN_PASSWORD,     # 4.0
+  ZMQ_ZAP_DOMAIN,         # 4.0
+);
+
+sub known_type_for_opt { $KnownTypes->get($_[1]) }
 
 sub get_sock_opt {
   my ($self, $opt, $type) = @_;
   my ($val, $ptr, $len);
+
+  unless (defined $type) {
+    $type = $KnownTypes->exists($opt) ? $KnownTypes->get($opt)
+      : confess "No return type specified and none known to us (opt $opt)"
+  }
 
   if ($type eq 'binary' || $type eq 'string') {
     $ptr = FFI::Raw::memptr( OPTVAL_MAXLEN );
@@ -210,8 +254,13 @@ sub get_sock_opt {
 
 sub set_sock_opt {
   my ($self, $opt, $val, $type) = @_;
-  # FIXME state hash containing some common OPT => TYPE mappings?
-  #  try to find $type for $opt if none specified
+
+  unless (defined $type) {
+    $type = $KnownTypes->exists($opt) ? $KnownTypes->get($opt)
+      : confess "No opt type specified and none known to us (opt $opt)"
+  }
+
+  # FIXME
 }
 
 
@@ -219,22 +268,6 @@ sub get_handle {
   my ($self) = @_;
   my $fno = $self->get_sock_opt( ZMQ_FD, 'int' );
   IO::Handle->new_from_fd( $fno, 'r' )
-}
-
-sub get_identity {
-
-}
-
-sub set_identity {
-
-}
-
-sub subscribe {
-
-}
-
-sub unsubscribe {
-
 }
 
 
