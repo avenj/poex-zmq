@@ -4,11 +4,6 @@ use v5.10;
 use strictures 1;
 use Carp;
 
-use IO::Handle ();
-sub fdopen {
-  my ($fno, $mode) = @_;
-  IO::Handle->new_from_fd($fno, ($mode || 'r'))
-}
 
 use Scalar::Util 'blessed';
 
@@ -16,9 +11,8 @@ use List::Objects::Types -types;
 use POEx::ZMQ::Types     -types;
 use Types::Standard      -types;
 
-use ZMQ::FFI;
-# FIXME grab constants directly or via an importer pkg?
-
+use POEx::ZMQ::Constants -all;
+use POEx::ZMQ::FFI::Context;
 
 use POE;
 
@@ -35,7 +29,7 @@ has zeromq => (
   lazy      => 1,
   is        => 'ro',
   isa       => ZMQContext,
-  builder   => sub { ZMQ::FFI->new },
+  builder   => sub { POEx::ZMQ::FFI::Context->new },
 );
 
 has type => (
@@ -61,19 +55,7 @@ has zsock => (
   isa       => ZMQSocket,
   builder   => sub {
     my ($self) = @_;
-    $self->zeromq->socket( $self->type )
-  },
-);
-
-has _zsock_fd => (
-  lazy      => 1,
-  is        => 'ro',
-  isa       => Int,
-  clearer   => '_clear_zsock_fd',
-  predicate => '_has_zsock_fd',
-  builder   => sub {
-    my ($self) = @_;
-    $self->zsock->get_fd
+    $self->zeromq->create_socket( $self->type )
   },
 );
 
@@ -83,10 +65,7 @@ has _zsock_fh => (
   isa       => FileHandle,
   clearer   => '_clear_zsock_fh',
   predicate => '_has_zsock_fh',
-  builder   => sub {
-    my ($self) = @_;
-    fdopen( $self->_zsock_fd, 'r' )
-  },
+  builder   => sub { shift->zsock->get_handle },
 );
 
 has _zsock_buf => (
@@ -147,21 +126,23 @@ sub _pxz_emitter_stopped {
 }
 
 
-sub get_major_vers { (shift->zeromq->version)[0] }
-sub get_minor_vers { (shift->zeromq->version)[1] }
+sub get_context_opt { shift->zeromq->get_ctx_opt(@_) }
+sub set_context_opt { shift->zeromq->set_ctx_opt(@_) }
 
-sub get_context_opt { shift->zeromq->get(@_) }
-sub set_context_opt { shift->zeromq->set(@_) }
-
-sub get_socket_opt { shift->zsock->get(@_) }
-sub set_socket_opt { shift->zsock->set(@_) }
+sub get_socket_opt { shift->zsock->get_sock_opt(@_) }
+sub set_socket_opt { shift->zsock->set_sock_opt(@_) }
 
 sub close { 
   my $self = shift; 
-  $self->zsock->close;
+  $self->zsock->close;  # FIXME drop out of scope instead..?
   $self->emit( 'closed' )
 }
 sub _px_close { $_[OBJECT]->close }
+
+sub unbind {
+  # FIXME
+}
+sub _px_unbind { $_[OBJECT]->unbind(@_[ARG0 .. $#_]) }
 
 sub bind { 
   my $self = shift;
@@ -215,12 +196,12 @@ sub _pxz_sock_unwatch {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
   $kernel->select( $self->_zsock_fh );
   $self->_clear_zsock_fh;
-  $self->_clear_zsock_fd;
 }
 
 sub _pxz_ready {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
 
+  # FIXME
   if ($self->zsock->has_pollin) {
     $self->call('nb_read');
   }
