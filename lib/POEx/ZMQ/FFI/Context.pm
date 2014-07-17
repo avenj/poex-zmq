@@ -20,6 +20,7 @@ use Moo; use MooX::late;
 
 has soname => (
   is        => 'ro',
+  isa       => Str,
   builder   => sub { POEx::ZMQ::FFI->find_soname },
 );
 
@@ -36,12 +37,11 @@ has max_sockets => (
   is        => 'ro',
   isa       => Int,
   predicate => 1,
-  builder   => sub { 1024 },
+  builder   => sub { 1023 },
 );
 
 
 has _ffi => ( 
-  lazy      => 1,
   is        => 'ro',
   isa       => InstanceOf['POEx::ZMQ::FFI::Callable'],
   builder   => sub {
@@ -85,6 +85,7 @@ has _ctx_ptr => (
     $self->_ffi->zmq_ctx_new // $self->throw_zmq_error('zmq_ctx_new');
   },
 );
+sub get_raw_context { shift->_ctx_ptr }
 
 
 with 'POEx::ZMQ::FFI::Role::ErrorChecking';
@@ -125,6 +126,8 @@ sub create_socket {
   )
 }
 
+sub get_zmq_version { POEx::ZMQ::FFI->get_version( shift->soname ) }
+
 sub get_ctx_opt {
   my ($self, $opt) = @_;
   my $val;
@@ -162,15 +165,21 @@ FIXME
 
 =head3 soname
 
-FIXME
+The dynamic library name to use (see L<FFI::Raw>).
+
+Defaults to calling L<POEx::ZMQ::FFI/"find_soname">.
 
 =head3 threads
 
-FIXME
+The size of the ZeroMQ IO thread pool.
+
+Defaults to 1.
 
 =head3 max_sockets
 
-FIXME
+The maximum number of sockets allowed on this context.
+
+Defaults to 1023 (the ZMQ4 default).
 
 =head2 METHODS
 
@@ -195,6 +204,20 @@ See L<zmq_ctx_get(3)>.
 Set context options.
 
 See L<zmq_ctx_set(3)>.
+
+=head3 get_raw_context
+
+Returns the raw context pointer; used internally by L<POEx::ZMQ::FFI::Socket>
+objects.
+
+=head3 get_zmq_version
+
+  my $vstruct = $ctx->get_zmq_version;
+  my $major   = $vstruct->major;
+  # See POEx::ZMQ::FFI for complete method list
+
+Returns the L<POEx::ZMQ::FFI/get_version> struct-like object for the current
+L</soname>.
 
 =head2 CONSUMES
 
