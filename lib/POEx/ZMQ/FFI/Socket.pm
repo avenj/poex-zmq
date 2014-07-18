@@ -1,9 +1,11 @@
 package POEx::ZMQ::FFI::Socket;
 
+use v5.10;
 use Carp;
 use strictures 1;
 
-use IO::Handle ();
+require bytes;
+require IO::Handle;
 
 use List::Objects::WithUtils;
 
@@ -12,6 +14,7 @@ use POEx::ZMQ::Types -types;
 
 use POEx::ZMQ::Constants -all;
 use POEx::ZMQ::FFI;
+use POEx::ZMQ::FFI::Callable;
 
 use FFI::Raw;
 
@@ -64,7 +67,7 @@ has _ffi => (
           FFI::Raw::ptr,  # -> value len ptr
       ),
 
-      zmq_setsockopt_int => FFI::Raw->new(
+      int_zmq_setsockopt => FFI::Raw->new(
         $soname, zmq_setsockopt =>
           FFI::Raw::int,  # <- rc
           FFI::Raw::ptr,  # -> socket ptr
@@ -72,7 +75,7 @@ has _ffi => (
           FFI::Raw::ptr,  # -> opt value ptr (int)
           FFI::Raw::int,  # -> opt value len
       ),
-      zmq_setsockopt_str => FFI::Raw->new(
+      str_zmq_setsockopt => FFI::Raw->new(
         $soname, zmq_setsockopt =>
           FFI::Raw::int,  # <- rc
           FFI::Raw::ptr,  # -> socket ptr
@@ -187,25 +190,41 @@ has _socket_ptr => (
 with 'POEx::ZMQ::FFI::Role::ErrorChecking';
 
 
-# Incomplete, but common-ish constant => type pairs:
 our $KnownTypes = hash;
 $KnownTypes->set( $_ => 'int' ) for (
+  ZMQ_BACKLOG,            #
+  ZMQ_CONFLATE,           # 4.0
+  ZMQ_DELAY_ATTACH_ON_CONNECT,
   ZMQ_EVENTS,             #
   ZMQ_FD,                 #
   ZMQ_IMMEDIATE,          # 3.3
   ZMQ_IPV4ONLY,           # deprecated by ZMQ_IPV6
   ZMQ_IPV6,               # 3.3
   ZMQ_LINGER,             #
+  ZMQ_MULTICAST_HOPS,     #
   ZMQ_PLAIN_SERVER,       # 4.0
   ZMQ_CURVE_SERVER,       # 4.0
   ZMQ_PROBE_ROUTER,       # 4.0
+  ZMQ_RATE,               #
+  ZMQ_RECOVERY_IVL,       #
+  ZMQ_RECONNECT_IVL,      #
+  ZMQ_RECONNECT_IVL_MAX,  #
+  ZMQ_REQ_CORRELATE,      # 4.0
+  ZMQ_REQ_RELAXED,        # 4.0
   ZMQ_ROUTER_MANDATORY,   #
   ZMQ_ROUTER_RAW,         # 3.3
+  ZMQ_RCVBUF,             #
   ZMQ_RCVMORE,            #
   ZMQ_RCVHWM,             #
-  ZMQ_SNDHWM,             #
   ZMQ_RCVTIMEO,           #
+  ZMQ_SNDHWM,             #
   ZMQ_SNDTIMEO,           #
+  ZMQ_SNDBUF,             #
+  ZMQ_XPUB_VERBOSE,       #
+);
+$KnownTypes->set( $_ => 'uint64' ) for (
+  ZMQ_AFFINITY,           #
+  ZMQ_MAXMSGSIZE,         #
 );
 $KnownTypes->set( $_ => 'binary' ) for (
   ZMQ_IDENTITY,           #
@@ -214,6 +233,7 @@ $KnownTypes->set( $_ => 'binary' ) for (
   ZMQ_CURVE_PUBLICKEY,    # 4.0
   ZMQ_CURVE_SECRETKEY,    # 4.0
   ZMQ_CURVE_SERVERKEY,    # 4.0
+  ZMQ_TCP_ACCEPT_FILTER,  #
 );
 $KnownTypes->set( $_ => 'string' ) for (
   ZMQ_LAST_ENDPOINT,      #
@@ -229,8 +249,8 @@ sub get_sock_opt {
   my ($val, $ptr, $len);
 
   unless (defined $type) {
-    $type = $KnownTypes->exists($opt) ? $KnownTypes->get($opt)
-      : confess "No return type specified and none known to us (opt $opt)"
+    $type = $self->known_type_for_opt($opt)
+      // confess "No return type specified and none known to us (opt $opt)"
   }
 
   if ($type eq 'binary' || $type eq 'string') {
@@ -256,51 +276,140 @@ sub set_sock_opt {
   my ($self, $opt, $val, $type) = @_;
 
   unless (defined $type) {
-    $type = $KnownTypes->exists($opt) ? $KnownTypes->get($opt)
-      : confess "No opt type specified and none known to us (opt $opt)"
+    $type = $self->known_type_for_opt($opt)
+      // confess "No opt type specified and none known to us (opt $opt)"
   }
 
-  # FIXME
+  if ($type eq 'binary' || $type eq 'string') {
+    $self->throw_if_error( zmq_setsockopt =>
+      $self->_ffi->str_zmq_setsockopt(
+        $self->_socket_ptr, $opt, $val, length $val
+      )
+    );
+  } else {
+    my $packed = POEx::ZMQ::FFI->zpack($type, $val);
+    my $ptr = unpack 'L!', pack 'P', $packed;
+    $self->throw_if_error( zmq_setsockopt =>
+      $self->_ffi->int_zmq_setsockopt(
+        $self->_socket_ptr, $opt, $ptr, length $packed
+      )
+    )
+  }
+
+  $self
 }
 
 
 sub get_handle {
   my ($self) = @_;
-  my $fno = $self->get_sock_opt( ZMQ_FD, 'int' );
+  my $fno = $self->get_sock_opt( ZMQ_FD );
   IO::Handle->new_from_fd( $fno, 'r' )
 }
 
 
 sub connect {
+  my ($self, $endpoint) = @_;
+  confess "Expected an endpoint" unless defined $endpoint;
 
+  $self->throw_if_error( zmq_connect =>
+    $self->_ffi->zmq_connect( $self->_socket_ptr, $endpoint )
+  );
+
+  $self
 }
 
 sub disconnect {
+  my ($self, $endpoint) = @_;
+  confess "Expected an endpoint" unless defined $endpoint;
 
+  $self->throw_if_error( zmq_disconnect =>
+    $self->_ffi->zmq_disconnect( $self->_socket_ptr, $endpoint )
+  );
+
+  $self
 }
 
 sub bind {
+  my ($self, $endpoint) = @_;
+  confess "Expected an endpoint" unless defined $endpoint;
 
+  $self->throw_if_error( zmq_bind =>
+    $self->_ffi->zmq_bind( $self->_socket_ptr, $endpoint )
+  );
+
+  $self
 }
 
 sub unbind {
+  my ($self, $endpoint) = @_;
+  confess "Expected an endpoint" unless defined $endpoint;
 
+  $self->throw_if_error( zmq_unbind =>
+    $self->_ffi->zmq_unbind( $self->_socket_ptr, $endpoint )
+  );
+
+  $self
 }
 
 sub send {
+  my ($self, $msg, $flags) = @_;
+  $flags //= 0;
+  my $len = bytes::length($msg);
+  $self->throw_if_error( zmq_send =>
+    $self->_ffi->zmq_send( $self->_socket_ptr, $msg, $len, $flags )
+  );
 
+  $self
 }
 
 sub send_multipart {
+  my ($self, $parts, $flags) = @_;
+  confess "Expected an ARRAY of message parts"
+    unless Scalar::Util::reftype($parts) eq 'ARRAY'
+    and @$parts;
 
+  my @copy = @$parts;
+  while (my $item = shift @copy) {
+    $self->send( $item, @copy ? ZMQ_SNDMORE : $flags )
+  }
 }
 
 sub recv {
+  my ($self, $flags) = @_;
+  $flags //= 0;
 
+  my $zmsg_ptr = FFI::Raw::memptr(40);
+  $self->throw_if_error( zmq_msg_init => 
+    $self->_ffi->zmq_msg_init($zmsg_ptr) 
+  );
+
+  my $zmsg_len = $self->_ffi->zmq_msg_recv(
+    $zmsg_ptr, $self->socket_ptr, $flags
+  );
+  $self->throw_if_error( zmq_msg_recv => $zmsg_len );
+
+  my $ret;
+  if ($zmsg_len) {
+    my $data_ptr     = $self->_ffi->zmq_msg_data($zmsg_ptr);
+    my $content_ptr  = FFI::Raw::memptr($zmsg_len);
+    $self->_ffi->memcpy( $content_ptr, $data_ptr, $zmsg_len );
+    $ret = $content_ptr->tostr($zmsg_len);
+  } else {
+    $ret = ''
+  }
+
+  $self->_ffi->zmq_msg_close($zmsg_ptr);
+
+  $ret
 }
 
 sub recv_multipart {
+  my ($self, $flags) = @_;
 
+  my @parts = $self->recv($flags);
+  push @parts, $self->recv($flags) while $self->get_sock_opt(ZMQ_RCVMORE);
+
+  array(@parts)
 }
 
 1;
