@@ -135,7 +135,7 @@ sub zunpack {
 
 =head1 NAME
 
-POEx::ZMQ::FFI - FFI backend for the POEx::ZMQ ZeroMQ component
+POEx::ZMQ::FFI - Minimalist ZMQ FFI wrapper for POEx::ZMQ
 
 =head1 SYNOPSIS
 
@@ -143,6 +143,9 @@ FIXME
 
 =head1 DESCRIPTION
 
+This is a minimalist L<FFI::Raw> interface to L<http://www.zeromq.org|ZeroMQ>
+version 3+, derived from Dylan Cali's L<ZMQ::FFI> (where you probably want to look if
+you're not using L<POEx::ZMQ>.)
 
 FIXME
 
@@ -171,11 +174,21 @@ The dynamic library name can be supplied:
 
 ... otherwise the library found by L</find_soname> is used.
 
+=head3 zpack
+
+FIXME
+
+=head3 zunpack
+
+FIXME
+
 =head1 AUTHOR
 
 Jon Portnoy <avenj@cobaltirc.org>
 
 Significant portions of this code are derived from L<ZMQ::FFI> by Dylan Cali
 (CPAN: CALID).
+
+Licensed under the same terms as Perl.
 
 =cut
