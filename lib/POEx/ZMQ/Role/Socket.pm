@@ -25,7 +25,7 @@ has '+register_prefix' => ( default => sub { 'ZMQ_' } );
 has '+shutdown_signal' => ( default => sub { 'SHUTDOWN_ZMQ' } );
 
 
-has zeromq => (
+has zcontext => (
   lazy      => 1,
   is        => 'ro',
   isa       => ZMQContext,
@@ -55,7 +55,7 @@ has zsock => (
   isa       => ZMQSocket,
   builder   => sub {
     my ($self) = @_;
-    $self->zeromq->create_socket( $self->type )
+    $self->zcontext->create_socket( $self->type )
   },
 );
 
@@ -126,8 +126,8 @@ sub _pxz_emitter_stopped {
 }
 
 
-sub get_context_opt { shift->zeromq->get_ctx_opt(@_) }
-sub set_context_opt { shift->zeromq->set_ctx_opt(@_) }
+sub get_context_opt { shift->zcontext->get_ctx_opt(@_) }
+sub set_context_opt { shift->zcontext->set_ctx_opt(@_) }
 
 sub get_socket_opt { shift->zsock->get_sock_opt(@_) }
 sub set_socket_opt { shift->zsock->set_sock_opt(@_) }
@@ -181,7 +181,7 @@ sub send {
 sub _px_send { $_[OBJECT]->send(@_[ARG0 .. $#_]) }
 
 sub send_multipart {
-
+  # FIXME
 }
 sub _px_send_multipart { $_[OBJECT]->send_multipart(@_[ARG0 .. $#_]) }
 
@@ -202,11 +202,11 @@ sub _pxz_ready {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
 
   # FIXME
-  if ($self->zsock->has_pollin) {
+  if ($self->zsock->has_pollin) { # FIXME
     $self->call('nb_read');
   }
 
-  if ($self->zsock->has_pollout) {
+  if ($self->zsock->has_pollout) { # FIXME
     $self->call('nb_write');
     # FIXME can write (from internal buf? ZMQ_DONTWAIT? check zmq docs)
     #       can we just use ->send and not worry about it..?
