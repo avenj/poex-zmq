@@ -180,9 +180,14 @@ has _ffi => (
 has _socket_ptr => (
   lazy      => 1,
   is        => 'ro',
+  isa       => Defined,
   writer    => '_set_socket_ptr',
   builder   => sub {
-    # FIXME
+    my ($self) = @_;
+    my $zsock = 
+      $self->_ffi->zmq_socket( $self->context->get_raw_context, $self->type );
+    $self->recv while $self->has_event_pollin;
+    $zsock
   },
 );
 
@@ -383,10 +388,14 @@ sub recv {
     $self->_ffi->zmq_msg_init($zmsg_ptr) 
   );
 
-  my $zmsg_len = $self->_ffi->zmq_msg_recv(
-    $zmsg_ptr, $self->socket_ptr, $flags
+  my $zmsg_len;
+  $self->throw_if_error( zmq_msg_recv =>
+    (
+      $zmsg_len = $self->_ffi->zmq_msg_recv(
+        $zmsg_ptr, $self->socket_ptr, $flags
+      )
+    )
   );
-  $self->throw_if_error( zmq_msg_recv => $zmsg_len );
 
   my $ret;
   if ($zmsg_len) {
@@ -412,4 +421,48 @@ sub recv_multipart {
   array(@parts)
 }
 
+sub has_event_pollin {
+  my ($self) = @_;
+  !! ( $self->get_sock_opt(ZMQ_EVENTS) & ZMQ_POLLIN )
+}
+
+sub has_event_pollout {
+  my ($self) = @_;
+  !! ( $self->get_sock_opt(ZMQ_EVENTS) & ZMQ_POLLOUT )
+}
+
 1;
+
+=pod
+
+=head1 NAME
+
+POEx::ZMQ::FFI::Socket
+
+=head1 SYNOPSIS
+
+  # Used internally by POEx::ZMQ
+
+=head1 DESCRIPTION
+
+An object representing a ZeroMQ socket; used internally by L<POEx::ZMQ>.
+
+This is essentially a minimalist reimplementation of Dylan Cali's L<ZMQ::FFI>;
+see L<ZMQ::FFI> for a ZeroMQ FFI implementation intended for use outside
+L<POE>.
+
+=head2 ATTRIBUTES
+
+=head2 METHODS
+
+=head2 CONSUMES
+
+=head1 AUTHOR
+
+Jon Portnoy <avenj@cobaltirc.org>
+
+Significant portions of this code are inspired by or derived from L<ZMQ::FFI>
+by Dylan Calid (CPAN: CALID).
+
+=cut
+

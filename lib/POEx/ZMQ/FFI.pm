@@ -139,15 +139,13 @@ POEx::ZMQ::FFI - Minimalist ZMQ FFI wrapper for POEx::ZMQ
 
 =head1 SYNOPSIS
 
-FIXME
+  # Used internally by POEx::ZMQ.
 
 =head1 DESCRIPTION
 
 This is a minimalist L<FFI::Raw> interface to L<http://www.zeromq.org|ZeroMQ>
 version 3+, derived from Dylan Cali's L<ZMQ::FFI> (where you probably want to look if
 you're not using L<POEx::ZMQ>.)
-
-FIXME
 
 =head2 CLASS METHODS
 

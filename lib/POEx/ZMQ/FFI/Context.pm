@@ -79,6 +79,7 @@ has _ffi => (
 has _ctx_ptr => (
   lazy      => 1,
   is        => 'ro',
+  isa       => Defined,
   writer    => '_set_ctx_ptr',
   builder   => sub {
     my ($self) = @_;
@@ -151,15 +152,18 @@ sub set_ctx_opt {
 
 =head1 NAME
 
-POEx::ZMQ::FFI::Context - ZeroMQ backend context object
+POEx::ZMQ::FFI::Context
 
 =head1 SYNOPSIS
 
-FIXME
+  # Used internally by POEx::ZMQ
 
 =head1 DESCRIPTION
 
-FIXME
+An object representing a ZeroMQ context; used internally by L<POEx::ZMQ>.
+
+See L<ZMQ::FFI> for a ZeroMQ FFI implementation intended for use outside
+L<POE>.
 
 =head2 ATTRIBUTES
 

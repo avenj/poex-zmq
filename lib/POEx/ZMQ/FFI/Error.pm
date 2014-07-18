@@ -30,7 +30,7 @@ POEx::ZMQ::FFI::Error - Exceptions thrown by the ZMQ backend
 
 =head1 SYNOPSIS
 
-FIXME
+  # Used internally by POEx::ZMQ
 
 =head1 DESCRIPTION
 
