@@ -7,8 +7,11 @@ use strictures 1;
 use POEx::ZMQ::FFI::Callable;
 use POEx::ZMQ::FFI::Error;
 
+use Types::Standard -types;
 
-use Moo::Role; use MooX::late;
+use FFI::Raw;
+
+use Moo::Role;
 requires 'soname';
 
 has err_handler => (
@@ -34,13 +37,13 @@ has err_handler => (
 
 sub errno {
   my ($self) = @_;
-  $self->_err_handler->zmq_errno
+  $self->err_handler->zmq_errno
 }
 
 sub errstr {
   my ($self, $errno) = @_;
-  $self->_err_handler->zmq_strerror(
-    $errno // $self->get_errno
+  $self->err_handler->zmq_strerror(
+    $errno // $self->errno
   )
 }
 
