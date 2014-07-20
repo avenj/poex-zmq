@@ -108,11 +108,10 @@ sub BUILD {
 
 sub DEMOLISH {
   my ($self) = @_;
-  return unless $self->_has_ctx_ptr and $self->_ctx_ptr != -1;
+  return unless $self->_has_ctx_ptr;
   $self->throw_if_error( zmq_ctx_destroy =>
     $self->_ffi->zmq_ctx_destroy( $self->_ctx_ptr )
   );
-  $self->_set_ctx_ptr(-1);
 }
 
 
