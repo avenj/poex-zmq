@@ -47,6 +47,7 @@ has soname  => (
 
 
 has _ffi => (
+  lazy      => 1,
   is        => 'ro',
   isa       => InstanceOf['POEx::ZMQ::FFI::Callable'],
   builder   => sub {

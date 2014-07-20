@@ -11,6 +11,7 @@ use POEx::ZMQ::Constants
 
 use POEx::ZMQ::FFI;
 use POEx::ZMQ::FFI::Callable;
+use POEx::ZMQ::FFI::Socket;
 
 use Types::Standard -types;
 
@@ -42,6 +43,7 @@ has max_sockets => (
 
 
 has _ffi => ( 
+  lazy      => 1,
   is        => 'ro',
   isa       => InstanceOf['POEx::ZMQ::FFI::Callable'],
   builder   => sub {
@@ -81,6 +83,7 @@ has _ctx_ptr => (
   is        => 'ro',
   isa       => Defined,
   writer    => '_set_ctx_ptr',
+  predicate => '_has_ctx_ptr',
   builder   => sub {
     my ($self) = @_;
     $self->_ffi->zmq_ctx_new // $self->throw_zmq_error('zmq_ctx_new');
@@ -105,11 +108,7 @@ sub BUILD {
 
 sub DEMOLISH {
   my ($self) = @_;
-  $self->_destroy_ctx unless $self->_ctx_ptr == -1;
-}
-
-sub _destroy_ctx {
-  my ($self) = @_;
+  return unless $self->_has_ctx_ptr and $self->_ctx_ptr != -1;
   $self->throw_if_error( zmq_ctx_destroy =>
     $self->_ffi->zmq_ctx_destroy( $self->_ctx_ptr )
   );
@@ -119,7 +118,7 @@ sub _destroy_ctx {
 
 sub create_socket {
   my ($self, $type) = @_;
-  ZMQ::FFI::Socket->new(
+  POEx::ZMQ::FFI::Socket->new(
     context     => $self,
     type        => $type,
     soname      => $self->soname,
@@ -192,6 +191,9 @@ Defaults to 1023 (the ZMQ4 default).
   my $sock = $ctx->create_socket($type);
 
 Returns a new L<POEx::ZMQ::FFI::Socket> for the given type.
+
+(There is no destroy method; the ZeroMQ context is terminated when the object
+goes out of scope.)
 
 =head3 get_ctx_opt
 
