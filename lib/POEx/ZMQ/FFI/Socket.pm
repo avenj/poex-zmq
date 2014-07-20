@@ -184,6 +184,7 @@ has _socket_ptr => (
   is        => 'ro',
   isa       => Defined,
   writer    => '_set_socket_ptr',
+  predicate => '_has_socket_ptr',
   builder   => sub {
     my ($self) = @_;
     my $zsock = 
@@ -195,6 +196,14 @@ has _socket_ptr => (
 
 
 with 'POEx::ZMQ::FFI::Role::ErrorChecking';
+
+
+sub DEMOLISH {
+  my ($self) = @_;
+  $self->warn_if_error( zmq_close =>
+    $self->_ffi->zmq_close( $self->_socket_ptr )
+  ) if $self->_has_socket_ptr;
+}
 
 
 our $KnownTypes = hash;
