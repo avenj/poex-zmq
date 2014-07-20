@@ -47,15 +47,19 @@ sub errstr {
   )
 }
 
-sub throw_zmq_error {
+sub _build_zmq_error {
   my ($self, $call) = @_;
   my $errno  = $self->errno;
-  my $errstr = $self->errstr;
+  my $errstr = $self->errstr($errno);
   POEx::ZMQ::FFI::Error->new(
     message  => $errstr,
     errno    => $errno,
     function => $call,
-  )->throw
+  ) 
+}
+
+sub throw_zmq_error {
+  shift->_build_zmq_error(@_)->throw
 }
 
 sub throw_if_error {
@@ -65,6 +69,19 @@ sub throw_if_error {
 
   if ($rc == -1) {
     $self->throw_zmq_error($call)
+  }
+
+  $self
+}
+
+sub warn_if_error {
+  my ($self, $call, $rc) = @_;
+  confess "Expected function name and return code"
+    unless defined $call and defined $rc;
+
+  if ($rc == -1) {
+    my $err = $self->_build_zmq_error($call);
+    warn $err . "\n"
   }
 
   $self
