@@ -189,7 +189,6 @@ has _socket_ptr => (
     my ($self) = @_;
     my $zsock = 
       $self->_ffi->zmq_socket( $self->context->get_raw_context, $self->type );
-    $self->recv while $self->has_event_pollin;
     $zsock
   },
 );
@@ -197,6 +196,12 @@ has _socket_ptr => (
 
 with 'POEx::ZMQ::FFI::Role::ErrorChecking';
 
+
+sub BUILD {
+  my ($self) = @_;
+  # (Edge poll is a bit annoying ->)
+  $self->recv while $self->has_event_pollin;
+}
 
 sub DEMOLISH {
   my ($self) = @_;
@@ -384,10 +389,8 @@ sub send_multipart {
     unless Scalar::Util::reftype($parts) eq 'ARRAY'
     and @$parts;
 
-  my @copy = @$parts;
-  while (my $item = shift @copy) {
-    $self->send( $item, @copy ? ZMQ_SNDMORE : $flags )
-  }
+  $self->send( $parts->[$_], ZMQ_SNDMORE ) for 0 .. ($#$parts - 1);
+  $self->send( $parts->[-1], $flags );
 }
 
 sub recv {
@@ -403,7 +406,7 @@ sub recv {
   $self->throw_if_error( zmq_msg_recv =>
     (
       $zmsg_len = $self->_ffi->zmq_msg_recv(
-        $zmsg_ptr, $self->socket_ptr, $flags
+        $zmsg_ptr, $self->_socket_ptr, $flags
       )
     )
   );
