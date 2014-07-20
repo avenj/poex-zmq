@@ -454,16 +454,117 @@ L<POE>.
 
 =head2 ATTRIBUTES
 
+=head3 context
+
+The L<POEx::ZMQ::FFI::Context> object this socket belongs to.
+
+=head3 type
+
+The ZeroMQ socket type (as a constant value, see L<POEx::ZMQ::Constants>).
+
+Required at creation time.
+
+=head3 soname
+
+The C<libzmq> dynamic library we are using.
+
+Retrieved from our L</context> object by default.
+
 =head2 METHODS
 
+=head3 connect
+
+  $zsock->connect( $endpoint );
+
+See L<zmq_connect(3)>
+
+=head3 disconnect
+
+  $zsock->disconnect( $endpoint );
+
+See L<zmq_disconnect(3)>
+
+=head3 bind
+
+  $zsock->bind( $endpoint );
+
+See L<zmq_bind(3)>
+
+=head3 unbind
+
+  $zsock->unbind( $endpoint );
+
+See L<zmq_unbind(3)>
+
+=head3 send
+
+FIXME
+
+=head3 send_multipart
+
+FIXME
+
+=head3 recv
+
+FIXME
+
+=head3 recv_multipart
+
+FIXME
+
+=head3 known_type_for_opt
+
+  my $opt_type = $zsock->known_type_for_opt( $opt_constant );
+
+Returns the type of an option for use with L</get_sock_opt> &
+L</set_sock_opt>.
+
+=head3 get_sock_opt
+
+  my $val = $zsock->get_sock_opt( $opt_constant );
+  
+  # Or manually specify value type:
+  my $val = $zsock->get_sock_opt( $opt_constant => 'int64' );
+
+Retrieves the currently-set value of a ZeroMQ option constant (see
+L<POEx::ZMQ::Constants>).
+
+See the zmq_getsockopt(3) man page for details regarding option constants and
+their returned values.
+
+You should typically be able to omit the option value's type -- this class will
+try to Do The Right Thing.
+The internal C<< option => type >> map is exposed via L</known_type_for_opt>;
+it should be reasonably complete. B<< If you have to specify your own value
+type for a new or missing option, file a bug >> via
+L<< http://www.github.com/avenj/poex-zmq|GitHub >> or RT.
+
+=head3 set_sock_opt
+
+FIXME
+
+=head3 get_handle
+
+FIXME
+
+=head3 has_event_pollin
+
+FIXME
+
+=head3 has_event_pollout
+
+FIXME
+
 =head2 CONSUMES
+
+L<POEx::ZMQ::FFI::Role::ErrorChecking>
 
 =head1 AUTHOR
 
 Jon Portnoy <avenj@cobaltirc.org>
 
 Significant portions of this code are inspired by or derived from L<ZMQ::FFI>
-by Dylan Calid (CPAN: CALID).
+by Dylan Cali (CPAN: CALID).
 
 =cut
 

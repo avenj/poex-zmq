@@ -70,5 +70,70 @@ sub throw_if_error {
   $self
 }
 
-
 1;
+
+
+=pod
+
+=head1 NAME
+
+POEx::ZMQ::FFI::Role::ErrorChecking
+
+=head1 SYNOPSIS
+
+  # Used internally by POEx::ZMQ
+
+=head1 DESCRIPTION
+
+A L<Moo::Role> consumed by classes comprising the L<POEx::ZMQ> FFI backend.
+
+Errors produced/thrown by these methods are instances of L<POEx::ZMQ::FFI::Error>.
+
+=head2 ATTRIBUTES
+
+=head3 err_handler
+
+The error handler is a L<POEx::ZMQ::FFI::Callable> instance providing direct
+access to the L<zmq_errno(3)> and L<zmq_strerror(3)> functions.
+
+=head2 METHODS
+
+=head3 errno
+
+Calls L<zmq_errno(3)> to get the errno value for the previous (failed) call.
+
+Used to build a thrown L<POEx::ZMQ::FFI::Error>.
+
+=head3 errstr
+
+Calls L<zmq_strerror(3)> to get the error string for the current L</errno>.
+
+An C<errno> can be supplied if one was previously retrieved:
+
+  my $errstr = $self->errstr( $errno );
+
+Used to build a thrown L<POEx::ZMQ::FFI::Error>.
+
+=head3 throw_zmq_error
+
+  $self->throw_zmq_error( $zmq_function );
+
+Throws a L<POEx::ZMQ::FFI::Error>, unconditionally.
+
+The ZMQ function name is purely informational; L</errno> and L</errstr> are
+automatically retrieved for inclusion in the thrown exception object.
+
+=head3 throw_if_error
+
+  $self->throw_if_error( $zmq_function =>
+    $call_zmq_ffi_func->(@args)
+  );
+
+Takes a ZMQ function name and a return code from a ZMQ FFI call; calls
+L</throw_zmq_error> if the return code indicates the call failed.
+
+=head1 AUTHOR
+
+Jon Portnoy <avenj@cobaltirc.org>
+
+=cut
