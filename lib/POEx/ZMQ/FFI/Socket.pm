@@ -39,9 +39,10 @@ has type    => (
 );
 
 has soname  => (
-  required  => 1,
+  lazy      => 1,
   is        => 'ro',
   isa       => Str,
+  builder   => sub { shift->context->soname },
 );
 
 
