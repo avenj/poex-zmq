@@ -92,7 +92,7 @@ use parent 'Exporter::Tiny';
 our @EXPORT = our @EXPORT_ALL = qw/
 HEADER
 
-for my $constant (keys %const) {
+for my $constant (keys %const, keys %errconst) {
   $output .= "  $constant\n"
 }
 $output .= "/;\n\n";
@@ -102,14 +102,14 @@ for my $constant (keys %const) {
   $output .= "sub $constant () { $val }\n";
 }
 
-$output .= "\nno strict refs;\n";
+$output .= "\nno strict 'refs';\n";
 
 for my $constant (keys %errconst) {
   my $val = $errconst{$constant};
   $output .= "sub $constant () { \n";
   $output .= "  defined &{'POSIX::$constant'} ?\n";
   $output .= "    &{'POSIX::$constant'} : $val\n";
-  $output .= "  }\n";
+  $output .= "}\n";
 }
 
 

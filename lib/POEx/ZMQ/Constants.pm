@@ -99,6 +99,28 @@ our @EXPORT = our @EXPORT_ALL = qw/
   ZMQ_IMMEDIATE
   ZMQ_AFFINITY
   ZMQ_TCP_KEEPALIVE_INTVL
+  EFSM
+  EAFNOSUPPORT
+  EADDRNOTAVAIL
+  ECONNREFUSED
+  ENOTSUP
+  ECONNRESET
+  EPROTONOSUPPORT
+  ENOTCONN
+  ENETUNREACH
+  EADDRINUSE
+  ETIMEDOUT
+  ECONNABORTED
+  ENOCOMPATPROTO
+  EMTHREAD
+  EMSGSIZE
+  ETERM
+  EHOSTUNREACH
+  ENETDOWN
+  ENETRESET
+  ENOTSOCK
+  EINPROGRESS
+  ENOBUFS
 /;
 
 sub ZMQ_RATE () { 8 }
@@ -196,98 +218,98 @@ sub ZMQ_IMMEDIATE () { 39 }
 sub ZMQ_AFFINITY () { 4 }
 sub ZMQ_TCP_KEEPALIVE_INTVL () { 37 }
 
-no strict refs;
+no strict 'refs';
 sub EFSM () { 
   defined &{'POSIX::EFSM'} ?
     &{'POSIX::EFSM'} : 156384763
-  }
+}
 sub EAFNOSUPPORT () { 
   defined &{'POSIX::EAFNOSUPPORT'} ?
     &{'POSIX::EAFNOSUPPORT'} : 156384723
-  }
+}
 sub EADDRNOTAVAIL () { 
   defined &{'POSIX::EADDRNOTAVAIL'} ?
     &{'POSIX::EADDRNOTAVAIL'} : 156384718
-  }
+}
 sub ECONNREFUSED () { 
   defined &{'POSIX::ECONNREFUSED'} ?
     &{'POSIX::ECONNREFUSED'} : 156384719
-  }
+}
 sub ENOTSUP () { 
   defined &{'POSIX::ENOTSUP'} ?
     &{'POSIX::ENOTSUP'} : 156384713
-  }
+}
 sub ECONNRESET () { 
   defined &{'POSIX::ECONNRESET'} ?
     &{'POSIX::ECONNRESET'} : 156384726
-  }
+}
 sub EPROTONOSUPPORT () { 
   defined &{'POSIX::EPROTONOSUPPORT'} ?
     &{'POSIX::EPROTONOSUPPORT'} : 156384714
-  }
+}
 sub ENOTCONN () { 
   defined &{'POSIX::ENOTCONN'} ?
     &{'POSIX::ENOTCONN'} : 156384727
-  }
+}
 sub ENETUNREACH () { 
   defined &{'POSIX::ENETUNREACH'} ?
     &{'POSIX::ENETUNREACH'} : 156384724
-  }
+}
 sub EADDRINUSE () { 
   defined &{'POSIX::EADDRINUSE'} ?
     &{'POSIX::EADDRINUSE'} : 156384717
-  }
+}
 sub ETIMEDOUT () { 
   defined &{'POSIX::ETIMEDOUT'} ?
     &{'POSIX::ETIMEDOUT'} : 156384728
-  }
+}
 sub ECONNABORTED () { 
   defined &{'POSIX::ECONNABORTED'} ?
     &{'POSIX::ECONNABORTED'} : 156384725
-  }
+}
 sub ENOCOMPATPROTO () { 
   defined &{'POSIX::ENOCOMPATPROTO'} ?
     &{'POSIX::ENOCOMPATPROTO'} : 156384764
-  }
+}
 sub EMTHREAD () { 
   defined &{'POSIX::EMTHREAD'} ?
     &{'POSIX::EMTHREAD'} : 156384766
-  }
+}
 sub EMSGSIZE () { 
   defined &{'POSIX::EMSGSIZE'} ?
     &{'POSIX::EMSGSIZE'} : 156384722
-  }
+}
 sub ETERM () { 
   defined &{'POSIX::ETERM'} ?
     &{'POSIX::ETERM'} : 156384765
-  }
+}
 sub EHOSTUNREACH () { 
   defined &{'POSIX::EHOSTUNREACH'} ?
     &{'POSIX::EHOSTUNREACH'} : 156384729
-  }
+}
 sub ENETDOWN () { 
   defined &{'POSIX::ENETDOWN'} ?
     &{'POSIX::ENETDOWN'} : 156384716
-  }
+}
 sub ENETRESET () { 
   defined &{'POSIX::ENETRESET'} ?
     &{'POSIX::ENETRESET'} : 156384730
-  }
+}
 sub ENOTSOCK () { 
   defined &{'POSIX::ENOTSOCK'} ?
     &{'POSIX::ENOTSOCK'} : 156384721
-  }
+}
 sub EINPROGRESS () { 
   defined &{'POSIX::EINPROGRESS'} ?
     &{'POSIX::EINPROGRESS'} : 156384720
-  }
+}
 sub ENOBUFS () { 
   defined &{'POSIX::ENOBUFS'} ?
     &{'POSIX::ENOBUFS'} : 156384715
-  }
+}
 
 1;
- # Generated at Sun Jul 20 21:55:39 2014
+ # Generated at Sun Jul 20 21:59:52 2014
 
 =pod
 
@@ -300,7 +322,7 @@ POEx::ZMQ::Constants - ZeroMQ (3 + 4) constants for use with POEx::ZMQ
   # All ZeroMQ v3 + v4 constants:
   use POEx::ZMQ::Constants -all;
   # Specific constants:
-  use POEx::ZMQ::Constants qw/ZMQ_ROUTER ZMQ_DEALER/;
+  use POEx::ZMQ::Constants qw/ZMQ_ROUTER ZMQ_DEALER EINTR/;
 
 =head1 DESCRIPTION
 
@@ -309,6 +331,9 @@ ZeroMQ constant exporter for use with L<POEx::ZMQ> applications.
 Automatically generated from ZeroMQ version 3 & 4 headers.
 
 Uses L<Exporter::Tiny>; look there for detailed import-related documentation.
+
+C<E>-prefixed error constants should generally do the right thing, using the
+ZeroMQ C<zmq.h> values if the POSIX constants are not available.
 
 =head1 AUTHOR
 
