@@ -4,7 +4,6 @@ use v5.10;
 use strictures 1;
 use Carp;
 
-
 use Scalar::Util 'blessed';
 
 use List::Objects::Types -types;
@@ -12,6 +11,7 @@ use POEx::ZMQ::Types     -types;
 use Types::Standard      -types;
 
 use POEx::ZMQ::Constants -all;
+use POEx::ZMQ::Buffered;
 use POEx::ZMQ::FFI::Context;
 
 use POE;
@@ -48,16 +48,25 @@ has filter => (
 
 
 has zsock => (
-  # FIXME consider clearer & trigger that set up or tear down watchers if
-  #       session is active?
+  # FIXME wrap _clear_zsock to pxz_sock_unwatch if session is active?
   lazy      => 1,
   is        => 'ro',
   isa       => ZMQSocket,
+  clearer   => '_clear_zsock',
   builder   => sub {
     my ($self) = @_;
     $self->zcontext->create_socket( $self->type )
   },
 );
+
+has is_closed => (
+  lazy      => 1,
+  is        => 'ro',
+  isa       => Bool,
+  writer    => '_set_is_closed',
+  builder   => sub { 0 },
+);
+
 
 has _zsock_fh => (
   lazy      => 1,
@@ -93,13 +102,25 @@ sub start {
 
   $self->set_object_states([
     $self => +{
-      emitter_started => '_pxz_emitter_started',
-      emitter_stopped => '_pxz_emitter_stopped',
-      # FIXME
+      emitter_started   => '_pxz_emitter_started',
+      emitter_stopped   => '_pxz_emitter_stopped',
+
+      pxz_sock_watch    => '_pxz_sock_watch',
+      pxz_sock_unwatch  => '_pxz_sock_unwatch',
+      pxz_ready         => '_pxz_ready',
+      pxz_nb_read       => '_pxz_nb_read',
+      pxz_nb_write      => '_pxz_nb_write',
+
+      bind            => '_px_bind',
+      connect         => '_px_connect',
+      unbind          => '_px_unbind',
+      disconnect      => '_px_disconnect',
+      send            => '_px_send',
+      send_multipart  => '_px_send_multipart',
     },
     
     # FIXME 'defined_states' attr with builder for use by consumers
-    #       to add events
+    #       to add events?
     ( $self->has_object_states ? @{ $self->object_states } : () ),
   ]);
 
@@ -113,16 +134,17 @@ sub stop {
 
 around _shutdown_emitter => sub {
   my ($orig, $self) = @_;
-  # FIXME shut down io watchers
+  $self->call( 'pxz_sock_unwatch' );
 };
 
 
 sub _pxz_emitter_started {
-  # FIXME call a watch for our ->zsock
+  my ($kernel, $self) = @_[KRENEL, OBJECT];
+  $self->call( 'pxz_sock_watch' );
 }
 
 sub _pxz_emitter_stopped {
-
+  # FIXME cleanups?
 }
 
 
@@ -134,13 +156,20 @@ sub set_socket_opt { shift->zsock->set_sock_opt(@_) }
 
 sub close { 
   my $self = shift; 
-  $self->zsock->close;  # FIXME drop out of scope instead..?
+  # FIXME call for a poll and yield the clear?
+  $self->_clear_zsock;
+  $self->_set_is_closed(1);
   $self->emit( 'closed' )
 }
 sub _px_close { $_[OBJECT]->close }
 
 sub unbind {
-  # FIXME
+  my $self = shift;
+  for my $endpt (@_) {
+    $self->zsock->unbind($endpt);
+    $self->emit( bind_removed => $endpt )
+  }
+  $self
 }
 sub _px_unbind { $_[OBJECT]->unbind(@_[ARG0 .. $#_]) }
 
@@ -176,12 +205,23 @@ sub disconnect {
 sub _px_disconnect { $_[OBJECT]->disconnect(@_[ARG0 .. $#_]) }
 
 sub send {
-  # FIXME if $self->filter, use POE::Filter serializer iface
+  my ($kernel, $self) = @_[KERNEL, OBJECT];
+  my ($msg, $flags)   = @_[ARG0, ARG1];
+
+  $self->_zsock_buf->push( 
+    POEx::ZMQ::Buffered->new(
+      item      => $msg,
+      item_type => 'single',
+      ( defined $flags ? (flags => $flags) : () ),
+    );
+  );
+
+  $self->call('pxz_nb_write');
 }
 sub _px_send { $_[OBJECT]->send(@_[ARG0 .. $#_]) }
 
 sub send_multipart {
-  # FIXME
+  # FIXME if $self->filter, filter chunks individually
 }
 sub _px_send_multipart { $_[OBJECT]->send_multipart(@_[ARG0 .. $#_]) }
 
@@ -201,13 +241,15 @@ sub _pxz_sock_unwatch {
 sub _pxz_ready {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
 
-  # FIXME
-  if ($self->zsock->has_pollin) { # FIXME
+  if ($self->zsock->has_event_pollin) {
     $self->call('nb_read');
   }
 
-  if ($self->zsock->has_pollout) { # FIXME
+  if ($self->zsock->has_event_pollout) {
     $self->call('nb_write');
+    # FIXME ready to write from internal buf after previous EAGAIN
+    #    write from buf until another bad rc
+    #  older notes ->
     # FIXME can write (from internal buf? ZMQ_DONTWAIT? check zmq docs)
     #       can we just use ->send and not worry about it..?
     #       differs between socket types, should we care or just always
@@ -215,6 +257,7 @@ sub _pxz_ready {
     #       ZMQ_DONTWAIT will EGAIN if we can't queue...
     #       pyzmq's event loop integration queues on HWM, wfm
     #       push [$data, $flags] to ->_zsock_buf
+    #
   }
 
 }
@@ -225,8 +268,21 @@ sub _pxz_nb_read {
 }
 
 sub _pxz_nb_write {
+  my ($kernel, $self) = @_[KERNEL, OBJECT];
+
+  return unless $self->_zsock_buf->has_any;
+
+  my $send_error;
+  until ($self->_zsock_buf->is_empty || $send_error) {
+    # FIXME
+  }
+  # FIXME called on pollout or because of a send()
+  #   try to write from buf until E*
+  #   yield back and try again on pollout on EGAIN
   # FIXME serialize if $self->filter
+  #     if multipart, serialize chunks individually
 }
 
+# FIXME monitor support
 
 1;
