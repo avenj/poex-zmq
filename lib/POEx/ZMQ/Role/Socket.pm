@@ -213,7 +213,7 @@ sub send {
       item      => $msg,
       item_type => 'single',
       ( defined $flags ? (flags => $flags) : () ),
-    );
+    )
   );
 
   $self->call('pxz_nb_write');
@@ -221,7 +221,16 @@ sub send {
 sub _px_send { $_[OBJECT]->send(@_[ARG0 .. $#_]) }
 
 sub send_multipart {
-  # FIXME if $self->filter, filter chunks individually
+  my ($kernel, $self) = @_[KERNEL, OBJECT];
+  my ($parts, $flags) = @_[ARG0, ARG1];
+
+  $self->_zsock_buf->push(
+    POEx::ZMQ::Buffered->new(
+      item      => $parts,
+      item_type => 'multipart',
+      ( defined $flags ? (flags => $flags) : () ),
+    )
+  );
 }
 sub _px_send_multipart { $_[OBJECT]->send_multipart(@_[ARG0 .. $#_]) }
 
@@ -263,7 +272,9 @@ sub _pxz_ready {
 }
 
 sub _pxz_nb_read {
-  # FIXME can do nb read (ZMQ_DONTWAIT?)
+  my ($kernel, $self) = @_[KERNEL, OBJECT];
+
+  # FIXME can do nb read (w/ ZMQ_DONTWAIT?)
   # FIXME deserialize input if $self->filter
 }
 
@@ -274,10 +285,11 @@ sub _pxz_nb_write {
 
   my $send_error;
   until ($self->_zsock_buf->is_empty || $send_error) {
-    # FIXME
+    # FIXME pull item, attempt send, requeue if need be 
+    #   for performance we should prob filter at point of ->send
   }
   # FIXME called on pollout or because of a send()
-  #   try to write from buf until E*
+  #   try to write from buf until E*  (w/ DONTWAIT?)
   #   yield back and try again on pollout on EGAIN
   # FIXME serialize if $self->filter
   #     if multipart, serialize chunks individually
