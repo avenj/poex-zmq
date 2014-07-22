@@ -191,8 +191,8 @@ Defaults to 1023 (the ZMQ4 default).
 
 Returns a new L<POEx::ZMQ::FFI::Socket> for the given type.
 
-(There is no destroy method; the ZeroMQ context is terminated when the object
-goes out of scope.)
+There is no destroy method; the ZeroMQ context is terminated when the object,
+and any sock created on this context, falls out of scope.
 
 =head3 get_ctx_opt
 
