@@ -28,3 +28,40 @@ has flags => (
 );
 
 1;
+
+
+=pod
+
+=head1 NAME
+
+POEx::ZMQ::Buffered
+
+=head1 SYNOPSIS
+
+  # Used internally by POEx::ZMQ
+
+=head1 DESCRIPTION
+
+A buffered outgoing single or multipart message.
+
+See L<POEx::ZMQ>.
+
+=head2 ATTRIBUTES
+
+=head3 item
+
+The message body.
+
+=head3 item_type
+
+The message type -- C<single> or C<multipart>.
+
+=head3 flags
+
+The ZeroMQ message flags.
+
+=head1 AUTHOR
+
+Jon Portnoy <avenj@cobaltirc.org>
+
+=cut
