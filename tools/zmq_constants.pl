@@ -15,6 +15,12 @@ my @headers = (
 
 my %const;
 my %errconst;
+my @posixonly = qw/
+  EAGAIN
+  EFAULT
+  EINTR
+  EINVAL
+/;
 
 # FIXME
 #  Pull in the POSIX consts not included in zmq.h, such as EAGAIN and EINTR
@@ -103,6 +109,12 @@ for my $constant (keys %errconst) {
   $output .= "sub $constant () { \n";
   $output .= "  defined &{'POSIX::$constant'} ?\n";
   $output .= "    &{'POSIX::$constant'} : $val\n";
+  $output .= "}\n";
+}
+
+for my $constant (@posixonly) {
+  $output .= "sub $constant () { \n";
+  $output .= "  POSIX::$constant\n";
   $output .= "}\n";
 }
 

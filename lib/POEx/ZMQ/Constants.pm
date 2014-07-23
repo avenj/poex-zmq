@@ -307,9 +307,21 @@ sub ENOBUFS () {
   defined &{'POSIX::ENOBUFS'} ?
     &{'POSIX::ENOBUFS'} : 156384715
 }
+sub EAGAIN () { 
+  POSIX::EAGAIN
+}
+sub EFAULT () { 
+  POSIX::EFAULT
+}
+sub EINTR () { 
+  POSIX::EINTR
+}
+sub EINVAL () { 
+  POSIX::EINVAL
+}
 
 1;
- # Generated at Sun Jul 20 21:59:52 2014
+ # Generated at Wed Jul 23 02:45:34 2014
 
 =pod
 
