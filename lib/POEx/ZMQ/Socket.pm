@@ -1,4 +1,4 @@
-package POEx::ZMQ::Role::Socket;
+package POEx::ZMQ::Socket;
 
 use v5.10;
 use strictures 1;
@@ -17,7 +17,8 @@ use POEx::ZMQ::FFI::Context;
 use POE;
 
 
-use Moo::Role; use MooX::late;
+use Moo; use MooX::late;
+
 
 with 'MooX::Role::POE::Emitter';
 has '+event_prefix'    => ( default => sub { 'zmq_' } );
@@ -25,18 +26,19 @@ has '+register_prefix' => ( default => sub { 'ZMQ_' } );
 has '+shutdown_signal' => ( default => sub { 'SHUTDOWN_ZMQ' } );
 
 
-has zcontext => (
-  lazy      => 1,
-  is        => 'ro',
-  isa       => ZMQContext,
-  builder   => sub { POEx::ZMQ::FFI::Context->new },
-);
-
 has type => (
   required  => 1,
   is        => 'ro',
   isa       => ZMQSocketType,
   coerce    => 1,
+);
+
+
+has zcontext => (
+  lazy      => 1,
+  is        => 'ro',
+  isa       => ZMQContext,
+  builder   => sub { POEx::ZMQ::FFI::Context->new },
 );
 
 has filter => (
@@ -208,6 +210,8 @@ sub send {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
   my ($msg, $flags)   = @_[ARG0, ARG1];
 
+  # FIXME queue filtered if $self->filter
+
   $self->_zsock_buf->push( 
     POEx::ZMQ::Buffered->new(
       item      => $msg,
@@ -223,6 +227,8 @@ sub _px_send { $_[OBJECT]->send(@_[ARG0 .. $#_]) }
 sub send_multipart {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
   my ($parts, $flags) = @_[ARG0, ARG1];
+
+  # FIXME filter each part if $self->filter
 
   $self->_zsock_buf->push(
     POEx::ZMQ::Buffered->new(
@@ -256,23 +262,42 @@ sub _pxz_ready {
 
   if ($self->zsock->has_event_pollout) {
     $self->call('nb_write');
-    # FIXME ready to write from internal buf after previous EAGAIN
-    #    write from buf until another bad rc
-    #  older notes ->
-    # FIXME can write (from internal buf? ZMQ_DONTWAIT? check zmq docs)
-    #       can we just use ->send and not worry about it..?
-    #       differs between socket types, should we care or just always
-    #       DONTWAIT and buffer on error? (requires a catch?)
-    #       ZMQ_DONTWAIT will EGAIN if we can't queue...
-    #       pyzmq's event loop integration queues on HWM, wfm
-    #       push [$data, $flags] to ->_zsock_buf
-    #
   }
 
 }
 
 sub _pxz_nb_read {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
+
+  my $recv_err;
+  RECV: while (1) {
+    try {
+      my $msg = $self->zsock->recv(ZMQ_DONTWAIT);
+      my @parts;
+      while ( $self->zsock->get_sock_opt(ZMQ_RCVMORE) ) {
+        push @parts, $self->zsock->recv;
+      }
+
+      if (@parts) {
+        $self->emit( recv_multipart => [ $msg, @parts ] );
+      } else {
+        $self->emit( recv => $msg );
+      }
+    } catch {
+      my $maybe_fatal = $_;
+      if (blessed $maybe_fatal) {
+        my $errno = $maybe_fatal->errno;
+        if ($errno == EAGAIN || $errno == EINTR) {
+          $self->yield('pxz_ready');
+        }
+      } else {
+        $recv_err = $maybe_fatal;
+      }
+    };
+  } # RECV
+
+  # FIXME handle maybe_fatal
+
 
   # FIXME can do nb read (w/ ZMQ_DONTWAIT?)
   # FIXME deserialize input if $self->filter
@@ -285,14 +310,32 @@ sub _pxz_nb_write {
 
   my $send_error;
   until ($self->_zsock_buf->is_empty || $send_error) {
-    # FIXME pull item, attempt send, requeue if need be 
-    #   for performance we should prob filter at point of ->send
+    my $msg = $self->_zsock_buf->shift;
+    my $flags = $msg->flags | ZMQ_DONTWAIT;
+    try {
+      if ($msg->item_type eq 'single') {
+        $self->zsock->send( $msg->item, $msg->flags );
+      } elsif ($msg->item_type eq 'multipart') {
+        $self->zsock->send_multipart( $msg->item, $msg->flags );
+      }
+    } catch {
+      my $maybe_fatal = $_;
+      if (blessed $maybe_fatal) {
+        my $errno = $maybe_fatal->errno;
+        if ($errno == EAGAIN || $errno == EINTR) {
+          $self->_zsock_buf->unshift($msg);
+          $self->yield('pxz_ready');
+        }
+      } else {
+        $send_error = $maybe_fatal
+      } 
+    };
   }
-  # FIXME called on pollout or because of a send()
-  #   try to write from buf until E*  (w/ DONTWAIT?)
-  #   yield back and try again on pollout on EGAIN
-  # FIXME serialize if $self->filter
-  #     if multipart, serialize chunks individually
+
+  if (defined $send_error) {
+    # FIXME something nasty happened, see zmq_msg_send(3)
+  }
+
 }
 
 # FIXME monitor support
