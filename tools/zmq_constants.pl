@@ -17,14 +17,8 @@ my %const;
 my %errconst;
 
 # FIXME
-#  We maybe want at least some of the E* constants ...
-#  (the zeromq-specific ones, at least)
-#  Need to do the HAUSNUMERO math ourselves.
-#  Not really sure what the correct behavior is wrt maybe-POSIX constants on
-#  platforms that don't have them -- zmq will use ZMQ_HAUSNUMERO plus
-#  whatever, but I'm not sure what the correct way to determine that might
-#  look like. Trying POSIX:: ?
-#
+#  Pull in the POSIX consts not included in zmq.h, such as EAGAIN and EINTR
+
 # FIXME
 #  Better define parser.
 #  We should be able to handle ( FOO | BAR ) etc,

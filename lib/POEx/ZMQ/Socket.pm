@@ -4,6 +4,8 @@ use v5.10;
 use strictures 1;
 use Carp;
 
+use POSIX 'EINTR', 'EAGAIN';
+
 use Scalar::Util 'blessed';
 
 use List::Objects::Types -types;
@@ -15,6 +17,8 @@ use POEx::ZMQ::Buffered;
 use POEx::ZMQ::FFI::Context;
 
 use POE;
+
+use Try::Tiny;
 
 
 use Moo; use MooX::late;
@@ -141,7 +145,7 @@ around _shutdown_emitter => sub {
 
 
 sub _pxz_emitter_started {
-  my ($kernel, $self) = @_[KRENEL, OBJECT];
+  my ($kernel, $self) = @_[KERNEL, OBJECT];
   $self->call( 'pxz_sock_watch' );
 }
 
@@ -269,6 +273,8 @@ sub _pxz_ready {
 sub _pxz_nb_read {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
 
+  # FIXME filter support
+
   my $recv_err;
   RECV: while (1) {
     try {
@@ -289,6 +295,8 @@ sub _pxz_nb_read {
         my $errno = $maybe_fatal->errno;
         if ($errno == EAGAIN || $errno == EINTR) {
           $self->yield('pxz_ready');
+        } else {
+          $recv_err = $maybe_fatal->errstr;
         }
       } else {
         $recv_err = $maybe_fatal;
@@ -296,11 +304,9 @@ sub _pxz_nb_read {
     };
   } # RECV
 
-  # FIXME handle maybe_fatal
+  confess $recv_err if $recv_err;
 
-
-  # FIXME can do nb read (w/ ZMQ_DONTWAIT?)
-  # FIXME deserialize input if $self->filter
+  $self->yield('pxz_ready');
 }
 
 sub _pxz_nb_write {
@@ -324,7 +330,8 @@ sub _pxz_nb_write {
         my $errno = $maybe_fatal->errno;
         if ($errno == EAGAIN || $errno == EINTR) {
           $self->_zsock_buf->unshift($msg);
-          $self->yield('pxz_ready');
+        } else {
+          $send_error = $maybe_fatal->errstr;
         }
       } else {
         $send_error = $maybe_fatal
@@ -332,10 +339,9 @@ sub _pxz_nb_write {
     };
   }
 
-  if (defined $send_error) {
-    # FIXME something nasty happened, see zmq_msg_send(3)
-  }
+  confess $send_error if defined $send_error;
 
+  $self->yield('pxz_ready');
 }
 
 # FIXME monitor support
