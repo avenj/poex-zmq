@@ -16,6 +16,8 @@ declare ZMQSocket =>
 
 declare ZMQSocketType => as Int;
 coerce  ZMQSocketType => 
-  from Str() => via { POEx::ZMQ::Constants->$_ };
+  from Str() => via { 
+    POEx::ZMQ::Constants->can($_) ? POEx::ZMQ::Constants->$_ : undef
+  };
 
 1;
