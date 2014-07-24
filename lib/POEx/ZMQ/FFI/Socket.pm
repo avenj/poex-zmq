@@ -189,11 +189,12 @@ has _socket_ptr => (
   predicate => '_has_socket_ptr',
   builder   => sub {
     my ($self) = @_;
-    my $zsock = 
-      $self->_ffi->zmq_socket( $self->context->get_raw_context, $self->type );
-    $zsock
+    $self->_ffi->zmq_socket( $self->context->get_raw_context, $self->type )
   },
 );
+
+sub get_raw_socket { shift->_socket_ptr }
+
 
 has _stored_handle => (
   lazy      => 1,
