@@ -196,7 +196,7 @@ sub send {
 
     $self->_zsock_buf->push( 
       POEx::ZMQ::Buffered->new(
-        item      => $item,
+        item      => $msg,
         item_type => 'single',
         ( defined $flags ? (flags => $flags) : () ),
       )
