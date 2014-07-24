@@ -25,10 +25,21 @@ my $second = $ctx->create_socket( ZMQ_SUB );
 isa_ok $second, 'POEx::ZMQ::FFI::Socket';
 
 # get_ctx_opt
-# FIXME
+{
+  my $temp = POEx::ZMQ::FFI::Context->new(
+    max_sockets => 10,
+    threads     => 2,
+  );
+  cmp_ok $temp->get_ctx_opt(ZMQ_IO_THREADS), '==', 2,
+    'get_sock_opt and threads attr agree';
+  cmp_ok $temp->get_ctx_opt(ZMQ_MAX_SOCKETS), '==', 10,
+    'get_sock_opt and max_sockets attr agree';
+}
 
 # set_ctx_opt
-# FIXME
+$ctx->set_ctx_opt(ZMQ_IO_THREADS, 3);
+cmp_ok $ctx->get_ctx_opt(ZMQ_IO_THREADS), '==', 3,
+  'set_ctx_opt ZMQ_IO_THREADS ok';
 
 # get_raw_context
 # FIXME
