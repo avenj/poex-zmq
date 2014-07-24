@@ -44,13 +44,13 @@ POEx::ZMQ::Buffered
 
 A buffered outgoing single or multipart message.
 
-See L<POEx::ZMQ>.
+See L<POEx::ZMQ> & L<POEx::ZMQ::Socket>.
 
 =head2 ATTRIBUTES
 
 =head3 item
 
-The message body.
+The (possibly filtered; see L<POEx::ZMQ::Socket>) message body.
 
 =head3 item_type
 

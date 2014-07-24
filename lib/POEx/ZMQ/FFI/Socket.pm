@@ -575,15 +575,18 @@ FIXME
 
 =head3 get_handle
 
-FIXME
+Returns a file handle (suitable for polling by an event loop such as L<POE>) by
+performing an L<fdopen(3)> on the file descriptor returned by the C<ZMQ_FD>
+socket option; see L<zmq_getsockopt(3)> and the
+L<http://zguide.zeromq.org|zguide>.
 
 =head3 has_event_pollin
 
-FIXME
+Checks the L<ZMQ_EVENTS> socket option to determine if the socket is readable.
 
 =head3 has_event_pollout
 
-FIXME
+Checks the L<ZMQ_EVENTS> socket option to determine if the socket is writable.
 
 =head2 CONSUMES
 
