@@ -4,8 +4,6 @@ use v5.10;
 use strictures 1;
 use Carp;
 
-use POSIX 'EINTR', 'EAGAIN';
-
 use Scalar::Util 'blessed';
 
 use List::Objects::Types -types;
@@ -28,6 +26,8 @@ with 'MooX::Role::POE::Emitter';
 has '+event_prefix'    => ( default => sub { 'zmq_' } );
 has '+register_prefix' => ( default => sub { 'ZMQ_' } );
 has '+shutdown_signal' => ( default => sub { 'SHUTDOWN_ZMQ' } );
+# FIXME default pluggable_type_prefixes?
+#       or do we not really care?
 
 
 has type => (
@@ -85,8 +85,6 @@ has _zsock_buf => (
 
 sub get_buffered_items { shift->_zsock_buf->copy }
 
-# FIXME default pluggable_type_prefixes?
-#       or do we not really care?
 
 sub start {
   my ($self) = @_;
@@ -320,3 +318,45 @@ sub _pxz_nb_write {
 # FIXME monitor support
 
 1;
+
+=pod
+
+=head1 NAME
+
+POEx::ZMQ::Socket - ZeroMQ socket with POE integration
+
+=head1 SYNOPSIS
+
+FIXME
+
+=head1 DESCRIPTION
+
+=head2 ATTRIBUTES
+
+=head3 type
+
+=head3 filter
+
+=head3 zcontext
+
+=head3 zsock
+
+=head2 METHODS
+
+=head2 ACCEPTED EVENTS
+
+=head2 EMITTED EVENTS
+
+=head1 CONSUMES
+
+L<MooX::Role::POE::Emitter>, which in turn consumes L<MooX::Role::Pluggable>.
+
+=head1 SEE ALSO
+
+=head1 AUTHOR
+
+Jon Portnoy <avenj@cobaltirc.org>
+
+Licensed under the same terms as Perl.
+
+=cut
