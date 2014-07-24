@@ -121,6 +121,10 @@ our @EXPORT = our @EXPORT_ALL = qw/
   ENOTSOCK
   EINPROGRESS
   ENOBUFS
+  EAGAIN
+  EFAULT
+  EINTR
+  EINVAL
 /;
 
 sub ZMQ_RATE () { 8 }
@@ -321,7 +325,7 @@ sub EINVAL () {
 }
 
 1;
- # Generated at Wed Jul 23 02:45:34 2014
+ # Generated at Thu Jul 24 00:56:27 2014
 
 =pod
 

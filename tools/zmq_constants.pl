@@ -92,7 +92,7 @@ use parent 'Exporter::Tiny';
 our @EXPORT = our @EXPORT_ALL = qw/
 HEADER
 
-for my $constant (keys %const, keys %errconst) {
+for my $constant (keys %const, keys %errconst, @posixonly) {
   $output .= "  $constant\n"
 }
 $output .= "/;\n\n";
