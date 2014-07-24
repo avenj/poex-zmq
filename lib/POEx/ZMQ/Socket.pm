@@ -64,16 +64,6 @@ has zsock => (
   },
 );
 
-
-has _zsock_fh => (
-  lazy      => 1,
-  is        => 'ro',
-  isa       => FileHandle,
-  clearer   => '_clear_zsock_fh',
-  predicate => '_has_zsock_fh',
-  builder   => sub { shift->zsock->get_handle },
-);
-
 has _zsock_buf => (
   lazy      => 1,
   is        => 'ro',
@@ -85,6 +75,7 @@ has _zsock_buf => (
 
 sub get_buffered_items { shift->_zsock_buf->copy }
 
+sub _zsock_fh { shift->zsock->get_handle }
 
 sub start {
   my ($self) = @_;
@@ -119,7 +110,6 @@ sub start {
 sub stop {
   my ($self) = @_;
   $self->call( 'pxz_sock_unwatch' );
-  $self->_clear_zsock_fh;
   $self->_clear_zsock;
   $self->_shutdown_emitter;
 }

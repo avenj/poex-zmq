@@ -7,6 +7,8 @@ use strictures 1;
 require bytes;
 require IO::Handle;
 
+use Time::HiRes;
+
 use List::Objects::WithUtils;
 
 use Types::Standard  -types;
@@ -193,6 +195,21 @@ has _socket_ptr => (
   },
 );
 
+has _stored_handle => (
+  lazy      => 1,
+  is        => 'ro',
+  isa       => FileHandle,
+  writer    => '_set_stored_handle',
+  clearer   => '_clear_stored_handle',
+  builder    => sub {
+    my ($self) = @_;
+    my $fno = $self->get_sock_opt( ZMQ_FD );
+    IO::Handle->new_from_fd( $fno, 'r' );
+  },
+);
+
+sub get_handle { shift->_stored_handle }
+
 
 with 'POEx::ZMQ::FFI::Role::ErrorChecking';
 
@@ -205,9 +222,14 @@ sub BUILD {
 
 sub DEMOLISH {
   my ($self) = @_;
+
   $self->warn_if_error( zmq_close =>
     $self->_ffi->zmq_close( $self->_socket_ptr )
   ) if $self->_has_socket_ptr;
+
+  # race causes assertions during cleanup after a get_handle ->
+  Time::HiRes::sleep 0.1;
+  $self->_clear_stored_handle;
 }
 
 
@@ -321,11 +343,6 @@ sub set_sock_opt {
 }
 
 
-sub get_handle {
-  my ($self) = @_;
-  my $fno = $self->get_sock_opt( ZMQ_FD );
-  IO::Handle->new_from_fd( $fno, 'r' )
-}
 
 
 sub connect {
