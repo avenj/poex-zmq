@@ -42,7 +42,6 @@ cmp_ok $ctx->get_ctx_opt(ZMQ_IO_THREADS), '==', 3,
   'set_ctx_opt ZMQ_IO_THREADS ok';
 
 # get_raw_context
-# FIXME
-
+ok $ctx->get_raw_context > -1, 'get_raw_context ok';
 
 done_testing
