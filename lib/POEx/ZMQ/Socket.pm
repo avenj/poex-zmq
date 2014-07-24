@@ -54,7 +54,6 @@ has filter => (
 
 
 has zsock => (
-  # FIXME wrap _clear_zsock to pxz_sock_unwatch if session is active?
   lazy      => 1,
   is        => 'ro',
   isa       => ZMQSocket,
@@ -63,14 +62,6 @@ has zsock => (
     my ($self) = @_;
     $self->zcontext->create_socket( $self->type )
   },
-);
-
-has is_closed => (
-  lazy      => 1,
-  is        => 'ro',
-  isa       => Bool,
-  writer    => '_set_is_closed',
-  builder   => sub { 0 },
 );
 
 
@@ -92,13 +83,7 @@ has _zsock_buf => (
   builder   => sub { [] },
 );
 
-has [qw/_zsock_connects _zsock_binds/] => (
-  lazy      => 1,
-  is        => 'ro',
-  isa       => ArrayObj,
-  coerce    => 1,
-  builder   => sub { [] },
-);
+sub get_buffered_items { shift->_zsock_buf->copy }
 
 # FIXME default pluggable_type_prefixes?
 #       or do we not really care?
@@ -135,14 +120,11 @@ sub start {
 
 sub stop {
   my ($self) = @_;
-  $self->yield(sub { $_[OBJECT]->_shutdown_emitter })
-}
-
-around _shutdown_emitter => sub {
-  my ($orig, $self) = @_;
   $self->call( 'pxz_sock_unwatch' );
-};
-
+  $self->_clear_zsock_fh;
+  $self->_clear_zsock;
+  $self->_shutdown_emitter;
+}
 
 sub _pxz_emitter_started {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
@@ -150,7 +132,7 @@ sub _pxz_emitter_started {
 }
 
 sub _pxz_emitter_stopped {
-  # FIXME cleanups?
+
 }
 
 
@@ -159,15 +141,6 @@ sub set_context_opt { shift->zcontext->set_ctx_opt(@_) }
 
 sub get_socket_opt { shift->zsock->get_sock_opt(@_) }
 sub set_socket_opt { shift->zsock->set_sock_opt(@_) }
-
-sub close { 
-  my $self = shift; 
-  # FIXME call for a poll and yield the clear?
-  $self->_clear_zsock;
-  $self->_set_is_closed(1);
-  $self->emit( 'closed' )
-}
-sub _px_close { $_[OBJECT]->close }
 
 sub unbind {
   my $self = shift;
