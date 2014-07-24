@@ -12,6 +12,7 @@ use Moo; use MooX::late;
 has item => (
   required  => 1,
   is        => 'ro',
+  isa       => Defined,
 );
 
 has item_type => (
@@ -24,7 +25,7 @@ has flags => (
   lazy      => 1,
   is        => 'ro',
   predicate => 1,
-  builder   => sub { undef },
+  builder   => sub { 0 },
 );
 
 1;
