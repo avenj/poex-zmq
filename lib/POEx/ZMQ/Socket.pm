@@ -48,6 +48,7 @@ has zcontext => (
 has filter => (
   lazy      => 1,
   is        => 'ro',
+  predicate => 1,
   isa       => Maybe[ InstanceOf['POE::Filter'] ],
   builder   => sub { undef },
 );
@@ -175,18 +176,32 @@ sub send {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
   my ($msg, $flags)   = @_[ARG0, ARG1];
 
-  # FIXME queue filtered if $self->filter
-  # FIXME .. unless this is a ZMQ::Buffered,
-  #    in which case we're presumably filtered already
-  #    and should be pushed directly to buf
+  SENDTYPE: {
+    if ($self->has_filter && $self->filter) {
+      my $chunks = $self->filter->put([$msg]);
+      $self->_zsock_buf->push(
+        POEx::ZMQ::Buffered->new(
+          item        => $_,
+          item_type   => 'single',
+          ( defined $flags ? (flags => $flags) : () ),
+        )
+      ) for @$chunks;
+      last SENDTYPE
+    }
 
-  $self->_zsock_buf->push( 
-    POEx::ZMQ::Buffered->new(
-      item      => $msg,
-      item_type => 'single',
-      ( defined $flags ? (flags => $flags) : () ),
-    )
-  );
+    if (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) {
+      $self->_zsock_buf->push($msg);
+      last SENDTYPE
+    }
+
+    $self->_zsock_buf->push( 
+      POEx::ZMQ::Buffered->new(
+        item      => $item,
+        item_type => 'single',
+        ( defined $flags ? (flags => $flags) : () ),
+      )
+    );
+  } # SENDTYPE
 
   $self->call('pxz_nb_write');
 }
@@ -195,9 +210,6 @@ sub _px_send { $_[OBJECT]->send(@_[ARG0 .. $#_]) }
 sub send_multipart {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
   my ($parts, $flags) = @_[ARG0, ARG1];
-
-  # FIXME filter each part if $self->filter
-  #  unless this is a ZMQ::Buffered, then push directly to buf
 
   $self->_zsock_buf->push(
     POEx::ZMQ::Buffered->new(
@@ -249,10 +261,19 @@ sub _pxz_nb_read {
         push @parts, $self->zsock->recv;
       }
 
+      # FIXME document that multipart is never automagically filtered
+      #   (to avoid fucking with identities, etc)
+      #   higher-level types should handle that situation
       if (@parts) {
         $self->emit( recv_multipart => [ $msg, @parts ] );
       } else {
-        $self->emit( recv => $msg );
+        $self->emit( 
+          recv => (
+            $self->has_filter && $self->filter ?
+              @{ $self->filter->get([$msg]) }
+              : $msg
+          )
+        );
       }
     } catch {
       my $maybe_fatal = $_;
@@ -317,7 +338,7 @@ sub _pxz_nb_write {
 
 =head1 NAME
 
-POEx::ZMQ::Socket - ZeroMQ socket with POE integration
+POEx::ZMQ::Socket - A POE-enabled ZeroMQ socket
 
 =head1 SYNOPSIS
 
@@ -329,11 +350,25 @@ FIXME
 
 =head3 type
 
+B<Required>.
+
+The socket type, as a constant (see L<POEx::ZMQ::Constants>).
+
 =head3 filter
+
+A L<POE::Filter> used for sending and receiving messages.
+
+This class will only apply the filter to single-part messages, to avoid
+munging socket identities and similar; higher-level subclasses should make use
+of the filter if defined.
 
 =head3 zcontext
 
+The L<POEx::ZMQ::FFI::Context> backend context object.
+
 =head3 zsock
+
+The L<POEx::ZMQ::FFI::Socket> backend socket object.
 
 =head2 METHODS
 
@@ -341,7 +376,28 @@ FIXME
 
 =head3 stop
 
+Stop the emitter; a L<zmq_close(3)> will be issued for the socket and
+L</zsock> will be cleared.
+
+Buffered items are not removed; L</get_buffered_items> can be used to retrieve
+them for feeding to a new socket object's L</send> method. See
+L<POEx::ZMQ::Buffered>.
+
 =head3 get_buffered_items
+
+Returns (a shallow copy of) the L<List::Objects::WithUtils::Array> containing
+messages currently buffered B<on the POE component> (due to a backend ZeroMQ
+socket's blocking behavior; see L<zmq_socket(3)>).
+
+This will not return messages queued on the ZeroMQ side.
+
+Each item is a L<POEx::ZMQ::Buffered> object; look there for attribute
+documentation. These can also be fed back to L</send> after retrieval from a
+dead socket, for example:
+
+  $old_socket->stop;  # Shut down this socket
+  my $pending = $old_socket->get_buffered_items;
+  $new_socket->send($_) for $pending->all;
 
 =head3 get_context_opt
 
