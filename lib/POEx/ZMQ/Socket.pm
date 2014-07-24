@@ -173,8 +173,7 @@ sub disconnect {
 sub _px_disconnect { $_[OBJECT]->disconnect(@_[ARG0 .. $#_]) }
 
 sub send {
-  my ($kernel, $self) = @_[KERNEL, OBJECT];
-  my ($msg, $flags)   = @_[ARG0, ARG1];
+  my ($self, $msg, $flags) = @_;
 
   SENDTYPE: {
     if ($self->has_filter && $self->filter) {
@@ -208,8 +207,7 @@ sub send {
 sub _px_send { $_[OBJECT]->send(@_[ARG0 .. $#_]) }
 
 sub send_multipart {
-  my ($kernel, $self) = @_[KERNEL, OBJECT];
-  my ($parts, $flags) = @_[ARG0, ARG1];
+  my ($self, $parts, $flags) = @_;
 
   $self->_zsock_buf->push(
     POEx::ZMQ::Buffered->new(
@@ -265,7 +263,7 @@ sub _pxz_nb_read {
       #   (to avoid fucking with identities, etc)
       #   higher-level types should handle that situation
       if (@parts) {
-        $self->emit( recv_multipart => [ $msg, @parts ] );
+        $self->emit( recv_multipart => array( $msg, @parts ) );
       } else {
         $self->emit( 
           recv => (
