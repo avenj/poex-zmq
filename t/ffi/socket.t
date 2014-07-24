@@ -77,11 +77,25 @@ cmp_ok $router->known_type_for_opt(ZMQ_AFFINITY), 'eq', 'uint64';
 cmp_ok $router->known_type_for_opt(ZMQ_IDENTITY), 'eq', 'binary';
 cmp_ok $router->known_type_for_opt(ZMQ_PLAIN_USERNAME), 'eq', 'string';
 
-# set_sock_opt
+# set_sock_opt (int)
 $router->set_sock_opt(ZMQ_SNDHWM, 100);
-# get_sock_opt
+
+# get_sock_opt (int)
 cmp_ok $router->get_sock_opt(ZMQ_SNDHWM), '==', 100,
   'ZMQ_SNDHWM set/get ok';
+
+# set_sock_opt (uint64)
+
+# get_sock_opt (uint64)
+
+# set_sock_opt (string)
+
+# get_sock_opt (string)
+
+# set_sock_opt (binary)
+
+# get_sock_opt (binary)
+
 # FIXME test w explicit types
 # FIXME test exception w bad type
 
