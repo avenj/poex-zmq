@@ -186,6 +186,9 @@ sub send {
   my ($msg, $flags)   = @_[ARG0, ARG1];
 
   # FIXME queue filtered if $self->filter
+  # FIXME .. unless this is a ZMQ::Buffered,
+  #    in which case we're presumably filtered already
+  #    and should be pushed directly to buf
 
   $self->_zsock_buf->push( 
     POEx::ZMQ::Buffered->new(
@@ -204,6 +207,7 @@ sub send_multipart {
   my ($parts, $flags) = @_[ARG0, ARG1];
 
   # FIXME filter each part if $self->filter
+  #  unless this is a ZMQ::Buffered, then push directly to buf
 
   $self->_zsock_buf->push(
     POEx::ZMQ::Buffered->new(
@@ -343,15 +347,82 @@ FIXME
 
 =head2 METHODS
 
+=head3 start
+
+=head3 stop
+
+=head3 get_buffered_items
+
+=head3 get_context_opt
+
+=head3 set_context_opt
+
+=head3 get_socket_opt
+
+=head3 set_socket_opt
+
+=head3 bind
+
+=head3 unbind
+
+=head3 connect
+
+=head3 disconnect
+
+=head3 send
+
+=head3 send_multipart
+
 =head2 ACCEPTED EVENTS
 
+These L<POE> events take the same arguments as their object-oriented
+counterparts documented in L</METHODS>:
+
+=over
+
+=item bind
+
+=item unbind
+
+=item connect
+
+=item disconnect
+
+=item send
+
+=item send_multipart
+
+=back
+
 =head2 EMITTED EVENTS
+
+=head3 bind_added
+
+=head3 bind_removed
+
+=head3 connect_added
+
+=head3 disconnect_issued
+
+=head3 recv
+
+=head3 recv_multipart
 
 =head1 CONSUMES
 
 L<MooX::Role::POE::Emitter>, which in turn consumes L<MooX::Role::Pluggable>.
 
 =head1 SEE ALSO
+
+L<zmq(7)>
+
+L<zmq_socket(3)>
+
+L<POEx::ZMQ::FFI::Context> for details on the ZeroMQ context backend.
+
+L<POEx::ZMQ::FFI::Socket> for details on the ZeroMQ socket backend.
+
+L<ZMQ::FFI> for a loop-agnostic ZeroMQ implementation.
 
 =head1 AUTHOR
 
