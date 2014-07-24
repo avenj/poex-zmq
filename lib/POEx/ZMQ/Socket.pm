@@ -23,9 +23,13 @@ use Moo; use MooX::late;
 
 
 with 'MooX::Role::POE::Emitter';
+
+# Emitter:
 has '+event_prefix'    => ( default => sub { 'zmq_' } );
-has '+register_prefix' => ( default => sub { 'ZMQ_' } );
 has '+shutdown_signal' => ( default => sub { 'SHUTDOWN_ZMQ' } );
+
+# Pluggable:
+has '+register_prefix' => ( default => sub { 'ZMQ_' } );
 # FIXME default pluggable_type_prefixes?
 #       or do we not really care?
 
@@ -38,7 +42,7 @@ has type => (
 );
 
 
-has zcontext => (
+has context => (
   lazy      => 1,
   is        => 'ro',
   isa       => ZMQContext,
@@ -61,7 +65,7 @@ has zsock => (
   clearer   => '_clear_zsock',
   builder   => sub {
     my ($self) = @_;
-    $self->zcontext->create_socket( $self->type )
+    $self->context->create_socket( $self->type )
   },
 );
 
@@ -125,8 +129,8 @@ sub _pxz_emitter_stopped {
 }
 
 
-sub get_context_opt { shift->zcontext->get_ctx_opt(@_) }
-sub set_context_opt { shift->zcontext->set_ctx_opt(@_) }
+sub get_context_opt { shift->context->get_ctx_opt(@_) }
+sub set_context_opt { shift->context->set_ctx_opt(@_) }
 
 sub get_socket_opt { shift->zsock->get_sock_opt(@_) }
 sub set_socket_opt { shift->zsock->set_sock_opt(@_) }
@@ -360,7 +364,7 @@ This class will only apply the filter to single-part messages, to avoid
 munging socket identities and similar; higher-level subclasses should make use
 of the filter if defined.
 
-=head3 zcontext
+=head3 context
 
 The L<POEx::ZMQ::FFI::Context> backend context object.
 
