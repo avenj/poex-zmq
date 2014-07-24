@@ -228,7 +228,7 @@ sub DEMOLISH {
   ) if $self->_has_socket_ptr;
 
   # race causes assertions during cleanup after a get_handle ->
-  Time::HiRes::sleep 0.1;
+  Time::HiRes::sleep 0.01;
   $self->_clear_stored_handle;
 }
 
