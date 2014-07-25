@@ -270,7 +270,7 @@ sub _pxz_nb_read {
       } else {
         $self->emit( 
           recv => (
-            $self->has_filter && $self->filter ?
+            ($self->has_filter && $self->filter) ?
               @{ $self->filter->get([$msg]) }
               : $msg
           )
@@ -293,7 +293,7 @@ sub _pxz_nb_read {
 
   confess $recv_err if $recv_err;
 
-  $self->yield('pxz_nb_read');
+  $self->yield('pxz_ready');
 }
 
 sub _pxz_nb_write {
