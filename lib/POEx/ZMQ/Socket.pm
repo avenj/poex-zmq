@@ -240,8 +240,8 @@ sub _pxz_sock_unwatch {
 sub _pxz_ready {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
 
-  $self->call('pxz_nb_read');
   $self->call('pxz_nb_write');
+  $self->call('pxz_nb_read');
 }
 
 
@@ -327,6 +327,8 @@ sub _pxz_nb_write {
   }
 
   confess $send_error if defined $send_error;
+
+  # FIXME support for a max per-buffered-item retry limit?
 
   $self->yield('pxz_ready');
 }
