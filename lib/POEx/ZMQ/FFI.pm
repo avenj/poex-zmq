@@ -76,6 +76,10 @@ sub get_version {
 }
 
 
+=for Pod::Coverage z(?:un)?pack
+
+=cut
+
 sub _begins { ! index($_[0], $_[1]) }
 
 sub zpack {
@@ -172,19 +176,11 @@ The dynamic library name can be supplied:
 
 ... otherwise the library found by L</find_soname> is used.
 
-=head3 zpack
-
-FIXME
-
-=head3 zunpack
-
-FIXME
-
 =head1 AUTHOR
 
 Jon Portnoy <avenj@cobaltirc.org>
 
-Significant portions of this code are derived from L<ZMQ::FFI> by Dylan Cali
+Significant portions of the FFI backend are derived from L<ZMQ::FFI> by Dylan Cali
 (CPAN: CALID).
 
 Licensed under the same terms as Perl.

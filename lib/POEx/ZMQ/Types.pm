@@ -21,3 +21,35 @@ coerce  ZMQSocketType =>
   };
 
 1;
+
+=pod
+
+=head1 NAME
+
+POEx::ZMQ::Types - Type::Tiny-based types for POEx::ZMQ
+
+=head1 SYNOPSIS
+
+  use POEx::ZMQ::Types -all;
+
+=head1 DESCRIPTION
+
+L<Type::Tiny>-based types for L<POEx::ZMQ>.
+
+=head2 ZMQContext
+
+A L<POEx::ZMQ::FFI::Context> object.
+
+=head2 ZMQSocket
+
+A L<POEx::ZMQ::FFI::Socket> object.
+
+=head2 ZMQSocketType
+
+A ZMQ socket type constant, such as those exported by L<POEx::ZMQ::Constants>.
+
+=head1 AUTHOR
+
+Jon Portnoy <avenj@cobaltirc.org>
+
+=cut

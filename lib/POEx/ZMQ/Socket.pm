@@ -345,9 +345,16 @@ POEx::ZMQ::Socket - A POE-enabled ZeroMQ socket
 
 =head1 SYNOPSIS
 
-FIXME
+FIXME borrow POEx::ZMQ SYNOPSIS?
 
 =head1 DESCRIPTION
+
+An asynchronous L<POE>-powered L<http://www.zeromq.org|ZeroMQ> socket.
+
+These objects are event emitters, powered by L<MooX::Role::POE::Emitter>. That
+means they come with flexible event processing / dispatch / multiplexing
+options. See the L<MooX::Role::Pluggable> and L<MooX::Role::POE::Emitter>
+documentation for details.
 
 =head2 ATTRIBUTES
 
@@ -377,6 +384,12 @@ The L<POEx::ZMQ::FFI::Socket> backend socket object.
 
 =head3 start
 
+Start the emitter and set up the associated socket.
+
+B<< This method must be called to create the socket! >>
+
+Returns the object.
+
 =head3 stop
 
 Stop the emitter; a L<zmq_close(3)> will be issued for the socket and
@@ -404,23 +417,67 @@ dead socket, for example:
 
 =head3 get_context_opt
 
+Retrieve context option values.
+
+See L<POEx::ZMQ::FFI::Context/get_ctx_opt> & L<zmq_ctx_get(3)>
+
 =head3 set_context_opt
+
+Set context option values.
+
+See L<POEx::ZMQ::FFI::Context/set_ctx_opt> & L<zmq_ctx_set(3)>
 
 =head3 get_socket_opt
 
+FIXME
+
 =head3 set_socket_opt
+
+FIXME
 
 =head3 bind
 
+  $sock->bind( @endpoints );
+
+Call a L<zmq_bind(3)> for one or more specified endpoints.
+
+A L</bind_added> event is emitted for each added endpoint.
+
 =head3 unbind
+
+  $sock->unbind( @endpoints );
+
+Call a L<zmq_unbind(3)> for one or more specified endpoints.
+
+A L</bind_removed> event is emitted for each removed endpoint.
 
 =head3 connect
 
+  $sock->connect( @endpoints );
+
+Call a L<zmq_bind(3)> for one or more specified endpoints.
+
+A L</connect_added> event is emitted for each added endpoint.
+
 =head3 disconnect
+
+  $sock->disconnect( @endpoints );
+
+Call a L<zmq_disconnect(3)> for one or more specified endpoints.
+
+A L</disconnect_issued> event is emitted for each removed endpoint.
 
 =head3 send
 
+FIXME send POD
+
+A send will never block; socket types that would normally block under certain
+conditions will queue messages locally instead for retrying later. 
+FIXME handlers & related docs
+
 =head3 send_multipart
+
+FIXME
 
 =head2 ACCEPTED EVENTS
 
@@ -445,6 +502,9 @@ counterparts documented in L</METHODS>:
 
 =head2 EMITTED EVENTS
 
+Emitted events are prefixed with the value of the
+L<MooX::Role::POE::Emitter/event_prefix> attribute; by default, C<zmq_>.
+
 =head3 bind_added
 
 =head3 bind_removed
@@ -455,7 +515,21 @@ counterparts documented in L</METHODS>:
 
 =head3 recv
 
+Emitted when a single-part message is received; C<$_[ARG0]> is the message
+item.
+
 =head3 recv_multipart
+
+  # A ROUTER receiving from REQ, for example:
+  sub zmq_recv_multipart {
+    my $parts = $_[ARG0];
+    my ($id, undef, $content) = $parts->all;
+    # ...
+  }
+
+Emitted when a multipart message is received; C<$_[ARG0]> is a
+L<List::Objects::WithUtils::Array> array-type object containing the message
+parts.
 
 =head1 CONSUMES
 

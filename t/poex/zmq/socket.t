@@ -14,11 +14,11 @@ my $endpt = "ipc:///tmp/test-poex-zmq-$$";
 
 my $Got = hash;
 my $Expected = hash(
-  'rtr got 3 items'   => 1,
-  'rtr got id'        => 1,
-  'null part empty'   => 1,
-  'multipart body ok' => 1,
-
+  'rtr got 3 items'     => 1,
+  'rtr got id'          => 1,
+  'null part empty'     => 1,
+  'multipart body ok'   => 1,
+  'single-part body ok' => 1,
 
 );
 
@@ -51,7 +51,7 @@ sub check_if_done {
     $_[HEAP]->{$_}->stop for qw/rtr req/;
     $_[KERNEL]->alarm_remove_all;
   } else {
-    $_[KERNEL]->delay_set( check_if_done => 1 );
+    $_[KERNEL]->delay_set( check_if_done => 0.5 );
   }
 }
 
@@ -84,8 +84,6 @@ sub router_req_setup {
 
   $_[HEAP]->{rtr}->bind($endpt);
 
-  Time::HiRes::sleep 0.1;
-
   $_[HEAP]->{req}->yield(
     sub { 
       diag "Issuing send"; 
@@ -105,8 +103,11 @@ sub zmq_bind_added {
 }
 
 sub zmq_recv {
-  diag "Got zmq_recv";
-  # FIXME  
+  diag "Got recv";
+
+  my $msg = $_[ARG0];
+
+  $Got->set('single-part body ok' => 1) if $msg eq 'bar';
 }
 
 sub zmq_recv_multipart {
@@ -120,6 +121,12 @@ sub zmq_recv_multipart {
   $Got->set('rtr got id' => 1) if defined $id;
   $Got->set('null part empty' => 1) if $nul eq '';
   $Got->set('multipart body ok' => 1) if $content eq 'foo';
+
+  # send_multipart
+  $_[HEAP]->{rtr}->send_multipart([ $id, '', 'bar' ]);
+#  $_[KERNEL]->post( $_[SENDER], send_multipart =>
+#    [ $id, '', 'bar' ]
+#  );
 }
 
 

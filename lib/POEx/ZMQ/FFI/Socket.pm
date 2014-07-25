@@ -529,19 +529,36 @@ See L<zmq_unbind(3)>
 
 =head3 send
 
-FIXME
+  $zsock->send( $data, $flags );
+
+Send a single-part message.
+
+See L<zmq_msg_send(3)>.
 
 =head3 send_multipart
 
-FIXME
+Send a multi-part message via C<ZMQ_SNDMORE>.
+
+See L<zmq_msg_send(3)>.
 
 =head3 recv
 
-FIXME
+  my $msg = $zsock->recv($flags);
+
+Retrieve a single message part.
+
+This could actually be the first part of a multi-part message.
+Also see L</recv_multipart>.
 
 =head3 recv_multipart
 
-FIXME
+  my $parts = $zsock->recv_multipart;
+
+Retrieve all available parts of a message and return them as a
+L<List::Objects::WithUtils::Array>.
+
+This is preferable over a L</recv>, as it handles RCVMORE semantics.
+(If this was a single-part message, there is one item in the array.)
 
 =head3 known_type_for_opt
 
@@ -555,12 +572,12 @@ L</set_sock_opt>.
   my $val = $zsock->get_sock_opt( $opt_constant );
   
   # Or manually specify value type:
-  my $val = $zsock->get_sock_opt( $opt_constant => 'int64' );
+  my $val = $zsock->get_sock_opt( $opt_constant, 'int64' );
 
 Retrieves the currently-set value of a ZeroMQ option constant (see
 L<POEx::ZMQ::Constants>).
 
-See the zmq_getsockopt(3) man page for details regarding option constants and
+See the L<zmq_getsockopt(3)> man page for details regarding option constants and
 their returned values.
 
 You should typically be able to omit the option value's type -- this class will
@@ -572,7 +589,12 @@ L<< http://www.github.com/avenj/poex-zmq|GitHub >> or RT.
 
 =head3 set_sock_opt
 
-FIXME
+  $zsock->set_sock_opt( $opt_constant, $val );
+  $zsock->set_sock_opt( $opt_constant, $val, $type );
+
+Set ZeroMQ options; all L</get_sock_opt> caveats apply here, also.
+
+See the L<zmq_setsockopt(3)> man page.
 
 =head3 get_handle
 
