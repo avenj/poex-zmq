@@ -6,6 +6,8 @@ use Carp;
 
 use Scalar::Util 'blessed';
 
+use List::Objects::WithUtils;
+
 use List::Objects::Types -types;
 use POEx::ZMQ::Types     -types;
 use Types::Standard      -types;
@@ -226,36 +228,33 @@ sub _px_send_multipart { $_[OBJECT]->send_multipart(@_[ARG0 .. $#_]) }
 
 sub _pxz_sock_watch {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
-  $kernel->select( $self->_zsock_fh, 'zsock_ready' );
+  $kernel->select( $self->_zsock_fh, 'pxz_ready' );
   1
 }
 
 sub _pxz_sock_unwatch {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
   $kernel->select( $self->_zsock_fh );
-  $self->_clear_zsock_fh;
 }
 
 sub _pxz_ready {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
 
-  if ($self->zsock->has_event_pollin) {
-    $self->call('nb_read');
-  }
-
-  if ($self->zsock->has_event_pollout) {
-    $self->call('nb_write');
-  }
-
+  $self->call('pxz_nb_read');
+  $self->call('pxz_nb_write');
 }
+
+
 
 sub _pxz_nb_read {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
 
+  return unless $self->zsock->has_event_pollin;
+
   # FIXME filter support
 
   my $recv_err;
-  RECV: while (1) {
+  RECV: {
     try {
       my $msg = $self->zsock->recv(ZMQ_DONTWAIT);
       my @parts;
@@ -277,24 +276,24 @@ sub _pxz_nb_read {
           )
         );
       }
+      1
     } catch {
       my $maybe_fatal = $_;
       if (blessed $maybe_fatal) {
         my $errno = $maybe_fatal->errno;
-        if ($errno == EAGAIN || $errno == EINTR) {
-          $self->yield('pxz_ready');
-        } else {
+        unless ($errno == EAGAIN || $errno == EINTR) {
           $recv_err = $maybe_fatal->errstr;
         }
       } else {
         $recv_err = $maybe_fatal;
       }
+      undef
     };
   } # RECV
 
   confess $recv_err if $recv_err;
 
-  $self->yield('pxz_ready');
+  $self->yield('pxz_nb_read');
 }
 
 sub _pxz_nb_write {

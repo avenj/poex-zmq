@@ -217,7 +217,7 @@ with 'POEx::ZMQ::FFI::Role::ErrorChecking';
 
 sub BUILD {
   my ($self) = @_;
-  # (Edge poll is a bit annoying ->)
+  # Clean edge state ->
   $self->recv while $self->has_event_pollin;
 }
 
