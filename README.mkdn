@@ -44,7 +44,7 @@ POEx::ZMQ - Asynchronous ZeroMQ sockets for POE
 
 # DESCRIPTION
 
-A [POE](https://metacpan.org/pod/POE) component providing non-blocking [http://www.zeromq.org|ZeroMQ](http://www.zeromq.org|ZeroMQ)
+A [POE](https://metacpan.org/pod/POE) component providing non-blocking [ZeroMQ](http://www.zeromq.org)
 (versions 3.x & 4.x) integration.
 
 See [POEx::ZMQ::Socket](https://metacpan.org/pod/POEx::ZMQ::Socket) for details on using sockets.

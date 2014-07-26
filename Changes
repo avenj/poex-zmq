@@ -1,5 +1,11 @@
 Revision history for Perl module POEx-ZMQ
 
+0.000_002 2014-07-26
+
+  - Set ZMQ_LINGER to 0 during ->stop
+
+  - BAIL_OUT of test suite if libzmq is too old
+
 0.000_001 2014-07-26
 
-   - Initial development release
+  - Initial development release
