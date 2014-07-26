@@ -54,7 +54,6 @@ has context => (
 has filter => (
   lazy      => 1,
   is        => 'ro',
-  predicate => 1,
   isa       => Maybe[ InstanceOf['POE::Filter'] ],
   builder   => sub { undef },
 );
@@ -182,7 +181,7 @@ sub send {
   my ($self, $msg, $flags) = @_;
 
   SENDTYPE: {
-    if ($self->has_filter && $self->filter) {
+    if ($self->filter) {
       my $chunks = $self->filter->put([$msg]);
       $self->_zsock_buf->push(
         POEx::ZMQ::Buffered->new(
@@ -272,8 +271,7 @@ sub _pxz_nb_read {
       } else {
         $self->emit( 
           recv => (
-            ($self->has_filter && $self->filter) ?
-              @{ $self->filter->get([$msg]) }
+            $self->filter ? @{ $self->filter->get([$msg]) }
               : $msg
           )
         );
