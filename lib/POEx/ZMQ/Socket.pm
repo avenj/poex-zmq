@@ -357,7 +357,7 @@ POEx::ZMQ::Socket - A POE-enabled ZeroMQ socket
 
 =head1 DESCRIPTION
 
-An asynchronous L<POE>-powered L<http://www.zeromq.org|ZeroMQ> socket.
+An asynchronous L<POE>-powered L<ZeroMQ|http://www.zeromq.org> socket.
 
 These objects are event emitters powered by L<MooX::Role::POE::Emitter>. That
 means they come with flexible event processing / dispatch / multiplexing

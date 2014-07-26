@@ -70,7 +70,7 @@ POEx::ZMQ - Asynchronous ZeroMQ sockets for POE
 
 =head1 DESCRIPTION
 
-A L<POE> component providing non-blocking L<http://www.zeromq.org|ZeroMQ>
+A L<POE> component providing non-blocking L<ZeroMQ|http://www.zeromq.org>
 (versions 3.x & 4.x) integration.
 
 See L<POEx::ZMQ::Socket> for details on using sockets.

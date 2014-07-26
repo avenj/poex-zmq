@@ -26,7 +26,7 @@ sub errstr { shift->message }
 
 =head1 NAME
 
-POEx::ZMQ::FFI::Error - Exceptions thrown by the ZMQ backend
+POEx::ZMQ::FFI::Error
 
 =head1 SYNOPSIS
 

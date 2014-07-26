@@ -26,7 +26,7 @@ coerce  ZMQSocketType =>
 
 =head1 NAME
 
-POEx::ZMQ::Types - Type::Tiny-based types for POEx::ZMQ
+POEx::ZMQ::Types
 
 =head1 SYNOPSIS
 
