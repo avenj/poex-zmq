@@ -121,7 +121,8 @@ for my $constant (@posixonly) {
 
 $output .= "\n1;\n";
 $output .= " # Generated at " . localtime . "\n";
-$output .= <<'POD';
+
+$output .= <<'PODMAIN';
 
 =pod
 
@@ -147,13 +148,24 @@ Uses L<Exporter::Tiny>; look there for detailed import-related documentation.
 C<E>-prefixed error constants should generally do the right thing, using the
 ZeroMQ C<zmq.h> values if the POSIX constants are not available.
 
+The complete list of exported constants:
+
+=over
+
+PODMAIN
+
+$output .= "=item $_\n\n" for (keys %const, keys %errconst, @posixonly);
+
+$output .= <<'PODFOOTER';
+=back
+
 =head1 AUTHOR
 
 Jon Portnoy <avenj@cobaltirc.org>
 
 =cut
 
-POD
+PODFOOTER
 
 print $output;
 

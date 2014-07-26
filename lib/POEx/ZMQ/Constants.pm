@@ -325,7 +325,7 @@ sub EINVAL () {
 }
 
 1;
- # Generated at Thu Jul 24 00:56:27 2014
+ # Generated at Sat Jul 26 02:57:58 2014
 
 =pod
 
@@ -350,6 +350,252 @@ Uses L<Exporter::Tiny>; look there for detailed import-related documentation.
 
 C<E>-prefixed error constants should generally do the right thing, using the
 ZeroMQ C<zmq.h> values if the POSIX constants are not available.
+
+The complete list of exported constants:
+
+=over
+
+=item ZMQ_RATE
+
+=item ZMQ_MORE
+
+=item ZMQ_RECOVERY_IVL
+
+=item ZMQ_PLAIN_SERVER
+
+=item ZMQ_DEALER
+
+=item ZMQ_DONTWAIT
+
+=item ZMQ_PLAIN
+
+=item ZMQ_FAIL_UNROUTABLE
+
+=item ZMQ_PLAIN_PASSWORD
+
+=item ZMQ_FORWARDER
+
+=item ZMQ_PROBE_ROUTER
+
+=item ZMQ_ROUTER_RAW
+
+=item ZMQ_EVENT_BIND_FAILED
+
+=item ZMQ_IPV4ONLY
+
+=item ZMQ_RCVTIMEO
+
+=item ZMQ_RCVHWM
+
+=item ZMQ_MAX_SOCKETS
+
+=item ZMQ_CURVE
+
+=item ZMQ_CURVE_SECRETKEY
+
+=item ZMQ_MAXMSGSIZE
+
+=item ZMQ_TCP_KEEPALIVE_CNT
+
+=item ZMQ_REP
+
+=item ZMQ_UNSUBSCRIBE
+
+=item ZMQ_POLLERR
+
+=item ZMQ_NOBLOCK
+
+=item ZMQ_IPV6
+
+=item ZMQ_IO_THREADS_DFLT
+
+=item ZMQ_NULL
+
+=item ZMQ_MECHANISM
+
+=item ZMQ_XREQ
+
+=item ZMQ_POLLITEMS_DFLT
+
+=item ZMQ_RECONNECT_IVL
+
+=item ZMQ_ROUTER
+
+=item ZMQ_XREP
+
+=item ZMQ_TCP_ACCEPT_FILTER
+
+=item ZMQ_EVENT_DISCONNECTED
+
+=item ZMQ_CURVE_PUBLICKEY
+
+=item ZMQ_BACKLOG
+
+=item ZMQ_IDENTITY
+
+=item ZMQ_REQ_RELAXED
+
+=item ZMQ_EVENT_CLOSED
+
+=item ZMQ_ROUTER_BEHAVIOR
+
+=item ZMQ_SUBSCRIBE
+
+=item ZMQ_XPUB
+
+=item ZMQ_PULL
+
+=item ZMQ_PUSH
+
+=item ZMQ_EVENT_LISTENING
+
+=item ZMQ_PAIR
+
+=item ZMQ_ROUTER_MANDATORY
+
+=item ZMQ_RECONNECT_IVL_MAX
+
+=item ZMQ_SNDHWM
+
+=item ZMQ_CONFLATE
+
+=item ZMQ_PUB
+
+=item ZMQ_SNDBUF
+
+=item ZMQ_IO_THREADS
+
+=item ZMQ_STREAM
+
+=item ZMQ_EVENT_MONITOR_STOPPED
+
+=item ZMQ_EVENT_CONNECTED
+
+=item ZMQ_MAX_SOCKETS_DFLT
+
+=item ZMQ_EVENT_ACCEPTED
+
+=item ZMQ_REQ
+
+=item ZMQ_CURVE_SERVERKEY
+
+=item ZMQ_HAUSNUMERO
+
+=item ZMQ_POLLIN
+
+=item ZMQ_MULTICAST_HOPS
+
+=item ZMQ_QUEUE
+
+=item ZMQ_TCP_KEEPALIVE_IDLE
+
+=item ZMQ_STREAMER
+
+=item ZMQ_LINGER
+
+=item ZMQ_SUB
+
+=item ZMQ_REQ_CORRELATE
+
+=item ZMQ_EVENT_CONNECT_DELAYED
+
+=item ZMQ_DELAY_ATTACH_ON_CONNECT
+
+=item ZMQ_TYPE
+
+=item ZMQ_XPUB_VERBOSE
+
+=item ZMQ_EVENT_CLOSE_FAILED
+
+=item ZMQ_EVENTS
+
+=item ZMQ_ZAP_DOMAIN
+
+=item ZMQ_FD
+
+=item ZMQ_SNDMORE
+
+=item ZMQ_EVENT_CONNECT_RETRIED
+
+=item ZMQ_TCP_KEEPALIVE
+
+=item ZMQ_EVENT_ACCEPT_FAILED
+
+=item ZMQ_XSUB
+
+=item ZMQ_LAST_ENDPOINT
+
+=item ZMQ_SNDTIMEO
+
+=item ZMQ_PLAIN_USERNAME
+
+=item ZMQ_RCVMORE
+
+=item ZMQ_POLLOUT
+
+=item ZMQ_CURVE_SERVER
+
+=item ZMQ_RCVBUF
+
+=item ZMQ_IMMEDIATE
+
+=item ZMQ_AFFINITY
+
+=item ZMQ_TCP_KEEPALIVE_INTVL
+
+=item EFSM
+
+=item EAFNOSUPPORT
+
+=item EADDRNOTAVAIL
+
+=item ECONNREFUSED
+
+=item ENOTSUP
+
+=item ECONNRESET
+
+=item EPROTONOSUPPORT
+
+=item ENOTCONN
+
+=item ENETUNREACH
+
+=item EADDRINUSE
+
+=item ETIMEDOUT
+
+=item ECONNABORTED
+
+=item ENOCOMPATPROTO
+
+=item EMTHREAD
+
+=item EMSGSIZE
+
+=item ETERM
+
+=item EHOSTUNREACH
+
+=item ENETDOWN
+
+=item ENETRESET
+
+=item ENOTSOCK
+
+=item EINPROGRESS
+
+=item ENOBUFS
+
+=item EAGAIN
+
+=item EFAULT
+
+=item EINTR
+
+=item EINVAL
+
+=back
 
 =head1 AUTHOR
 
