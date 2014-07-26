@@ -475,7 +475,8 @@ A L</disconnect_issued> event is emitted for each removed endpoint.
 FIXME send POD
 
 A send will never block; socket types that would normally block under certain
-conditions will queue messages locally instead for retrying later. 
+conditions will queue messages locally instead for retrying later. FIXME
+that's not true until we handle EFSM & test for same ...
 FIXME handlers & related docs
 
 =head3 send_multipart
