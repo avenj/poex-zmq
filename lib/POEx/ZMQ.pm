@@ -71,12 +71,17 @@ POEx::ZMQ - Asynchronous ZeroMQ sockets for POE
 =head1 DESCRIPTION
 
 A L<POE> component providing non-blocking L<http://www.zeromq.org|ZeroMQ>
-(version 3+) integration.
+(versions 3.x & 4.x) integration.
 
 See L<POEx::ZMQ::Socket> for details on using sockets.
 
-Each ZeroMQ socket is an event emitter powered by L<MooX::Role::POE::Emitter>.
-The documentation for that distribution is likely to be helpful.
+Each ZeroMQ socket is an event emitter powered by L<MooX::Role::POE::Emitter>;
+the documentation for that distribution is likely to be helpful.
+
+This is early-development software, as indicated by the C<0.x> version number.
+The test suite is incomplete, bugs are sure to be lurking, documentation may
+not always be verbose, and the API is not guarantted.  Issues & pull requests
+are welcome, of course: L<http://www.github.com/avenj/poex-zmq>
 
 If you are not using L<POE>, try L<ZMQ::FFI> for an excellent loop-agnostic
 ZeroMQ implementation.

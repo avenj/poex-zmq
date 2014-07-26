@@ -19,7 +19,7 @@ my $Expected = hash(
   'null part empty'     => 1,
   'multipart body ok'   => 1,
   'single-part body ok' => 1,
-
+  'rtr got second msg'  => 1,
 );
 
 
@@ -102,12 +102,15 @@ sub zmq_bind_added {
   # FIXME
 }
 
+my $done = 0;
 sub zmq_recv {
   diag "Got recv";
 
   my $msg = $_[ARG0];
 
   $Got->set('single-part body ok' => 1) if $msg eq 'bar';
+
+  $_[KERNEL]->post( $_[SENDER], send => 'bar' ) unless $done++;
 }
 
 sub zmq_recv_multipart {
@@ -121,6 +124,7 @@ sub zmq_recv_multipart {
   $Got->set('rtr got id' => 1) if defined $id;
   $Got->set('null part empty' => 1) if $nul eq '';
   $Got->set('multipart body ok' => 1) if $content eq 'foo';
+  $Got->set('rtr got second msg' => 1) if $content eq 'bar';
 
   # send_multipart (+ test from posted send)
   $_[KERNEL]->post( $_[SENDER], send_multipart =>

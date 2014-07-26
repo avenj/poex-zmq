@@ -318,6 +318,7 @@ sub _pxz_nb_write {
       if (blessed $maybe_fatal) {
         my $errno = $maybe_fatal->errno;
         if ($errno == EAGAIN || $errno == EINTR) {
+          # FIXME should we handle EFSM (bad state) separately?
           $self->_zsock_buf->unshift($msg);
         } else {
           $send_error = $maybe_fatal->errstr;
