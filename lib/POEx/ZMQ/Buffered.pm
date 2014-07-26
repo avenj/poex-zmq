@@ -53,7 +53,7 @@ See L<POEx::ZMQ> & L<POEx::ZMQ::Socket>.
 
 =head3 item
 
-The (possibly filtered; see L<POEx::ZMQ::Socket>) message body.
+The message body.
 
 =head3 item_type
 

@@ -51,13 +51,6 @@ has context => (
   builder   => sub { POEx::ZMQ::FFI::Context->new },
 );
 
-has filter => (
-  lazy      => 1,
-  is        => 'ro',
-  isa       => Maybe[ InstanceOf['POE::Filter'] ],
-  builder   => sub { undef },
-);
-
 
 has zsock => (
   lazy      => 1,
@@ -180,24 +173,9 @@ sub _px_disconnect { $_[OBJECT]->disconnect(@_[ARG0 .. $#_]) }
 sub send {
   my ($self, $msg, $flags) = @_;
 
-  SENDTYPE: {
-    if ($self->filter) {
-      my $chunks = $self->filter->put([$msg]);
-      $self->_zsock_buf->push(
-        POEx::ZMQ::Buffered->new(
-          item        => $_,
-          item_type   => 'single',
-          ( defined $flags ? (flags => $flags) : () ),
-        )
-      ) for @$chunks;
-      last SENDTYPE
-    }
-
-    if (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) {
-      $self->_zsock_buf->push($msg);
-      last SENDTYPE
-    }
-
+  if (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) {
+    $self->_zsock_buf->push($msg);
+  } else {
     $self->_zsock_buf->push( 
       POEx::ZMQ::Buffered->new(
         item      => $msg,
@@ -205,7 +183,7 @@ sub send {
         ( defined $flags ? (flags => $flags) : () ),
       )
     );
-  } # SENDTYPE
+  }
 
   $self->call('pxz_nb_write');
 }
@@ -252,8 +230,6 @@ sub _pxz_nb_read {
 
   return unless $self->zsock->has_event_pollin;
 
-  # FIXME filter support
-
   my $recv_err;
   RECV: {
     try {
@@ -263,18 +239,10 @@ sub _pxz_nb_read {
         push @parts, $self->zsock->recv;
       }
 
-      # FIXME document that multipart is never automagically filtered
-      #   (to avoid fucking with identities, etc)
-      #   higher-level types should handle that situation
       if (@parts) {
         $self->emit( recv_multipart => array( $msg, @parts ) );
       } else {
-        $self->emit( 
-          recv => (
-            $self->filter ? @{ $self->filter->get([$msg]) }
-              : $msg
-          )
-        );
+        $self->emit( recv => $msg )
       }
       1
     } catch {
@@ -366,14 +334,6 @@ B<Required>; the socket type, as a constant.
 See L<zmq_socket(3)> for details on socket types.
 
 See L<POEx::ZMQ::Constants> for a ZeroMQ constant exporter.
-
-=head3 filter
-
-A L<POE::Filter> used for sending and receiving messages.
-
-This class will only apply the filter to single-part messages, to avoid
-munging socket identities and similar; higher-level subclasses should make use
-of the filter if defined.
 
 =head3 context
 
