@@ -222,6 +222,8 @@ sub send_multipart {
       ( defined $flags ? (flags => $flags) : () ),
     )
   );
+
+  $self->call('pxz_nb_write');
 }
 sub _px_send_multipart { $_[OBJECT]->send_multipart(@_[ARG0 .. $#_]) }
 

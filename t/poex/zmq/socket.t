@@ -122,11 +122,10 @@ sub zmq_recv_multipart {
   $Got->set('null part empty' => 1) if $nul eq '';
   $Got->set('multipart body ok' => 1) if $content eq 'foo';
 
-  # send_multipart
-  $_[HEAP]->{rtr}->send_multipart([ $id, '', 'bar' ]);
-#  $_[KERNEL]->post( $_[SENDER], send_multipart =>
-#    [ $id, '', 'bar' ]
-#  );
+  # send_multipart (+ test from posted send)
+  $_[KERNEL]->post( $_[SENDER], send_multipart =>
+    [ $id, '', 'bar' ]
+  );
 }
 
 
