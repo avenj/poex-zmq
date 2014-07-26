@@ -148,6 +148,8 @@ sub set_ctx_opt {
 
 =pod
 
+=for Pod::Coverage has_(?:threads|max_sockets)
+
 =head1 NAME
 
 POEx::ZMQ::FFI::Context
@@ -212,8 +214,8 @@ See L<zmq_ctx_set(3)>.
 
 =head3 get_raw_context
 
-Returns the raw context pointer; used internally by L<POEx::ZMQ::FFI::Socket>
-objects.
+Returns the raw context pointer, suitable for use with direct L<FFI::Raw>
+calls (used internally by L<POEx::ZMQ::FFI::Socket> objects).
 
 =head3 get_zmq_version
 

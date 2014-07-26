@@ -78,10 +78,11 @@ See L<POEx::ZMQ::Socket> for details on using sockets.
 Each ZeroMQ socket is an event emitter powered by L<MooX::Role::POE::Emitter>;
 the documentation for that distribution is likely to be helpful.
 
-This is early-development software, as indicated by the C<0.x> version number.
-The test suite is incomplete, bugs are sure to be lurking, documentation may
-not always be verbose, and the API is not guarantted.  Issues & pull requests
-are welcome, of course: L<http://www.github.com/avenj/poex-zmq>
+B<This is early-development software,> as indicated by the C<0.x> version number.
+The test suite is incomplete, bugs are sure to be lurking, documentation is
+not yet especially verbose, and the API is not completely guaranteed.  Issues
+& pull requests are welcome, of course:
+L<http://www.github.com/avenj/poex-zmq>
 
 If you are not using L<POE>, try L<ZMQ::FFI> for an excellent loop-agnostic
 ZeroMQ implementation.

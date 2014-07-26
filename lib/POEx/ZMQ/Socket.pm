@@ -361,9 +361,11 @@ documentation for details.
 
 =head3 type
 
-B<Required>.
+B<Required>; the socket type, as a constant.
 
-The socket type, as a constant (see L<POEx::ZMQ::Constants>).
+See L<zmq_socket(3)> for details on socket types.
+
+See L<POEx::ZMQ::Constants> for a ZeroMQ constant exporter.
 
 =head3 filter
 
@@ -508,13 +510,30 @@ L<MooX::Role::POE::Emitter/event_prefix> attribute; by default, C<zmq_>.
 
 =head3 bind_added
 
+Emitted when a L</bind> is issued for an endpoint; C<$_[ARG0]> is the bound
+endpoint.
+
 =head3 bind_removed
+
+Emitted when a L</unbind> is issued for an endpoint; C<$_[ARG0]> is the
+unbound endpoint.
 
 =head3 connect_added
 
+Emitted when a L</connect> is issued for an endpoint; C<$_[ARG0]> is the
+target endpoint.
+
 =head3 disconnect_issued
 
+Emitted when a L</disconnect> is issued for an endpoint; C<$_[ARG0]> is the
+disconnecting endpoint.
+
 =head3 recv
+
+  sub zmq_recv {
+    my $msg = $_[ARG0];
+    $_[KERNEL]->post( $_[SENDER], send => 'bar' ) if $msg eq 'foo';
+  }
 
 Emitted when a single-part message is received; C<$_[ARG0]> is the message
 item.
@@ -524,8 +543,13 @@ item.
   # A ROUTER receiving from REQ, for example:
   sub zmq_recv_multipart {
     my $parts = $_[ARG0];
-    my ($id, undef, $content) = $parts->all;
-    # ...
+    my ($id, undef, $content) = @$parts;
+
+    my $response = 'bar' if $content eq 'foo';
+
+    $_[KERNEL]->post( $_[SENDER], send_multipart =>
+      [ $id, '', $response ]
+    );
   }
 
 Emitted when a multipart message is received; C<$_[ARG0]> is a

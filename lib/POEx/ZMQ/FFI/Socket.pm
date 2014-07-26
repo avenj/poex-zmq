@@ -21,7 +21,17 @@ use POEx::ZMQ::FFI::Callable;
 use FFI::Raw;
 
 
-# Large enough to hold ZMQ_IDENTITY / ZMQ_LAST_ENDPOINT:
+=pod
+
+=for Pod::Coverage OPTVAL_MAXLEN
+
+=for comment
+
+Maximum length of binary/string type option values.
+(Large enough to hold ZMQ_IDENTITY / ZMQ_LAST_ENDPOINT)
+
+=cut
+
 sub OPTVAL_MAXLEN () { 256 }
 
 
@@ -214,6 +224,10 @@ sub get_handle { shift->_stored_handle }
 
 with 'POEx::ZMQ::FFI::Role::ErrorChecking';
 
+
+=for Pod::Coverage BUILD DEMOLISH
+
+=cut
 
 sub BUILD {
   my ($self) = @_;
@@ -603,13 +617,17 @@ performing an L<fdopen(3)> on the file descriptor returned by the C<ZMQ_FD>
 socket option; see L<zmq_getsockopt(3)> and the
 L<http://zguide.zeromq.org|zguide>.
 
+=head3 get_raw_socket
+
+Returns the raw socket ptr, suitable for use with direct L<FFI::Raw> calls.
+
 =head3 has_event_pollin
 
-Checks the L<ZMQ_EVENTS> socket option to determine if the socket is readable.
+Checks the C<ZMQ_EVENTS> socket option to determine if the socket is readable.
 
 =head3 has_event_pollout
 
-Checks the L<ZMQ_EVENTS> socket option to determine if the socket is writable.
+Checks the C<ZMQ_EVENTS> socket option to determine if the socket is writable.
 
 =head2 CONSUMES
 

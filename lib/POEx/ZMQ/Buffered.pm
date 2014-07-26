@@ -33,6 +33,8 @@ has flags => (
 
 =pod
 
+=for Pod::Coverage has_flags
+
 =head1 NAME
 
 POEx::ZMQ::Buffered
@@ -60,6 +62,8 @@ The message type -- C<single> or C<multipart>.
 =head3 flags
 
 The ZeroMQ message flags.
+
+Predicate: B<has_flags>
 
 =head1 AUTHOR
 
