@@ -14,6 +14,8 @@ my $endpt = "ipc:///tmp/test-poex-zmq-$$";
 
 my $Got = hash;
 my $Expected = hash(
+  'got connect_added'   => 1,
+  'got bind_added'      => 1,
   'rtr got 3 items'     => 1,
   'rtr got id'          => 1,
   'null part empty'     => 1,
@@ -23,7 +25,7 @@ my $Expected = hash(
 );
 
 
-alarm 20;
+alarm 60;
 
 POE::Session->create(
   package_states => [
@@ -45,7 +47,6 @@ POE::Session->create(
 );
 
 sub check_if_done {
-  # FIXME call a stop if Got and Expected key counts match, reissue alarm if not
   if ($Got->keys->count == $Expected->keys->count) {
     diag "Matching key counts, exiting loop";
     $_[HEAP]->{$_}->stop for qw/rtr req/;
@@ -71,9 +72,6 @@ sub _start {
     type    => ZMQ_REQ,
   )->start;
   
-#  $_[KERNEL]->call( $_->alias, subscribe => 'all' )
-#    for $_[HEAP]->{rtr}, $_[HEAP]->{req};
-
   $_[KERNEL]->yield( 'router_req_setup' );
 }
 
@@ -94,12 +92,13 @@ sub router_req_setup {
 
 sub zmq_connect_added {
   diag "Got connect_added";
-  # FIXME
+
+  $Got->set('got connect_added' => 1) if $_[ARG0] eq $endpt;
 }
 
 sub zmq_bind_added {
   diag "Got bind_added";
-  # FIXME
+  $Got->set('got bind_added' => 1) if $_[ARG0] eq $endpt;
 }
 
 my $done = 0;
