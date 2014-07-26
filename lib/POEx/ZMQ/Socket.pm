@@ -32,8 +32,6 @@ has '+shutdown_signal' => ( default => sub { 'SHUTDOWN_ZMQ' } );
 
 # Pluggable:
 has '+register_prefix' => ( default => sub { 'ZMQ_' } );
-# FIXME default pluggable_type_prefixes?
-#       or do we not really care?
 
 
 has type => (
