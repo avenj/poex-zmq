@@ -1,7 +1,7 @@
 package POEx::ZMQ::FFI::Role::ErrorChecking;
 
 use v5.10;
-use Carp;
+use Carp 'cluck', 'confess';
 use strictures 1;
 
 use POEx::ZMQ::FFI::Callable;
@@ -81,7 +81,8 @@ sub warn_if_error {
 
   if ($rc == -1) {
     my $err = $self->_build_zmq_error($call);
-    warn $err . "\n"
+    cluck $err . "\n";
+    return
   }
 
   $self
@@ -148,6 +149,13 @@ automatically retrieved for inclusion in the thrown exception object.
 
 Takes a ZMQ function name and a return code from a ZMQ FFI call; calls
 L</throw_zmq_error> if the return code indicates the call failed.
+
+=head3 warn_if_error
+
+Like L</throw_if_error>, but warn via L<Carp/cluck> rather than throwing an
+error object.
+
+Returns the invocant if there was no error, else returns false.
 
 =head1 AUTHOR
 
