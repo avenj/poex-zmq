@@ -283,8 +283,8 @@ sub _pxz_nb_write {
       my $maybe_fatal = $_;
       if (blessed $maybe_fatal) {
         my $errno = $maybe_fatal->errno;
+        # FIXME handle EFSM / queuing behavior
         if ($errno == EAGAIN || $errno == EINTR) {
-          # FIXME should we handle EFSM (bad state) separately?
           $self->_zsock_buf->unshift($msg);
         } else {
           $send_error = $maybe_fatal->errstr;
@@ -297,7 +297,7 @@ sub _pxz_nb_write {
 
   confess $send_error if defined $send_error;
 
-  # FIXME support for a max per-buffered-item retry limit?
+  # FIXME support for a max per-buffered-item retry limit
 
   $self->yield('pxz_ready');
 }
@@ -314,13 +314,54 @@ POEx::ZMQ::Socket - A POE-enabled ZeroMQ socket
 
 =head1 SYNOPSIS
 
-FIXME borrow POEx::ZMQ SYNOPSIS?
+  # An example ZMQ_ROUTER socket ->
+  use POE;
+  use POEx::ZMQ;
+
+  POE::Session->create(
+    inline_states => +{
+      _start => sub {
+        # Set up a Context and save it for creating sockets later:
+        $_[HEAP]->{ctx} = POEx::ZMQ->context;
+
+        # Create a ZMQ_ROUTER socket associated with our Context:
+        $_[HEAP]->{rtr} = POEx::ZMQ::Socket->new(
+          context => $_[HEAP]->{ctx},
+          type    => ZMQ_ROUTER,
+        );
+
+        # Set up the backend socket and start accepting/emitting events:
+        $_[HEAP]->{rtr}->start;
+
+        # Bind to a local TCP endpoint:
+        $_[HEAP]->{rtr}->bind( 'tcp://127.0.0.1:1234' );
+      },
+
+      zmq_recv_multipart => sub {
+        # ROUTER got message from REQ;
+        # parts are available as a List::Objects::WithUtils::Array ->
+        my $parts = $_[ARG0];
+
+        # ROUTER receives [ IDENTITY, NULL, MSG .. ]:
+        my ($id, undef, $content) = $parts->all;
+
+        my $response;
+        # ... do work ...
+        # Send a response back:
+        $_[KERNEL]->post( $_[SENDER], send_multipart =>
+          $id, '', $response
+        );
+      },
+    },
+  );
+
+  POE::Kernel->run;
 
 =head1 DESCRIPTION
 
 An asynchronous L<POE>-powered L<http://www.zeromq.org|ZeroMQ> socket.
 
-These objects are event emitters, powered by L<MooX::Role::POE::Emitter>. That
+These objects are event emitters powered by L<MooX::Role::POE::Emitter>. That
 means they come with flexible event processing / dispatch / multiplexing
 options. See the L<MooX::Role::Pluggable> and L<MooX::Role::POE::Emitter>
 documentation for details.
@@ -349,7 +390,8 @@ The L<POEx::ZMQ::FFI::Socket> backend socket object.
 
 Start the emitter and set up the associated socket.
 
-B<< This method must be called to create the socket! >>
+B<< This method must be called >> to create the backend ZeroMQ socket and start
+the emitter's L<POE::Session>.
 
 Returns the object.
 
@@ -392,11 +434,15 @@ See L<POEx::ZMQ::FFI::Context/set_ctx_opt> & L<zmq_ctx_set(3)>
 
 =head3 get_socket_opt
 
-FIXME
+Get socket option values.
+
+See L<POEx::ZMQ::FFI::Socket/get_sock_opt> & L<zmq_getsockopt(3)>.
 
 =head3 set_socket_opt
 
-FIXME
+Set socket option values.
+
+See L<POEx::ZMQ::FFI::Socket/set_sock_opt> & L<zmq_setsockopt(3)>.
 
 =head3 bind
 
@@ -432,16 +478,21 @@ A L</disconnect_issued> event is emitted for each removed endpoint.
 
 =head3 send
 
-FIXME send POD
+  $sock->send( $msg, $flags );
 
-A send will never block; socket types that would normally block under certain
-conditions will queue messages locally instead for retrying later. FIXME
-that's not true until we handle EFSM & test for same ...
-FIXME handlers & related docs
+Send a single-part message (without blocking).
+
+=for comment FIXME document queuing behavior etc
 
 =head3 send_multipart
 
-FIXME
+  $sock->send_multipart( [ @parts ], $flags );
+  # For example, a ROUTER sending to $id ->
+  $rtr->send_multipart( [ $id, '', $msg ], $flags );
+
+Send a multi-part message.
+
+=for comment FIXME document queuing behavior
 
 =head2 ACCEPTED EVENTS
 
