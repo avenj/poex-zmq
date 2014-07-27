@@ -24,7 +24,7 @@ cmp_ok $vers_so_str, 'eq', $vers->string,
   'passing soname to get_version seems ok';
 
 eval {; POEx::ZMQ::FFI->get_version('hopefullynosuchlibexistsever') };
-like $@, qr/shared/i, 'passing bad soname to get_version dies';
+like $@, qr/(?:shared|not.found)/i, 'passing bad soname to get_version dies';
 
 # zpack
 # FIXME
