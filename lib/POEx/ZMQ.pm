@@ -42,7 +42,7 @@ POEx::ZMQ - Asynchronous ZeroMQ sockets for POE
         # Set up a ROUTER; save our Context for creating other sockets later:
         $_[HEAP]->{ctx} = POEx::ZMQ->context;
 
-        $_[HEAP]->{rtr} = POEx::ZMQ::Socket->new(
+        $_[HEAP]->{rtr} = POEx::ZMQ->socket(
           context => $_[HEAP]->{ctx},
           type    => ZMQ_ROUTER,
         );

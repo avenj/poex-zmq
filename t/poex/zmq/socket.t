@@ -1,6 +1,11 @@
 use Test::More;
 use strict; use warnings FATAL => 'all';
 
+# TODO -
+#   - Test context opt set/get
+#   - Test get_buffered_items
+#   - Probably lots more \o/
+
 use Time::HiRes ();
 
 use List::Objects::WithUtils;
@@ -74,6 +79,10 @@ sub _start {
     context => $_[HEAP]->{ctx},
     type    => ZMQ_REQ,
   )->start;
+
+  ok $_[HEAP]->{req}->type == ZMQ_REQ, 'type attr ok';
+  isa_ok $_[HEAP]->{req}->zsock, 'POEx::ZMQ::FFI::Socket';
+  isa_ok $_[HEAP]->{req}->context, 'POEx::ZMQ::FFI::Context';
   
   $_[KERNEL]->yield( 'router_req_setup' );
 }
