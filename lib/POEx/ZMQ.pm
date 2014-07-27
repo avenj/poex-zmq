@@ -19,6 +19,8 @@ sub import {
 
 sub context { shift; POEx::ZMQ::FFI::Context->new(@_) }
 
+sub socket { shift; POEx::ZMQ::Socket->new(@_) }
+
 1;
 
 
@@ -101,6 +103,12 @@ Returns a new L<POEx::ZMQ::FFI::Context>. C<@_> is passed through.
 The context object should be shared between sockets belonging to the same
 process; a forked child process should create a new context with its own set
 of sockets.
+
+=head3 socket
+
+  my $sock = POEx::ZMQ->socket(context => $ctx, type => ZMQ_ROUTER);
+
+Returns a new L<POEx::ZMQ::Socket>. C<@_> is passed through.
 
 =head1 AUTHOR
 
