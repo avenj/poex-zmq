@@ -3,16 +3,16 @@ use strict; use warnings FATAL => 'all';
 
 use POEx::ZMQ::FFI;
 
-eval {; POEx::ZMQ::FFI->get_version };
+my $vers;
+eval {; $vers = POEx::ZMQ::FFI->get_version->string };
 if (my $err = $@) {
   if ($err =~ /requires.ZeroMQ/) {
-    warn $err;
-    die "OS unsupported";
+    BAIL_OUT "OS unsupported - $err";
   } else {
     die $@
   }
 }
 
-pass "System has acceptable ZMQ version";
+ok $vers, "System has acceptable ZMQ version: $vers";
 
 done_testing
