@@ -96,8 +96,6 @@ sub start {
       send_multipart  => '_px_send_multipart',
     },
     
-    # FIXME 'defined_states' attr with builder for use by consumers
-    #       to add events?
     ( $self->has_object_states ? @{ $self->object_states } : () ),
   ]);
 
@@ -294,8 +292,7 @@ sub _pxz_nb_write {
       my $maybe_fatal = $_;
       if (blessed $maybe_fatal) {
         my $errno = $maybe_fatal->errno;
-        # FIXME handle EFSM / queuing behavior
-        if ($errno == EAGAIN || $errno == EINTR) {
+        if ($errno == EAGAIN || $errno == EINTR || $errno == EFSM) {
           $self->_zsock_buf->unshift($msg);
         } else {
           $send_error = $maybe_fatal->errstr;
