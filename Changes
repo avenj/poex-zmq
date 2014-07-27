@@ -1,5 +1,19 @@
 Revision history for Perl module POEx-ZMQ
 
+0.000_003 2014-07-27
+
+  - Provide POEx::ZMQ->socket() constructor shortcut
+
+  - Prefer libzmq.so.3 over libzmq.so
+    (Might be reverted. I'm running into systems with libzmq.so pointing to
+    ZMQ2 and libzmq.so.3 available.)
+
+  - Various test expansion/fixes
+
+  - Really fix bad-version BAIL_OUT. ... I think.
+
+  - MetaNoIndex for tools/
+
 0.000_002 2014-07-26
 
   - Set ZMQ_LINGER to 0 during ->stop
