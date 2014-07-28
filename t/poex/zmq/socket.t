@@ -83,6 +83,7 @@ sub _start {
   )->start;
 
   ok $_[HEAP]->{req}->type == ZMQ_REQ, 'type attr ok';
+  ok $_[HEAP]->{req}->zmq_version->string, 'zmq_version ok';
   isa_ok $_[HEAP]->{req}->zsock, 'POEx::ZMQ::FFI::Socket';
   isa_ok $_[HEAP]->{req}->context, 'POEx::ZMQ::FFI::Context';
   

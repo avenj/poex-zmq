@@ -138,6 +138,8 @@ sub set_socket_opt { shift->zsock->set_sock_opt(@_) }
   *set_sock_opt = *set_socket_opt;
 }
 
+sub zmq_version { shift->context->get_zmq_version }
+
 sub unbind {
   my $self = shift;
   for my $endpt (@_) {
@@ -411,6 +413,11 @@ L</zsock> will be cleared.
 Buffered items are not removed; L</get_buffered_items> can be used to retrieve
 them for feeding to a new socket object's L</send> method. See
 L<POEx::ZMQ::Buffered>.
+
+=head3 zmq_version
+
+Returns the ZeroMQ version, as a struct-like object; see
+L<POEx::ZMQ::FFI/get_version>.
 
 =head3 get_buffered_items
 
