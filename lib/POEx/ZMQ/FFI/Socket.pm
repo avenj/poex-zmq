@@ -236,7 +236,9 @@ sub BUILD {
 }
 
 sub DEMOLISH {
-  my ($self) = @_;
+  my ($self, $gd) = @_;
+
+  return if $gd;
 
   $self->warn_if_error( zmq_close =>
     $self->_ffi->zmq_close( $self->_socket_ptr )
