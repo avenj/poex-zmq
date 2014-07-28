@@ -6,7 +6,7 @@ use POEx::ZMQ::FFI;
 my $vers;
 eval {; $vers = POEx::ZMQ::FFI->get_version->string };
 if (my $err = $@) {
-  if ($err =~ /requires.ZeroMQ/) {
+  if ($err =~ /(?:requires.ZeroMQ|search.path)/) {
     BAIL_OUT "OS unsupported - $err";
   } else {
     die $@
