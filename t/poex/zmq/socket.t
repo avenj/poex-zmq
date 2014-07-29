@@ -14,7 +14,8 @@ use POE;
 use POEx::ZMQ;
 use POEx::ZMQ::Constants -all;
 
-my $endpt = "ipc:///tmp/test-poex-zmq-$$";
+use Test::TCP 'empty_port';
+my $endpt = 'tcp://127.0.0.1:'.empty_port;
 
 
 my $Got = hash;
