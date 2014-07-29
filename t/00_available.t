@@ -13,6 +13,7 @@ if (my $err = $@) {
   }
 }
 
+diag "Testing against ZeroMQ $vers";
 ok $vers, "System has acceptable ZMQ version: $vers";
 
 done_testing
