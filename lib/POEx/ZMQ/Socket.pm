@@ -41,13 +41,28 @@ has type => (
   coerce    => 1,
 );
 
-
 has context => (
   lazy      => 1,
   is        => 'ro',
   isa       => ZMQContext,
   builder   => sub { POEx::ZMQ::FFI::Context->new },
 );
+
+has max_queue_size => (
+  lazy      => 1,
+  is        => 'ro',
+  isa       => Int,
+  builder   => sub { 0 },
+);
+
+has max_queue_action => (
+  lazy      => 1,
+  is        => 'ro',
+  # A default action or a CodeRef passed the buffer ArrayObj ->
+  isa       => (Enum[qw/drop warn die/] | CodeRef),
+  builder   => sub { 'die' },
+);
+
 
 
 has zsock => (
@@ -181,8 +196,55 @@ sub disconnect {
 }
 sub _px_disconnect { $_[OBJECT]->disconnect(@_[ARG0 .. $#_]) }
 
+
+sub _message_not_sendable {
+  my ($self, $msg, $flags, $is_multipart) = @_;
+
+  return unless $self->max_queue_size > 0
+    and $self->_zsock_buf->count == $self->max_queue_size;
+
+  my $action = $self->max_queue_action;
+
+  QUEUE_FILL_ACTION: {
+    if (ref $action eq 'CODE') {
+      my $buf = POEx::ZMQ::Buffered->new(
+        item_type => ($is_multipart ? 'multipart' : 'single'),
+        item      => $msg,
+        ( defined $flags ? (flags => $flags) : () ),
+      );
+
+      if ( $action->($buf, $self->_zsock_buf) ) {
+        # coderef action can return true to cause an event check ->
+        $self->yield('pxz_ready')
+      }
+
+      return 1
+    }
+
+    if ($action eq 'die') {
+      my $id = $self->alias;
+      confess "Attempted to send on socket with filled queue (session $id)" 
+    }
+
+    if ($action eq 'warn') {
+      my $id = $self->alias;
+      warn "WARNING; send queue filled (session $id), dropping message\n";
+      return 1
+    }
+
+    if ($action eq 'drop') {
+      return 1
+    }
+
+  } # QUEUE_FILL_ACTION
+
+  1
+}
+
 sub send {
   my ($self, $msg, $flags) = @_;
+
+  return if $self->_message_not_sendable($msg, $flags);
 
   if (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) {
     $self->_zsock_buf->push($msg);
@@ -202,6 +264,8 @@ sub _px_send { $_[OBJECT]->send(@_[ARG0 .. $#_]) }
 
 sub send_multipart {
   my ($self, $parts, $flags) = @_;
+
+  return if $self->_message_not_sendable($parts, $flags, 'IS_MULTIPART');
 
   $self->_zsock_buf->push(
     POEx::ZMQ::Buffered->new(

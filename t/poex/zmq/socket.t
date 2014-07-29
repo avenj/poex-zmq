@@ -96,6 +96,7 @@ sub router_req_setup {
   $_[HEAP]->{req}->connect($endpt);
 
   $_[HEAP]->{rtr}->bind($endpt);
+  Time::HiRes::sleep 0.1;
 
   $_[HEAP]->{req}->yield(
     sub { 
