@@ -207,11 +207,12 @@ sub _message_not_sendable {
 
   QUEUE_FILL_ACTION: {
     if (ref $action eq 'CODE') {
-      my $buf = POEx::ZMQ::Buffered->new(
-        item_type => ($is_multipart ? 'multipart' : 'single'),
-        item      => $msg,
-        ( defined $flags ? (flags => $flags) : () ),
-      );
+      my $buf = (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) ? $msg
+        : POEx::ZMQ::Buffered->new(
+          item_type => ($is_multipart ? 'multipart' : 'single'),
+          item      => $msg,
+          ( defined $flags ? (flags => $flags) : () ),
+        );
 
       if ( $action->($buf, $self->_zsock_buf) ) {
         # coderef action can return true to cause an event check ->
