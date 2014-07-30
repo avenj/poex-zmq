@@ -1,5 +1,13 @@
 Revision history for Perl module POEx-ZMQ
 
+0.000_006 2014-07-30
+
+  - Add max_queue_size / max_queue_action
+
+  - Test TCP transport
+
+  - Fix constant optimization for maybe-POSIX constants
+
 0.000_005 2014-07-27
 
   - Provide ->zmq_version method on POEx::ZMQ::Socket objs
