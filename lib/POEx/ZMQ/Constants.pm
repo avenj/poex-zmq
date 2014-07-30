@@ -223,94 +223,72 @@ sub ZMQ_AFFINITY () { 4 }
 sub ZMQ_TCP_KEEPALIVE_INTVL () { 37 }
 
 no strict 'refs';
-sub EFSM () { 
-  defined &{'POSIX::EFSM'} ?
-    &POSIX::EFSM : 156384763
-}
-sub EAFNOSUPPORT () { 
-  defined &{'POSIX::EAFNOSUPPORT'} ?
-    &POSIX::EAFNOSUPPORT : 156384723
-}
-sub EADDRNOTAVAIL () { 
-  defined &{'POSIX::EADDRNOTAVAIL'} ?
-    &POSIX::EADDRNOTAVAIL : 156384718
-}
-sub ECONNREFUSED () { 
-  defined &{'POSIX::ECONNREFUSED'} ?
-    &POSIX::ECONNREFUSED : 156384719
-}
-sub ENOTSUP () { 
-  defined &{'POSIX::ENOTSUP'} ?
-    &POSIX::ENOTSUP : 156384713
-}
-sub ECONNRESET () { 
-  defined &{'POSIX::ECONNRESET'} ?
-    &POSIX::ECONNRESET : 156384726
-}
-sub EPROTONOSUPPORT () { 
-  defined &{'POSIX::EPROTONOSUPPORT'} ?
-    &POSIX::EPROTONOSUPPORT : 156384714
-}
-sub ENOTCONN () { 
-  defined &{'POSIX::ENOTCONN'} ?
-    &POSIX::ENOTCONN : 156384727
-}
-sub ENETUNREACH () { 
-  defined &{'POSIX::ENETUNREACH'} ?
-    &POSIX::ENETUNREACH : 156384724
-}
-sub EADDRINUSE () { 
-  defined &{'POSIX::EADDRINUSE'} ?
-    &POSIX::EADDRINUSE : 156384717
-}
-sub ETIMEDOUT () { 
-  defined &{'POSIX::ETIMEDOUT'} ?
-    &POSIX::ETIMEDOUT : 156384728
-}
-sub ECONNABORTED () { 
-  defined &{'POSIX::ECONNABORTED'} ?
-    &POSIX::ECONNABORTED : 156384725
-}
-sub ENOCOMPATPROTO () { 
-  defined &{'POSIX::ENOCOMPATPROTO'} ?
-    &POSIX::ENOCOMPATPROTO : 156384764
-}
-sub EMTHREAD () { 
-  defined &{'POSIX::EMTHREAD'} ?
-    &POSIX::EMTHREAD : 156384766
-}
-sub EMSGSIZE () { 
-  defined &{'POSIX::EMSGSIZE'} ?
-    &POSIX::EMSGSIZE : 156384722
-}
-sub ETERM () { 
-  defined &{'POSIX::ETERM'} ?
-    &POSIX::ETERM : 156384765
-}
-sub EHOSTUNREACH () { 
-  defined &{'POSIX::EHOSTUNREACH'} ?
-    &POSIX::EHOSTUNREACH : 156384729
-}
-sub ENETDOWN () { 
-  defined &{'POSIX::ENETDOWN'} ?
-    &POSIX::ENETDOWN : 156384716
-}
-sub ENETRESET () { 
-  defined &{'POSIX::ENETRESET'} ?
-    &POSIX::ENETRESET : 156384730
-}
-sub ENOTSOCK () { 
-  defined &{'POSIX::ENOTSOCK'} ?
-    &POSIX::ENOTSOCK : 156384721
-}
-sub EINPROGRESS () { 
-  defined &{'POSIX::EINPROGRESS'} ?
-    &POSIX::EINPROGRESS : 156384720
-}
-sub ENOBUFS () { 
-  defined &{'POSIX::ENOBUFS'} ?
-    &POSIX::ENOBUFS : 156384715
-}
+eval( defined &{'POSIX::EFSM'} ?
+  'sub EFSM () { POSIX::EFSM }'
+   : 'sub EFSM () { 156384763 }' );
+eval( defined &{'POSIX::EAFNOSUPPORT'} ?
+  'sub EAFNOSUPPORT () { POSIX::EAFNOSUPPORT }'
+   : 'sub EAFNOSUPPORT () { 156384723 }' );
+eval( defined &{'POSIX::EADDRNOTAVAIL'} ?
+  'sub EADDRNOTAVAIL () { POSIX::EADDRNOTAVAIL }'
+   : 'sub EADDRNOTAVAIL () { 156384718 }' );
+eval( defined &{'POSIX::ECONNREFUSED'} ?
+  'sub ECONNREFUSED () { POSIX::ECONNREFUSED }'
+   : 'sub ECONNREFUSED () { 156384719 }' );
+eval( defined &{'POSIX::ENOTSUP'} ?
+  'sub ENOTSUP () { POSIX::ENOTSUP }'
+   : 'sub ENOTSUP () { 156384713 }' );
+eval( defined &{'POSIX::ECONNRESET'} ?
+  'sub ECONNRESET () { POSIX::ECONNRESET }'
+   : 'sub ECONNRESET () { 156384726 }' );
+eval( defined &{'POSIX::EPROTONOSUPPORT'} ?
+  'sub EPROTONOSUPPORT () { POSIX::EPROTONOSUPPORT }'
+   : 'sub EPROTONOSUPPORT () { 156384714 }' );
+eval( defined &{'POSIX::ENOTCONN'} ?
+  'sub ENOTCONN () { POSIX::ENOTCONN }'
+   : 'sub ENOTCONN () { 156384727 }' );
+eval( defined &{'POSIX::ENETUNREACH'} ?
+  'sub ENETUNREACH () { POSIX::ENETUNREACH }'
+   : 'sub ENETUNREACH () { 156384724 }' );
+eval( defined &{'POSIX::EADDRINUSE'} ?
+  'sub EADDRINUSE () { POSIX::EADDRINUSE }'
+   : 'sub EADDRINUSE () { 156384717 }' );
+eval( defined &{'POSIX::ETIMEDOUT'} ?
+  'sub ETIMEDOUT () { POSIX::ETIMEDOUT }'
+   : 'sub ETIMEDOUT () { 156384728 }' );
+eval( defined &{'POSIX::ECONNABORTED'} ?
+  'sub ECONNABORTED () { POSIX::ECONNABORTED }'
+   : 'sub ECONNABORTED () { 156384725 }' );
+eval( defined &{'POSIX::ENOCOMPATPROTO'} ?
+  'sub ENOCOMPATPROTO () { POSIX::ENOCOMPATPROTO }'
+   : 'sub ENOCOMPATPROTO () { 156384764 }' );
+eval( defined &{'POSIX::EMTHREAD'} ?
+  'sub EMTHREAD () { POSIX::EMTHREAD }'
+   : 'sub EMTHREAD () { 156384766 }' );
+eval( defined &{'POSIX::EMSGSIZE'} ?
+  'sub EMSGSIZE () { POSIX::EMSGSIZE }'
+   : 'sub EMSGSIZE () { 156384722 }' );
+eval( defined &{'POSIX::ETERM'} ?
+  'sub ETERM () { POSIX::ETERM }'
+   : 'sub ETERM () { 156384765 }' );
+eval( defined &{'POSIX::EHOSTUNREACH'} ?
+  'sub EHOSTUNREACH () { POSIX::EHOSTUNREACH }'
+   : 'sub EHOSTUNREACH () { 156384729 }' );
+eval( defined &{'POSIX::ENETDOWN'} ?
+  'sub ENETDOWN () { POSIX::ENETDOWN }'
+   : 'sub ENETDOWN () { 156384716 }' );
+eval( defined &{'POSIX::ENETRESET'} ?
+  'sub ENETRESET () { POSIX::ENETRESET }'
+   : 'sub ENETRESET () { 156384730 }' );
+eval( defined &{'POSIX::ENOTSOCK'} ?
+  'sub ENOTSOCK () { POSIX::ENOTSOCK }'
+   : 'sub ENOTSOCK () { 156384721 }' );
+eval( defined &{'POSIX::EINPROGRESS'} ?
+  'sub EINPROGRESS () { POSIX::EINPROGRESS }'
+   : 'sub EINPROGRESS () { 156384720 }' );
+eval( defined &{'POSIX::ENOBUFS'} ?
+  'sub ENOBUFS () { POSIX::ENOBUFS }'
+   : 'sub ENOBUFS () { 156384715 }' );
 sub EAGAIN () { 
   POSIX::EAGAIN
 }
@@ -325,7 +303,7 @@ sub EINVAL () {
 }
 
 1;
- # Generated at Wed Jul 30 01:37:24 2014
+ # Generated at Wed Jul 30 01:57:25 2014
 
 =pod
 
