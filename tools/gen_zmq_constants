@@ -107,7 +107,7 @@ for my $constant (keys %errconst) {
   my $val = $errconst{$constant};
   $output .= "sub $constant () { \n";
   $output .= "  defined &{'POSIX::$constant'} ?\n";
-  $output .= "    &{'POSIX::$constant'} : $val\n";
+  $output .= "    &POSIX::$constant : $val\n";
   $output .= "}\n";
 }
 
