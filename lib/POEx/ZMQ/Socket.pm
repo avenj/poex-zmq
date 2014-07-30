@@ -451,6 +451,47 @@ See L<zmq_socket(3)> for details on socket types.
 
 See L<POEx::ZMQ::Constants> for a ZeroMQ constant exporter.
 
+=head3 max_queue_size
+
+Socket types that would normally block or return C<EFSM> (for example,
+out-of-order REP/REQ communication) will queue messages
+instead; C<max_queue_size> is the maximum number of messages queued
+application-side before L</max_queue_action> is invoked.
+
+This is not related to messages queued on the ZeroMQ side; see
+L<zmq_socket(3)> for details on socket behavior.
+
+Defaults to 0 (unlimited)
+
+=head3 max_queue_action
+
+The action to take during L</send> invocation when the application-side
+outgoing message queue reaches L</max_queue_size>.
+
+If set to B<drop>, new messages will be dropped.
+
+If set to B<warn>, a warning will be issued and new messages will be dropped.
+
+If set to B<die>, a stack trace is thrown.
+
+If set to a coderef:
+
+  max_queue_action => sub {
+    my ($buf_item, $queue) = @_;
+    # Drop old and try again, for example:
+    $queue->shift;
+    1
+  },
+
+... the subroutine is invoked and passed the
+L<POEx::ZMQ::Buffered> object for the message and the current application-side
+outgoing message queue as a L<List::Objects::WithUtils::Array> (respectively).
+This can be used to manually munge your outgoing queue yourself or perform
+some other action; if the given subroutine returns a boolean true value, another
+socket write will be attempted after the subroutine returns.
+
+Defaults to C<die>.
+
 =head3 context
 
 The L<POEx::ZMQ::FFI::Context> backend context object.
