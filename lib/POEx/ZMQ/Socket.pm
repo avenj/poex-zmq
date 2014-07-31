@@ -372,8 +372,6 @@ sub _pxz_nb_write {
 
   confess $send_error if defined $send_error;
 
-  # FIXME support for a max per-buffered-item retry limit
-
   $self->yield('pxz_ready');
 }
 
