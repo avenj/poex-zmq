@@ -359,8 +359,12 @@ sub _pxz_nb_write {
       my $maybe_fatal = $_;
       if (blessed $maybe_fatal) {
         my $errno = $maybe_fatal->errno;
-        if ($errno == EAGAIN || $errno == EINTR || $errno == EFSM) {
+        if ($errno == EAGAIN || $errno == EINTR) {
           $self->_zsock_buf->unshift($msg);
+        } elsif ($errno == EFSM) {
+          warn "Requeuing message on bad socket state (EFSM) -- ",
+               "your app is probably misusing a socket!";
+          $self->_zsock_buf->unshift($msg); 
         } else {
           $send_error = $maybe_fatal->errstr;
         }
