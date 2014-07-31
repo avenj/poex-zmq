@@ -7,7 +7,7 @@ use strictures 1;
 require bytes;
 require IO::Handle;
 
-use Time::HiRes;
+use Time::HiRes ();
 
 use List::Objects::WithUtils;
 
