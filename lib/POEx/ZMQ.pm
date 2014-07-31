@@ -3,6 +3,8 @@ package POEx::ZMQ;
 use Carp;
 use strictures 1;
 
+use Import::Into;
+
 use POEx::ZMQ::FFI::Context;
 
 use POEx::ZMQ::Constants ();
