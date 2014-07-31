@@ -105,9 +105,9 @@ $output .= "\nno strict 'refs';\n";
 
 for my $constant (keys %errconst) {
   my $val = $errconst{$constant};
-  $output .= "eval( defined &{'POSIX::$constant'} ?\n";
+  $output .= "eval( defined *{'POSIX::$constant'} ?\n";
   $output .= "  'sub $constant () { POSIX::$constant }'\n";
-  $output .="   : 'sub $constant () { $val }' );\n";
+  $output .="   : 'sub $constant () { $val }'\n);\n\n";
 }
 
 for my $constant (@posixonly) {
