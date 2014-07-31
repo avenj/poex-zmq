@@ -1,18 +1,13 @@
 use Test::More;
 use strict; use warnings FATAL => 'all';
 
-# TODO -
-#   - Test context opt set/get
-#   - Test get_buffered_items
-#   - Probably lots more \o/
-
 use Time::HiRes ();
 
 use List::Objects::WithUtils;
 
 use POE;
 use POEx::ZMQ;
-use POEx::ZMQ::Constants -all;
+
 
 my $endpt = "ipc:///tmp/test-poex-ffi-$$";
 
