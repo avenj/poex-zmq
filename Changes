@@ -1,5 +1,11 @@
 Revision history for Perl module POEx-ZMQ
 
+0.001001 2014-07-31
+
+  - Issue warnings when buffering on EFSM
+
+  - More Constants.pm fixes/cleanups
+
 0.000_006 2014-07-30
 
   - Add max_queue_size / max_queue_action
