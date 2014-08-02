@@ -213,8 +213,7 @@ has _stored_handle => (
   writer    => '_set_stored_handle',
   clearer   => '_clear_stored_handle',
   builder    => sub {
-    my ($self) = @_;
-    my $fno = $self->get_sock_opt( ZMQ_FD );
+    my $fno = shift->get_sock_opt( ZMQ_FD );
     IO::Handle->new_from_fd( $fno, 'r' );
   },
 );
@@ -258,7 +257,7 @@ $KnownTypes->set( $_ => 'int' ) for (
   ZMQ_EVENTS,             #
   ZMQ_FD,                 #
   ZMQ_IMMEDIATE,          # 3.3
-  ZMQ_IPV4ONLY,           # deprecated by ZMQ_IPV6
+  ZMQ_IPV4ONLY,           # deprecated by ZMQ_IPV6 (3.3)
   ZMQ_IPV6,               # 3.3
   ZMQ_LINGER,             #
   ZMQ_MULTICAST_HOPS,     #

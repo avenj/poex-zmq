@@ -295,6 +295,19 @@ sub _pxz_sock_unwatch {
 sub _pxz_ready {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
 
+  # Level-triggered behavior is annoying; this select ought be triggered when
+  # any events happen (which might or might not pertain to us). We might not
+  # be notified if state changes as a result of something we do. 
+  # At the moment:
+  #  - Try to write pending
+  #    - Return if we have nothing queued
+  #    - yield another pxz_ready if successful or EAGAIN, EINTR, EFSM
+  #  - Try to read pending
+  #    - Return if ZeroMQ has nothing queued
+  #    - yield another pxz_ready if successful or EAGAIN, EINTR
+  # Probably we need smarter management of pxz_ready events; as it is, we're
+  # stuck in a yield() loop until something happens if queuing app-side while
+  # trying to write against a blocked socket.
   $self->call('pxz_nb_write');
   $self->call('pxz_nb_read');
 }
