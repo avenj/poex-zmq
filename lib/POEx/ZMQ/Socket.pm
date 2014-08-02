@@ -4,8 +4,6 @@ use v5.10;
 use strictures 1;
 use Carp;
 
-use Scalar::Util 'blessed';
-
 use List::Objects::WithUtils;
 
 use List::Objects::Types -types;
@@ -205,39 +203,36 @@ sub _message_not_sendable {
 
   my $action = $self->max_queue_action;
 
-  QUEUE_FILL_ACTION: {
-    if (ref $action eq 'CODE') {
-      my $buf = (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) ? $msg
-        : POEx::ZMQ::Buffered->new(
-          item_type => ($is_multipart ? 'multipart' : 'single'),
-          item      => $msg,
-          ( defined $flags ? (flags => $flags) : () ),
-        );
+  if (ref $action eq 'CODE') {
+    my $buf = (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) ? $msg
+      : POEx::ZMQ::Buffered->new(
+        item_type => ($is_multipart ? 'multipart' : 'single'),
+        item      => $msg,
+        ( defined $flags ? (flags => $flags) : () ),
+      );
 
-      if ( $action->($buf, $self->_zsock_buf) ) {
-        # coderef action can return true to cause an event check ->
-        $self->yield('pxz_ready')
-      }
-
-      return 1
+    if ( $action->($buf, $self->_zsock_buf) ) {
+      # coderef action can return true to cause an event check ->
+      $self->yield('pxz_ready')
     }
 
-    if ($action eq 'die') {
-      my $id = $self->alias;
-      confess "Attempted to send on socket with filled queue (session $id)" 
-    }
+    return 1
+  }
 
-    if ($action eq 'warn') {
-      my $id = $self->alias;
-      warn "WARNING; send queue filled (session $id), dropping message\n";
-      return 1
-    }
+  if ($action eq 'die') {
+    my $id = $self->alias;
+    confess "Attempted to send on socket with filled queue (session $id)" 
+  }
 
-    if ($action eq 'drop') {
-      return 1
-    }
+  if ($action eq 'warn') {
+    my $id = $self->alias;
+    warn "WARNING; send queue filled (session $id), dropping message\n";
+    return 1
+  }
 
-  } # QUEUE_FILL_ACTION
+  if ($action eq 'drop') {
+    return 1
+  }
 
   1
 }
