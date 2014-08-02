@@ -1,19 +1,7 @@
 ## POEx::ZMQ::Socket
-  ## Send queue handling
-    * EAGAIN, EINTR, EFSM should cause a requeue
-    * max_send_retries
-    * max_queue_size
-    * queue_overflow_action ? drop / warn+drop / die
-    * retry_overflow_action ? drop / warn+drop / die
-
-  ## IPv6 helper
-    * ->ipv6() attr
-      automatically (v3.3+ ? set ZMQ_IPV6 : unset ZMQ_IPV4ONLY) after build
 
   ## Monitor support
 
   ## Curve encryption support
 
-  #? SSH tunnelling helper?
-
-#? Per-socket classes w/ POE::Filter integration
+  ## SSH tunnelling helper?

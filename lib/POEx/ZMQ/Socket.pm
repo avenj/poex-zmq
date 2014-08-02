@@ -403,6 +403,14 @@ sub _pxz_nb_write {
 }
 
 # FIXME monitor support
+#  - FFI::Socket method that calls zmq_socket_monitor
+#  - spawn a child POEx::ZMQ::Socket for our side of ZMQ_PAIR,
+#     give it a special event prefix
+#  - accept & unpack recv_multipart events from the PAIR sock
+#     first frame is a 16-bit event id matching a const,
+#      prepending a 32-bit event value
+#     second frame is the affected endpoint string
+#  - switch emitting more useful events
 
 1;
 
