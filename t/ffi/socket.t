@@ -6,6 +6,10 @@ use Time::HiRes 'sleep';
 use POEx::ZMQ::Constants -all;
 use POEx::ZMQ::FFI::Context;
 
+use File::Temp ();
+my $tempdir = File::Temp::tempdir(CLEANUP => 1);
+my $endpt = "ipc://$tempdir/test-poex-ffi-$$";
+
 alarm 60;
 $SIG{ALRM} = sub { die "Test timed out!" };
 
@@ -25,8 +29,6 @@ $SIG{ALRM} = sub { die "Test timed out!" };
 
   # soname
   ok $router->soname, 'soname ok';
-
-  my $endpt = "ipc:///tmp/test-poex-ffi-$$";
 
   # connect
   $req->connect($endpt);

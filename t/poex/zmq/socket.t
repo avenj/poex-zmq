@@ -9,7 +9,9 @@ use POE;
 use POEx::ZMQ;
 
 
-my $endpt = "ipc:///tmp/test-poex-ffi-$$";
+use File::Temp ();
+my $tempdir = File::Temp::tempdir(CLEANUP => 1);
+my $endpt = "ipc://$tempdir/test-poex-ffi-$$";
 
 
 my $Got = hash;
