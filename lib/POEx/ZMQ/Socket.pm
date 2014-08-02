@@ -46,6 +46,13 @@ has context => (
   builder   => sub { POEx::ZMQ::FFI::Context->new },
 );
 
+has ipv6    => (
+  lazy      => 1,
+  is        => 'ro',
+  isa       => Bool,
+  builder   => sub { 0 },
+);
+
 has max_queue_size => (
   lazy      => 1,
   is        => 'ro',
@@ -118,13 +125,21 @@ sub start {
 sub stop {
   my ($self) = @_;
   $self->call( 'pxz_sock_unwatch' );
-  $self->zsock->set_sock_opt(ZMQ_LINGER, 0);
+  $self->set_sock_opt(ZMQ_LINGER, 0);
   $self->_clear_zsock;
   $self->_shutdown_emitter;
 }
 
 sub _pxz_emitter_started {
   my ($kernel, $self) = @_[KERNEL, OBJECT];
+
+  if ($self->ipv6) {
+    $self->set_sock_opt(
+      $self->context->get_zmq_version->string =~ /^(4|3.3)/ ?
+        (ZMQ_IPV6, 1) : (ZMQ_IPV4ONLY, 0)
+    )
+  }
+
   $self->call( 'pxz_sock_watch' );
 }
 
