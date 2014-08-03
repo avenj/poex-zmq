@@ -44,7 +44,7 @@ sub AUTOLOAD {
   Carp::confess "Can't locate object method '$method'"
     unless exists $self->{$method};
 
-  $self->{$method}->(@_)
+  $self->{$method}->call(@_)
 }
 
 sub DESTROY {}
