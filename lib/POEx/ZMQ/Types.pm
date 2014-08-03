@@ -48,6 +48,8 @@ A L<POEx::ZMQ::FFI::Socket> object.
 
 A ZMQ socket type constant, such as those exported by L<POEx::ZMQ::Constants>.
 
+Can be coerced from a string.
+
 =head1 AUTHOR
 
 Jon Portnoy <avenj@cobaltirc.org>

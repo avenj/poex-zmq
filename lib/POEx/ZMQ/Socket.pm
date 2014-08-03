@@ -484,6 +484,14 @@ See L<zmq_socket(3)> for details on socket types.
 
 See L<POEx::ZMQ::Constants> for a ZeroMQ constant exporter.
 
+=head3 ipv6
+
+If set to true, IPv6 support is enabled via the appropriate socket option
+(C<ZMQ_IPV4ONLY> or C<ZMQ_IPV6> depending on your ZeroMQ version) when the
+emitter is started.
+
+Defaults to false.
+
 =head3 max_queue_size
 
 Socket types that would normally block or return C<EFSM> (for example,

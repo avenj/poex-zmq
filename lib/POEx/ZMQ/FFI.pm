@@ -43,10 +43,8 @@ sub find_soname {
     unless defined $soname;
 
   my $vers = $class->get_version($soname);
-  unless ($vers->major >= 3) {
-    my $vstr = join '.', $vers->major, $vers->minor, $vers->patch;
-    croak "This library requires ZeroMQ 3+ but you only have $vstr"
-  }
+  croak "This library requires ZeroMQ 3+ but you only have ".$vers->string
+    unless $vers->major >= 3;
   
   $soname
 }
@@ -80,56 +78,53 @@ sub get_version {
 
 =cut
 
-sub _begins { ! index($_[0], $_[1]) }
+sub _begins { ! index $_[0], $_[1] }
 
 sub zpack {
-  my ($class, $type, $val) = @_;
+  my (undef, $type, $val) = @_;
 
   # See zmq_getsockopt(3) for more on types ->
-  PTYPE: {
-    if ($type eq 'int') {
-      return pack 'i!', $val
-    }
+  if ($type eq 'int') {
+    return pack 'i!', $val
+  }
 
-    if ( _begins($type => 'int64') ) {
-      return int64_to_native($val)
-    }
+  if ( _begins($type => 'int64') ) {
+    return int64_to_native($val)
+  }
 
-    if ( _begins($type => 'uint64') ) {
-      return uint64_to_native($val)
-    }
+  if ( _begins($type => 'uint64') ) {
+    return uint64_to_native($val)
+  }
 
-    confess "Unknown type: $type"
-  } # PTYPE
+  confess "Unknown type: $type"
 }
 
 sub zunpack {
-  my ($class, $type, $val, $ptr, $len) = @_;
-  UTYPE: {
-    if ($type eq 'int') {
-      return unpack 'i!', $val
-    }
+  my (undef, $type, $val, $ptr, $len) = @_;
 
-    if ($type eq 'binary') {
-      $len = unpack 'L!', $len;
-      return if $len == 0;
-      return $ptr->tostr($len)
-    }
+  if ($type eq 'int') {
+    return unpack 'i!', $val
+  }
 
-    if ($type eq 'string') {
-      return $ptr->tostr
-    }
+  if ($type eq 'binary') {
+    $len = unpack 'L!', $len;
+    return if $len == 0;
+    return $ptr->tostr($len)
+  }
 
-    if ( _begins($type => 'int64') ) {
-      return native_to_int64($val)
-    }
+  if ($type eq 'string') {
+    return $ptr->tostr
+  }
 
-    if ( _begins($type => 'uint64') ) {
-      return native_to_uint64($val)
-    }
+  if ( _begins($type => 'int64') ) {
+    return native_to_int64($val)
+  }
 
-    confess "Unknown type: $type"
-  } # UTYPE
+  if ( _begins($type => 'uint64') ) {
+    return native_to_uint64($val)
+  }
+
+  confess "Unknown type: $type"
 }
 
 
