@@ -1,5 +1,22 @@
 Revision history for Perl module POEx-ZMQ
 
+0.001002 2014-08-03
+
+  - Issue a warning when queuing app-side on EFSM.
+    The socket is probably not being used as intended, but since our sockets
+    should never block, it's still maybe valid to queue up messages headed to
+    REP (for example).
+    Application-side queue management is definitely not finalized; this
+    behavior is likely to change.
+
+  - Add 'ipv6' attr to handle appropriate socket options automatically
+
+  - Port a couple of examples/ from the deprecated POEx-ZMQ3 dist
+
+  - Be smarter about choosing ipc:// endpoints for tests
+
+  - Expanded tests (somewhat, test suite is still woefully incomplete)
+
 0.001001 2014-07-31
 
   - Issue warnings when buffering on EFSM
