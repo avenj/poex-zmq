@@ -87,7 +87,7 @@ has _zsock_buf => (
   isa       => ArrayObj,
   coerce    => 1,
   writer    => '_set_zsock_buf',
-  builder   => sub { [] },
+  builder   => sub { array },
 );
 
 sub get_buffered_items { shift->_zsock_buf->copy }
