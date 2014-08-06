@@ -85,6 +85,7 @@ sub _start {
   isa_ok $_[HEAP]->{req}->context, 'POEx::ZMQ::FFI::Context';
   
   $_[KERNEL]->yield( 'router_req_setup' );
+  $_[KERNEL]->yield( 'test_get_set' );
 }
 
 sub router_req_setup {
@@ -93,7 +94,6 @@ sub router_req_setup {
   $_[HEAP]->{req}->connect($endpt);
 
   $_[HEAP]->{rtr}->bind($endpt);
-  Time::HiRes::sleep 0.1;
 
   $_[HEAP]->{req}->yield(
     sub { 
@@ -101,13 +101,11 @@ sub router_req_setup {
       $_[OBJECT]->send( 'foo' ) 
     }
   );
-
-  $_[KERNEL]->yield( 'test_get_set' );
 }
 
 sub test_get_set {
   # int
-  diag "Testing set/get for ZMQ_SNDHWM";
+  diag "Testing set/get";
   $_[HEAP]->{rtr}->set_socket_opt( ZMQ_SNDHWM, 2000 );
   my $val = $_[HEAP]->{rtr}->get_socket_opt( ZMQ_SNDHWM );
   $Got->set('set hwm ok' => 1) if $val == 2000;
@@ -120,6 +118,7 @@ sub test_get_set {
   $_[HEAP]->{req}->set_context_opt( ZMQ_IO_THREADS, 2 );
   my $iothreads = $_[HEAP]->{req}->get_context_opt( ZMQ_IO_THREADS );
   $Got->set('context set/get ok' => 1) if $iothreads == 2;
+  $_[HEAP]->{req}->set_context_opt( ZMQ_IO_THREADS, 1 );
 }
 
 sub zmq_connect_added {
