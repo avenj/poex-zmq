@@ -75,29 +75,39 @@ $SIG{ALRM} = sub { die "Test timed out!" };
 
 
   # known_type_for_opt
-  cmp_ok $router->known_type_for_opt(ZMQ_IPV6), 'eq', 'int';
-  cmp_ok $router->known_type_for_opt(ZMQ_AFFINITY), 'eq', 'uint64';
-  cmp_ok $router->known_type_for_opt(ZMQ_IDENTITY), 'eq', 'binary';
-  cmp_ok $router->known_type_for_opt(ZMQ_PLAIN_USERNAME), 'eq', 'string';
+  cmp_ok $router->known_type_for_opt(ZMQ_IPV6), 'eq', 'int',
+    'known_type_for_opt int ok';
+  cmp_ok $router->known_type_for_opt(ZMQ_AFFINITY), 'eq', 'uint64',
+    'known_type_for_opt uint64 ok';
+  cmp_ok $router->known_type_for_opt(ZMQ_IDENTITY), 'eq', 'binary',
+    'known_type_for_opt binary ok';
+  cmp_ok $router->known_type_for_opt(ZMQ_PLAIN_USERNAME), 'eq', 'string',
+    'known_type_for_opt string ok';
 
   # set_sock_opt (int)
   $router->set_sock_opt(ZMQ_SNDHWM, 100);
 
   # get_sock_opt (int)
   cmp_ok $router->get_sock_opt(ZMQ_SNDHWM), '==', 100,
-    'ZMQ_SNDHWM set/get ok';
+    'ZMQ_SNDHWM (int) set/get ok';
 
   # set_sock_opt (uint64)
-
+  $router->set_sock_opt(ZMQ_AFFINITY, 2);
   # get_sock_opt (uint64)
+  cmp_ok $router->get_sock_opt(ZMQ_AFFINITY), '==', 2,
+    'ZMQ_AFFINITY (uint64) set/get ok';
+  $router->set_sock_opt(ZMQ_AFFINITY, 1);
 
   # set_sock_opt (string)
-
+  # FIXME version check, test ZMQ_PLAIN_USERNAME
   # get_sock_opt (string)
+  # FIXME
 
   # set_sock_opt (binary)
-
+  $router->set_sock_opt(ZMQ_IDENTITY, 'foo');
   # get_sock_opt (binary)
+  cmp_ok $router->get_sock_opt(ZMQ_IDENTITY), 'eq', 'foo',
+    'ZMQ_IDENTITY set/get ok';
 
   # FIXME test w explicit types
   # FIXME test exception w bad type
