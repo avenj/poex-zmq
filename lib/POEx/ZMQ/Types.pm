@@ -42,7 +42,25 @@ POEx::ZMQ::Types
 
 =head1 SYNOPSIS
 
-  use POEx::ZMQ::Types -all;
+  use POEx::ZMQ;
+  use POEx::ZMQ::Types -types;
+  use Moo;
+
+  has zmq_ctx => (
+    is      => 'ro',
+    isa     => ZMQContext,
+    builder => sub { POEx::ZMQ->context },
+  );
+
+  has zmq_pub => (
+    lazy    => 1,
+    is      => 'ro',
+    isa     => ZMQSocket[ZMQ_PUB],
+    builder => sub {
+      my ($self) = @_;
+      POEx::ZMQ->socket(context => $self->zmq_ctx, type => ZMQ_PUB)
+    },
+  );
 
 =head1 DESCRIPTION
 
