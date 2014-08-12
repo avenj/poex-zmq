@@ -648,7 +648,8 @@ A L</disconnect_issued> event is emitted for each removed endpoint.
 
 Send a single-part message (without blocking).
 
-=for comment FIXME document queuing behavior etc
+Sending will not block, regardless of the typical behavior of the ZeroMQ
+socket. See L</max_queue_size> for details on queuing behavior.
 
 =head3 send_multipart
 
@@ -658,7 +659,8 @@ Send a single-part message (without blocking).
 
 Send a multi-part message.
 
-=for comment FIXME document queuing behavior
+Applies the same application-side queuing behavior as L</send>; see
+L</max_queue_size>.
 
 =head2 ACCEPTED EVENTS
 
