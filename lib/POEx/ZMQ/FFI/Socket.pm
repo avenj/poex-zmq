@@ -41,7 +41,7 @@ use Moo; use MooX::late;
 has context => (
   required  => 1,
   is        => 'ro',
-  isa       => InstanceOf['POEx::ZMQ::FFI::Context'],
+  isa       => ZMQContext,
 );
 
 has type    => (
