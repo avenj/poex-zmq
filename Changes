@@ -1,5 +1,15 @@
 Revision history for Perl module POEx-ZMQ
 
+0.002001 2014-08-12
+
+  - Support for POEx::ZMQ instances with context sharing between sockets
+
+  - Parameterized ZMQSocket type
+
+  - Expanded tests & POD
+
+  - Minor optimizations
+
 0.001002 2014-08-03
 
   - Issue a warning when queuing app-side on EFSM.
