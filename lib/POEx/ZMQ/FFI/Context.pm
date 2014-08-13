@@ -153,7 +153,7 @@ sub set_ctx_opt {
 
 =head1 NAME
 
-POEx::ZMQ::FFI::Context
+POEx::ZMQ::FFI::Context - Backend ZeroMQ context objects for POEx::ZMQ
 
 =head1 SYNOPSIS
 
