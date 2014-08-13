@@ -1,5 +1,9 @@
 Revision history for Perl module POEx-ZMQ
 
+0.002002 2014-08-13
+
+  - POEx::ZMQ::Constants fixes
+
 0.002001 2014-08-12
 
   - Support for POEx::ZMQ instances with context sharing between sockets
