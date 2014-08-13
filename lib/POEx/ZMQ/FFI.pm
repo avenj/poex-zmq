@@ -134,7 +134,7 @@ sub zunpack {
 
 =head1 NAME
 
-POEx::ZMQ::FFI - Minimalist ZMQ FFI wrapper for POEx::ZMQ
+POEx::ZMQ::FFI - libzmq3+ FFI wrapper for POEx::ZMQ
 
 =head1 SYNOPSIS
 
@@ -143,8 +143,8 @@ POEx::ZMQ::FFI - Minimalist ZMQ FFI wrapper for POEx::ZMQ
 =head1 DESCRIPTION
 
 This is a minimalist L<FFI::Raw> interface to L<ZeroMQ|http://www.zeromq.org>
-version 3+, derived from Dylan Cali's L<ZMQ::FFI> (where you probably want to look if
-you're not using L<POEx::ZMQ>.)
+version 3+, derived from Dylan Cali's L<ZMQ::FFI> (which is where you likely
+want to look if you're not using L<POEx::ZMQ>).
 
 =head2 CLASS METHODS
 
