@@ -224,130 +224,130 @@ sub ZMQ_TCP_KEEPALIVE_INTVL () { 37 }
 
 no strict 'refs';
 eval( defined *{'POSIX::EFSM'} ?
-  'sub EFSM () { POSIX::EFSM }'
+  'sub EFSM () { &POSIX::EFSM }'
    : 'sub EFSM () { 156384763 }'
 );
 
 eval( defined *{'POSIX::EAFNOSUPPORT'} ?
-  'sub EAFNOSUPPORT () { POSIX::EAFNOSUPPORT }'
+  'sub EAFNOSUPPORT () { &POSIX::EAFNOSUPPORT }'
    : 'sub EAFNOSUPPORT () { 156384723 }'
 );
 
 eval( defined *{'POSIX::EADDRNOTAVAIL'} ?
-  'sub EADDRNOTAVAIL () { POSIX::EADDRNOTAVAIL }'
+  'sub EADDRNOTAVAIL () { &POSIX::EADDRNOTAVAIL }'
    : 'sub EADDRNOTAVAIL () { 156384718 }'
 );
 
 eval( defined *{'POSIX::ECONNREFUSED'} ?
-  'sub ECONNREFUSED () { POSIX::ECONNREFUSED }'
+  'sub ECONNREFUSED () { &POSIX::ECONNREFUSED }'
    : 'sub ECONNREFUSED () { 156384719 }'
 );
 
 eval( defined *{'POSIX::ENOTSUP'} ?
-  'sub ENOTSUP () { POSIX::ENOTSUP }'
+  'sub ENOTSUP () { &POSIX::ENOTSUP }'
    : 'sub ENOTSUP () { 156384713 }'
 );
 
 eval( defined *{'POSIX::ECONNRESET'} ?
-  'sub ECONNRESET () { POSIX::ECONNRESET }'
+  'sub ECONNRESET () { &POSIX::ECONNRESET }'
    : 'sub ECONNRESET () { 156384726 }'
 );
 
 eval( defined *{'POSIX::EPROTONOSUPPORT'} ?
-  'sub EPROTONOSUPPORT () { POSIX::EPROTONOSUPPORT }'
+  'sub EPROTONOSUPPORT () { &POSIX::EPROTONOSUPPORT }'
    : 'sub EPROTONOSUPPORT () { 156384714 }'
 );
 
 eval( defined *{'POSIX::ENOTCONN'} ?
-  'sub ENOTCONN () { POSIX::ENOTCONN }'
+  'sub ENOTCONN () { &POSIX::ENOTCONN }'
    : 'sub ENOTCONN () { 156384727 }'
 );
 
 eval( defined *{'POSIX::ENETUNREACH'} ?
-  'sub ENETUNREACH () { POSIX::ENETUNREACH }'
+  'sub ENETUNREACH () { &POSIX::ENETUNREACH }'
    : 'sub ENETUNREACH () { 156384724 }'
 );
 
 eval( defined *{'POSIX::EADDRINUSE'} ?
-  'sub EADDRINUSE () { POSIX::EADDRINUSE }'
+  'sub EADDRINUSE () { &POSIX::EADDRINUSE }'
    : 'sub EADDRINUSE () { 156384717 }'
 );
 
 eval( defined *{'POSIX::ETIMEDOUT'} ?
-  'sub ETIMEDOUT () { POSIX::ETIMEDOUT }'
+  'sub ETIMEDOUT () { &POSIX::ETIMEDOUT }'
    : 'sub ETIMEDOUT () { 156384728 }'
 );
 
 eval( defined *{'POSIX::ECONNABORTED'} ?
-  'sub ECONNABORTED () { POSIX::ECONNABORTED }'
+  'sub ECONNABORTED () { &POSIX::ECONNABORTED }'
    : 'sub ECONNABORTED () { 156384725 }'
 );
 
 eval( defined *{'POSIX::ENOCOMPATPROTO'} ?
-  'sub ENOCOMPATPROTO () { POSIX::ENOCOMPATPROTO }'
+  'sub ENOCOMPATPROTO () { &POSIX::ENOCOMPATPROTO }'
    : 'sub ENOCOMPATPROTO () { 156384764 }'
 );
 
 eval( defined *{'POSIX::EMTHREAD'} ?
-  'sub EMTHREAD () { POSIX::EMTHREAD }'
+  'sub EMTHREAD () { &POSIX::EMTHREAD }'
    : 'sub EMTHREAD () { 156384766 }'
 );
 
 eval( defined *{'POSIX::EMSGSIZE'} ?
-  'sub EMSGSIZE () { POSIX::EMSGSIZE }'
+  'sub EMSGSIZE () { &POSIX::EMSGSIZE }'
    : 'sub EMSGSIZE () { 156384722 }'
 );
 
 eval( defined *{'POSIX::ETERM'} ?
-  'sub ETERM () { POSIX::ETERM }'
+  'sub ETERM () { &POSIX::ETERM }'
    : 'sub ETERM () { 156384765 }'
 );
 
 eval( defined *{'POSIX::EHOSTUNREACH'} ?
-  'sub EHOSTUNREACH () { POSIX::EHOSTUNREACH }'
+  'sub EHOSTUNREACH () { &POSIX::EHOSTUNREACH }'
    : 'sub EHOSTUNREACH () { 156384729 }'
 );
 
 eval( defined *{'POSIX::ENETDOWN'} ?
-  'sub ENETDOWN () { POSIX::ENETDOWN }'
+  'sub ENETDOWN () { &POSIX::ENETDOWN }'
    : 'sub ENETDOWN () { 156384716 }'
 );
 
 eval( defined *{'POSIX::ENETRESET'} ?
-  'sub ENETRESET () { POSIX::ENETRESET }'
+  'sub ENETRESET () { &POSIX::ENETRESET }'
    : 'sub ENETRESET () { 156384730 }'
 );
 
 eval( defined *{'POSIX::ENOTSOCK'} ?
-  'sub ENOTSOCK () { POSIX::ENOTSOCK }'
+  'sub ENOTSOCK () { &POSIX::ENOTSOCK }'
    : 'sub ENOTSOCK () { 156384721 }'
 );
 
 eval( defined *{'POSIX::EINPROGRESS'} ?
-  'sub EINPROGRESS () { POSIX::EINPROGRESS }'
+  'sub EINPROGRESS () { &POSIX::EINPROGRESS }'
    : 'sub EINPROGRESS () { 156384720 }'
 );
 
 eval( defined *{'POSIX::ENOBUFS'} ?
-  'sub ENOBUFS () { POSIX::ENOBUFS }'
+  'sub ENOBUFS () { &POSIX::ENOBUFS }'
    : 'sub ENOBUFS () { 156384715 }'
 );
 
 sub EAGAIN () { 
-  POSIX::EAGAIN
+  &POSIX::EAGAIN
 }
 sub EFAULT () { 
-  POSIX::EFAULT
+  &POSIX::EFAULT
 }
 sub EINTR () { 
-  POSIX::EINTR
+  &POSIX::EINTR
 }
 sub EINVAL () { 
-  POSIX::EINVAL
+  &POSIX::EINVAL
 }
 
 1;
- # Generated at Thu Jul 31 00:28:17 2014
+ # Generated at Wed Aug 13 04:12:56 2014
 
 =pod
 
