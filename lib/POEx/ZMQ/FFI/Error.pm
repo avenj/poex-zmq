@@ -17,7 +17,7 @@ has errno => (
   is        => 'ro',
 );
 
-sub errstr { shift->message }
+sub errstr { $_[0]->message }
 
 
 1;
