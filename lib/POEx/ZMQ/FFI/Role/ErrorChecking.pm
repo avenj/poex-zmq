@@ -66,7 +66,7 @@ sub throw_if_error {
   confess "Expected function name and return code"
     unless defined $_[1] and defined $_[2];
   $_[0]->throw_zmq_error($_[1]) if $_[2] == -1;
-  1
+  $_[0]
 }
 
 sub warn_if_error {
@@ -80,7 +80,7 @@ sub warn_if_error {
     return
   }
 
-  1
+  $self
 }
 
 1;

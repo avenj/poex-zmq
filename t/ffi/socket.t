@@ -31,10 +31,10 @@ $SIG{ALRM} = sub { die "Test timed out!" };
   ok $router->soname, 'soname ok';
 
   # connect
-  $req->connect($endpt);
+  ok $req->connect($endpt) == $req, 'connect() ok';
 
   # bind
-  $router->bind($endpt);
+  ok $router->bind($endpt) == $router, 'bind() ok';
 
   my $first  = 'foo bar';
   my $second = 'quux';
@@ -60,9 +60,9 @@ $SIG{ALRM} = sub { die "Test timed out!" };
     or diag explain $content;
 
   # send_multipart
-  $router->send_multipart(
+  ok $router->send_multipart(
     [ $id, '', $second ] 
-  );
+  ) == $router, 'send_multipart ok';
 
   until ($req->has_event_pollin) {
     sleep 0.1;

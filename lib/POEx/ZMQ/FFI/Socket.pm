@@ -10,6 +10,7 @@ require IO::Handle;
 use Time::HiRes ();
 
 use List::Objects::WithUtils;
+use List::Objects::WithUtils::Array;
 
 use Types::Standard  -types;
 use POEx::ZMQ::Types -types;
@@ -367,9 +368,7 @@ sub connect {
 
   $self->throw_if_error( zmq_connect =>
     $self->_ffi->zmq_connect( $self->_socket_ptr, $endpoint )
-  );
-
-  $self
+  )
 }
 
 sub disconnect {
@@ -378,9 +377,7 @@ sub disconnect {
 
   $self->throw_if_error( zmq_disconnect =>
     $self->_ffi->zmq_disconnect( $self->_socket_ptr, $endpoint )
-  );
-
-  $self
+  )
 }
 
 sub bind {
@@ -389,9 +386,7 @@ sub bind {
 
   $self->throw_if_error( zmq_bind =>
     $self->_ffi->zmq_bind( $self->_socket_ptr, $endpoint )
-  );
-
-  $self
+  )
 }
 
 sub unbind {
@@ -400,20 +395,15 @@ sub unbind {
 
   $self->throw_if_error( zmq_unbind =>
     $self->_ffi->zmq_unbind( $self->_socket_ptr, $endpoint )
-  );
-
-  $self
+  )
 }
 
 sub send {
   my ($self, $msg, $flags) = @_;
-  $flags //= 0;
   my $len = bytes::length($msg);
   $self->throw_if_error( zmq_send =>
-    $self->_ffi->zmq_send( $self->_socket_ptr, $msg, $len, $flags )
-  );
-
-  $self
+    $self->_ffi->zmq_send( $self->_socket_ptr, $msg, $len, ($flags // 0 ) )
+  )
 }
 
 sub send_multipart {
@@ -428,44 +418,42 @@ sub send_multipart {
 
 sub recv {
   my ($self, $flags) = @_;
-  $flags //= 0;
+  my $ffi = $self->_ffi;
 
   my $zmsg_ptr = FFI::Raw::memptr(40);
   $self->throw_if_error( zmq_msg_init => 
-    $self->_ffi->zmq_msg_init($zmsg_ptr) 
+    $ffi->zmq_msg_init($zmsg_ptr) 
   );
 
   my $zmsg_len;
   $self->throw_if_error( zmq_msg_recv =>
     (
-      $zmsg_len = $self->_ffi->zmq_msg_recv(
-        $zmsg_ptr, $self->_socket_ptr, $flags
+      $zmsg_len = $ffi->zmq_msg_recv(
+        $zmsg_ptr, $self->_socket_ptr, ($flags // 0)
       )
     )
   );
 
   my $ret;
   if ($zmsg_len) {
-    my $data_ptr     = $self->_ffi->zmq_msg_data($zmsg_ptr);
+    my $data_ptr     = $ffi->zmq_msg_data($zmsg_ptr);
     my $content_ptr  = FFI::Raw::memptr($zmsg_len);
-    $self->_ffi->memcpy( $content_ptr, $data_ptr, $zmsg_len );
+    $ffi->memcpy( $content_ptr, $data_ptr, $zmsg_len );
     $ret = $content_ptr->tostr($zmsg_len);
   } else {
     $ret = ''
   }
 
-  $self->_ffi->zmq_msg_close($zmsg_ptr);
+  $ffi->zmq_msg_close($zmsg_ptr);
 
   $ret
 }
 
 sub recv_multipart {
   my ($self, $flags) = @_;
-
   my @parts = $self->recv($flags);
   push @parts, $self->recv($flags) while $self->get_sock_opt(ZMQ_RCVMORE);
-
-  array(@parts)
+  List::Objects::WithUtils::Array->new(@parts)
 }
 
 sub has_event_pollin {

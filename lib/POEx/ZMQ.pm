@@ -1,6 +1,5 @@
 package POEx::ZMQ;
 
-use Carp;
 use strictures 1;
 
 use Scalar::Util 'blessed';
@@ -101,7 +100,8 @@ POEx::ZMQ - Asynchronous ZeroMQ sockets for POE
 A L<POE> component providing non-blocking L<ZeroMQ|http://www.zeromq.org>
 (versions 3.x & 4.x) integration.
 
-See L<POEx::ZMQ::Socket> for details on using these sockets.
+See L<POEx::ZMQ::Socket> for details on using these sockets and the
+L<zmq_socket(3)> man page regarding behavior of each socket type.
 
 See the L<zguide|http://zguide.zeromq.org> for more on using ZeroMQ in
 general.
