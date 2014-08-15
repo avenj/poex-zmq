@@ -214,12 +214,11 @@ has _stored_handle => (
   writer    => '_set_stored_handle',
   clearer   => '_clear_stored_handle',
   builder    => sub {
-    my $fno = shift->get_sock_opt( ZMQ_FD );
-    IO::Handle->new_from_fd( $fno, 'r' );
+    IO::Handle->new_from_fd( $_[0]->get_sock_opt(ZMQ_FD), 'r' );
   },
 );
 
-sub get_handle { shift->_stored_handle }
+sub get_handle { $_[0]->_stored_handle }
 
 
 with 'POEx::ZMQ::FFI::Role::ErrorChecking';
