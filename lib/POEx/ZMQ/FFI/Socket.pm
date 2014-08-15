@@ -399,25 +399,22 @@ sub unbind {
 }
 
 sub send {
-  my ($self, $msg, $flags) = @_;
-  my $len = bytes::length($msg);
-  $self->throw_if_error( zmq_send =>
-    $self->_ffi->zmq_send( $self->_socket_ptr, $msg, $len, ($flags // 0 ) )
+  my $len = bytes::length($_[1]);
+  $_[0]->throw_if_error( zmq_send =>
+    $_[0]->_ffi->zmq_send( $_[0]->_socket_ptr, $_[1], $len, ($_[2] // 0 ) )
   )
 }
 
 sub send_multipart {
-  my ($self, $parts, $flags) = @_;
   confess "Expected an ARRAY of message parts"
-    unless Scalar::Util::reftype($parts) eq 'ARRAY'
-    and @$parts;
-
-  $self->send( $parts->[$_], ZMQ_SNDMORE ) for 0 .. ($#$parts - 1);
-  $self->send( $parts->[-1], $flags );
+    unless Scalar::Util::reftype($_[1]) eq 'ARRAY'
+    and @{ $_[1] };
+  $_[0]->send( $_[1]->[$_], ZMQ_SNDMORE ) for 0 .. ($#{ $_[1] } - 1);
+  $_[0]->send( $_[1]->[-1], ($_[2] // 0) );
 }
 
 sub recv {
-  my ($self, $flags) = @_;
+  my $self = $_[0];
   my $ffi = $self->_ffi;
 
   my $zmsg_ptr = FFI::Raw::memptr(40);
@@ -429,7 +426,7 @@ sub recv {
   $self->throw_if_error( zmq_msg_recv =>
     (
       $zmsg_len = $ffi->zmq_msg_recv(
-        $zmsg_ptr, $self->_socket_ptr, ($flags // 0)
+        $zmsg_ptr, $self->_socket_ptr, ($_[1] // 0)
       )
     )
   );
