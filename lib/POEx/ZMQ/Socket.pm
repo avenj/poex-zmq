@@ -330,33 +330,31 @@ sub _pxz_nb_read {
   return unless $self->zsock->has_event_pollin;
 
   my $recv_err;
-  RECV: {
-    try {
-      my $msg = $self->zsock->recv(ZMQ_DONTWAIT);
-      my @parts;
-      while ( $self->zsock->get_sock_opt(ZMQ_RCVMORE) ) {
-        push @parts, $self->zsock->recv;
-      }
+  try {
+    my $msg = $self->zsock->recv(ZMQ_DONTWAIT);
+    my @parts;
+    while ( $self->zsock->get_sock_opt(ZMQ_RCVMORE) ) {
+      push @parts, $self->zsock->recv;
+    }
 
-      if (@parts) {
-        $self->emit( recv_multipart => array( $msg, @parts ) );
-      } else {
-        $self->emit( recv => $msg )
+    if (@parts) {
+      $self->emit( recv_multipart => array( $msg, @parts ) );
+    } else {
+      $self->emit( recv => $msg )
+    }
+    1
+  } catch {
+    my $maybe_fatal = $_;
+    if (blessed $maybe_fatal) {
+      my $errno = $maybe_fatal->errno;
+      unless ($errno == EAGAIN || $errno == EINTR) {
+        $recv_err = $maybe_fatal->errstr;
       }
-      1
-    } catch {
-      my $maybe_fatal = $_;
-      if (blessed $maybe_fatal) {
-        my $errno = $maybe_fatal->errno;
-        unless ($errno == EAGAIN || $errno == EINTR) {
-          $recv_err = $maybe_fatal->errstr;
-        }
-      } else {
-        $recv_err = $maybe_fatal;
-      }
-      undef
-    };
-  } # RECV
+    } else {
+      $recv_err = $maybe_fatal;
+    }
+    undef
+  };
 
   confess $recv_err if $recv_err;
 
