@@ -415,52 +415,38 @@ sub send_multipart {
 
 sub recv {
   my $self = $_[0];
-  my $ffi = $self->_ffi;
+  my ($ffi, $zmsg_ptr, $zmsg_len) = ( $self->_ffi, FFI::Raw::memptr(40) );
 
-  my $zmsg_ptr = FFI::Raw::memptr(40);
-  $self->throw_if_error( zmq_msg_init => 
-    $ffi->zmq_msg_init($zmsg_ptr) 
-  );
-
-  my $zmsg_len;
-  $self->throw_if_error( zmq_msg_recv =>
-    (
-      $zmsg_len = $ffi->zmq_msg_recv(
-        $zmsg_ptr, $self->_socket_ptr, ($_[1] // 0)
-      )
+  $self->throw_if_error( zmq_msg_init => $ffi->zmq_msg_init($zmsg_ptr) );
+  $self->throw_if_error( zmq_msg_recv => (
+    $zmsg_len =
+      $ffi->zmq_msg_recv( $zmsg_ptr, $self->_socket_ptr, ($_[1] // 0) )
     )
   );
 
-  my $ret;
   if ($zmsg_len) {
-    my $data_ptr     = $ffi->zmq_msg_data($zmsg_ptr);
     my $content_ptr  = FFI::Raw::memptr($zmsg_len);
-    $ffi->memcpy( $content_ptr, $data_ptr, $zmsg_len );
-    $ret = $content_ptr->tostr($zmsg_len);
+    $ffi->memcpy( $content_ptr, $ffi->zmq_msg_data($zmsg_ptr), $zmsg_len );
+    $ffi->zmq_msg_close($zmsg_ptr);
+    return $content_ptr->tostr($zmsg_len);
   } else {
-    $ret = ''
+    $ffi->zmq_msg_close($zmsg_ptr);
+    return ''
   }
-
-  $ffi->zmq_msg_close($zmsg_ptr);
-
-  $ret
 }
 
 sub recv_multipart {
-  my ($self, $flags) = @_;
-  my @parts = $self->recv($flags);
-  push @parts, $self->recv($flags) while $self->get_sock_opt(ZMQ_RCVMORE);
+  my @parts = $_[0]->recv($_[1]);
+  push @parts, $_[0]->recv($_[1]) while $_[0]->get_sock_opt(ZMQ_RCVMORE);
   List::Objects::WithUtils::Array->new(@parts)
 }
 
 sub has_event_pollin {
-  my ($self) = @_;
-  !! ( $self->get_sock_opt(ZMQ_EVENTS) & ZMQ_POLLIN )
+  !! ( $_[0]->get_sock_opt(ZMQ_EVENTS) & ZMQ_POLLIN )
 }
 
 sub has_event_pollout {
-  my ($self) = @_;
-  !! ( $self->get_sock_opt(ZMQ_EVENTS) & ZMQ_POLLOUT )
+  !! ( $_[0]->get_sock_opt(ZMQ_EVENTS) & ZMQ_POLLOUT )
 }
 
 1;
