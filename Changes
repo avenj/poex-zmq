@@ -1,5 +1,13 @@
 Revision history for Perl module POEx-ZMQ
 
+0.003001 2014-08-16
+
+  - Add SSH tunnel example script from deprecated POEx-ZMQ3 dist
+
+  - Add ZMQEndpoint type to POEx::ZMQ::Types
+
+  - FFI backend optimizations
+
 0.002002 2014-08-13
 
   - POEx::ZMQ::Constants fixes
