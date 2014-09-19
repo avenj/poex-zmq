@@ -24,16 +24,21 @@ use FFI::Raw;
 
 =pod
 
-=for Pod::Coverage OPTVAL_MAXLEN
+=for Pod::Coverage OPTVAL_MAXLEN ZMQ_MSG_SIZE
 
 =for comment
 
+OPTVAL_MAXLEN
 Maximum length of binary/string type option values.
 (Large enough to hold ZMQ_IDENTITY / ZMQ_LAST_ENDPOINT)
+
+ZMQ_MSG_SIZE
+Maximum zmg_msg_t_size plus wiggle room.
 
 =cut
 
 sub OPTVAL_MAXLEN () { 256 }
+sub ZMQ_MSG_SIZE  () { 96 }
 
 
 use Moo; use MooX::late;
@@ -414,7 +419,8 @@ sub send_multipart {
 
 sub recv {
   my $self = $_[0];
-  my ($ffi, $zmsg_ptr, $zmsg_len) = ( $self->_ffi, FFI::Raw::memptr(40) );
+  my ($ffi, $zmsg_ptr, $zmsg_len) 
+    = ( $self->_ffi, FFI::Raw::memptr(ZMQ_MSG_SIZE) );
 
   $self->throw_if_error( zmq_msg_init => $ffi->zmq_msg_init($zmsg_ptr) );
   $self->throw_if_error( zmq_msg_recv => (
