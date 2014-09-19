@@ -410,11 +410,13 @@ sub send {
 }
 
 sub send_multipart {
+  my ($self, $data, $flags) = @_;
+  $flags //= 0;
   confess "Expected an ARRAY of message parts"
-    unless Scalar::Util::reftype($_[1]) eq 'ARRAY'
-    and @{ $_[1] };
-  $_[0]->send( $_[1]->[$_], ZMQ_SNDMORE ) for 0 .. ($#{ $_[1] } - 1);
-  $_[0]->send( $_[1]->[-1], ($_[2] // 0) );
+    unless Scalar::Util::reftype($data) eq 'ARRAY'
+    and @$data;
+  $self->send( $data->[$_], $flags | ZMQ_SNDMORE ) for 0 .. ($#$data - 1);
+  $self->send( $data->[-1], $flags );
 }
 
 sub recv {
