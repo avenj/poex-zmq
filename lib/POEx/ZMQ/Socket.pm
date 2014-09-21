@@ -380,7 +380,9 @@ sub _pxz_nb_write {
       } elsif ($msg->item_type eq 'multipart') {
         $self->zsock->send_multipart( $msg->item, $msg->flags );
       }
-    } catch { $maybe_fatal = $_; };
+    } catch {
+      $maybe_fatal = $_
+    };
 
     next WRITE unless $maybe_fatal; 
 
@@ -397,9 +399,9 @@ sub _pxz_nb_write {
         $self->_zsock_buf->unshift($msg); 
         $poe_kernel->alarm(pxz_ready => Time::HiRes::time + 0.1);
         return
-      } else {
-        $send_error = $maybe_fatal->errstr;
       }
+      $send_error = $maybe_fatal->errstr;
+      last WRITE
     } else {
       $send_error = $maybe_fatal;
       last WRITE
