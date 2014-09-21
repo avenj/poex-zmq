@@ -28,6 +28,8 @@ sub set {
 
 sub clear {
   my (undef, $classtype, $soname) = @_;
+  confess "Expected cached obj type and soname"
+    unless defined $classtype and defined $soname;
   delete $Cache{ $classtype . $soname }
 }
 
