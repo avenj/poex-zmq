@@ -17,6 +17,7 @@ use POEx::ZMQ::Types -types;
 
 use POEx::ZMQ::Constants -all;
 use POEx::ZMQ::FFI;
+use POEx::ZMQ::FFI::Cached;
 use POEx::ZMQ::FFI::Callable;
 
 use FFI::Raw;
@@ -68,9 +69,18 @@ has _ffi => (
   lazy      => 1,
   is        => 'ro',
   isa       => InstanceOf['POEx::ZMQ::FFI::Callable'],
-  builder   => sub {
-    my $soname = shift->soname;
-    POEx::ZMQ::FFI::Callable->new(
+  builder   => '_build_ffi',
+);
+
+sub _build_ffi {
+  my ($self) = @_;
+  my $soname = $self->soname;
+
+  my $ffi = POEx::ZMQ::FFI::Cached->get(Socket => $soname);
+  return $ffi if defined $ffi;
+
+  POEx::ZMQ::FFI::Cached->set(
+    Socket => $soname => POEx::ZMQ::FFI::Callable->new(
       zmq_socket => FFI::Raw->new(
         $soname, zmq_socket =>
           FFI::Raw::ptr,  # <- socket ptr
@@ -194,8 +204,8 @@ has _ffi => (
           FFI::Raw::int,  # -> len
       ),
     )
-  },
-);
+  )
+}
 
 has _socket_ptr => (
   lazy      => 1,

@@ -10,6 +10,7 @@ use POEx::ZMQ::Constants
   'ZMQ_MAX_SOCKETS';
 
 use POEx::ZMQ::FFI;
+use POEx::ZMQ::FFI::Cached;
 use POEx::ZMQ::FFI::Callable;
 use POEx::ZMQ::FFI::Socket;
 
@@ -46,9 +47,18 @@ has _ffi => (
   lazy      => 1,
   is        => 'ro',
   isa       => InstanceOf['POEx::ZMQ::FFI::Callable'],
-  builder   => sub {
-    my $soname = shift->soname;
-    POEx::ZMQ::FFI::Callable->new(
+  builder   => '_build_ffi',
+);
+
+sub _build_ffi {
+  my ($self) = @_;
+  my $soname = $self->soname;
+  
+  my $ffi = POEx::ZMQ::FFI::Cached->get(Context => $soname);
+  return $ffi if defined $ffi;
+
+  POEx::ZMQ::FFI::Cached->set(
+    Context => $soname => POEx::ZMQ::FFI::Callable->new(
       zmq_ctx_new => FFI::Raw->new(
         $soname, zmq_ctx_new => 
           FFI::Raw::ptr,   # <- ctx ptr
@@ -75,8 +85,8 @@ has _ffi => (
           FFI::Raw::ptr,  # -> ctx ptr
       ),
     )
-  },
-);
+  )
+}
 
 has _ctx_ptr => (
   lazy      => 1,
