@@ -369,40 +369,42 @@ sub _pxz_nb_write {
   return unless $self->_zsock_buf->has_any;
 
   my $send_error;
-  until ($self->_zsock_buf->is_empty || $send_error) {
-    my $retry_later;
+  WRITE: until ($self->_zsock_buf->is_empty || $send_error) {
+    my $maybe_fatal;
     my $msg = $self->_zsock_buf->shift;
     my $flags = $msg->flags | ZMQ_DONTWAIT;
+
     try {
       if ($msg->item_type eq 'single') {
         $self->zsock->send( $msg->item, $msg->flags );
       } elsif ($msg->item_type eq 'multipart') {
         $self->zsock->send_multipart( $msg->item, $msg->flags );
       }
-    } catch {
-      my $maybe_fatal = $_;
-      if (blessed $maybe_fatal) {
-        my $errno = $maybe_fatal->errno;
-        if ($errno == EAGAIN || $errno == EINTR) {
-          $self->_zsock_buf->unshift($msg);
-          # FIXME tests:
-          $poe_kernel->alarm(pxz_ready => Time::HiRes::time + 0.1);
-          $retry_later = 1
-        } elsif ($errno == EFSM) {
-          warn "Requeuing message on bad socket state (EFSM) -- ",
-               "your app is probably misusing a socket!";
-          $self->_zsock_buf->unshift($msg); 
-          $poe_kernel->alarm(pxz_ready => Time::HiRes::time + 0.1);
-          $retry_later = 1
-        } else {
-          $send_error = $maybe_fatal->errstr;
-        }
+    } catch { $maybe_fatal = $_; };
+
+    next WRITE unless $maybe_fatal; 
+
+    # FIXME tests:
+    if (blessed $maybe_fatal) {
+      my $errno = $maybe_fatal->errno;
+      if ($errno == EAGAIN || $errno == EINTR) {
+        $self->_zsock_buf->unshift($msg);
+        $poe_kernel->alarm(pxz_ready => Time::HiRes::time + 0.1);
+        return
+      } elsif ($errno == EFSM) {
+        warn "Requeuing message on bad socket state (EFSM) -- ",
+             "your app is probably misusing a socket!";
+        $self->_zsock_buf->unshift($msg); 
+        $poe_kernel->alarm(pxz_ready => Time::HiRes::time + 0.1);
+        return
       } else {
-        $send_error = $maybe_fatal
-      } 
-    };
-    return if $retry_later;
-  }
+        $send_error = $maybe_fatal->errstr;
+      }
+    } else {
+      $send_error = $maybe_fatal;
+      last WRITE
+    } 
+  } # WRITE
 
   confess $send_error if defined $send_error;
 
