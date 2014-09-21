@@ -132,7 +132,6 @@ sub create_socket {
     context     => $self,
     type        => $type,
     soname      => $self->soname,
-    err_handler => $self->err_handler,
   )
 }
 

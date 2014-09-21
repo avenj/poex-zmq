@@ -4,6 +4,7 @@ use v5.10;
 use Carp 'cluck', 'confess';
 use strictures 1;
 
+use POEx::ZMQ::FFI::Cached;
 use POEx::ZMQ::FFI::Callable;
 use POEx::ZMQ::FFI::Error;
 
@@ -18,9 +19,18 @@ has err_handler => (
   lazy    => 1,
   is      => 'ro',
   isa     => InstanceOf['POEx::ZMQ::FFI::Callable'],
-  builder => sub {
-    my $soname = shift->soname;
-    POEx::ZMQ::FFI::Callable->new(
+  builder => '_build_ffi',
+);
+
+sub _build_ffi {
+  my ($self) = @_;
+  my $soname = $self->soname;
+  
+  my $ffi = POEx::ZMQ::FFI::Cached->get(ErrHandler => $soname);
+  return $ffi if defined $ffi;
+
+  POEx::ZMQ::FFI::Cached->set(
+    ErrHandler => $soname => POEx::ZMQ::FFI::Callable->new(
       zmq_errno => FFI::Raw->new(
         $soname, zmq_errno => FFI::Raw::int
       ),
@@ -31,8 +41,8 @@ has err_handler => (
           FFI::Raw::int,  # -> errno
       ),
     )
-  },
-);
+  )
+}
 
 
 sub errno {
