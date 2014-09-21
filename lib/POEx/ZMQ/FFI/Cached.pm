@@ -20,10 +20,7 @@ sub set {
   confess "Expected cached obj type, soname, and Callable FFI obj"
     unless defined $classtype
     and    defined $soname
-    and    defined $callable_ffi;
-
-  confess "Expected a POEx::ZMQ::FFI::Callable but got $callable_ffi"
-    unless blessed $callable_ffi
+    and    blessed $callable_ffi
     and    $callable_ffi->isa('POEx::ZMQ::FFI::Callable');
 
   $Cache{ $classtype . $soname } = $callable_ffi
