@@ -128,4 +128,7 @@ $SIG{ALRM} = sub { die "Test timed out!" };
 
 pass "Nobody croaked after object destruction";
 
+cmp_ok scalar keys %POEx::ZMQ::FFI::Cached::Cache, '==', 2,
+  'have two cached FFI objs';
+
 done_testing
