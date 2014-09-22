@@ -276,6 +276,9 @@ sub _px_send { $_[OBJECT]->send(@_[ARG0 .. $#_]) }
 sub send_multipart {
   my ($self, $parts, $flags) = @_;
 
+  confess "Expected an ARRAY of message parts"
+    unless reftype $parts eq 'ARRAY' and @$parts;
+
   return if $self->_message_not_sendable($parts, $flags, 'IS_MULTIPART');
 
   $self->_zsock_buf->push(
