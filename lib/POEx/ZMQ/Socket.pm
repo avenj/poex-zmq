@@ -2,9 +2,10 @@ package POEx::ZMQ::Socket;
 
 use v5.10;
 use strictures 1;
-use Carp;
 
-use Time::HiRes ();
+use Carp;
+use Scalar::Util 'reftype';
+
 
 use List::Objects::WithUtils;
 
@@ -220,7 +221,7 @@ sub _message_not_sendable {
 
   my $action = $self->max_queue_action;
 
-  if (ref $action eq 'CODE') {
+  if (reftype $action eq 'CODE') {
     my $buf = (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) ? $msg
       : POEx::ZMQ::Buffered->new(
         item_type => ($is_multipart ? 'multipart' : 'single'),
@@ -247,10 +248,7 @@ sub _message_not_sendable {
     return 1
   }
 
-  if ($action eq 'drop') {
-    return 1
-  }
-
+  # $action eq 'drop' returns 1:
   1
 }
 
