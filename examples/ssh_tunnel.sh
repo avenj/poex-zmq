@@ -1,7 +1,7 @@
 #!/bin/sh
 ## This is what a simple SSH tunnel might look like:
 USER=avenj
-ENDPOINT=eris
+ENDPOINT=your.remote.server
 LOCALPORT=5511
 REMOTEPORT=5511
 ssh -f ${USER}@${ENDPOINT} \
