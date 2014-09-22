@@ -389,13 +389,13 @@ sub _pxz_nb_write {
       my $errno = $maybe_fatal->errno;
       if ($errno == EAGAIN || $errno == EINTR) {
         $self->_zsock_buf->unshift($msg);
-        $poe_kernel->alarm(pxz_ready => Time::HiRes::time + 0.1);
+        $poe_kernel->delay(pxz_ready => 0.1);
         return
       } elsif ($errno == EFSM) {
-        warn "Requeuing message on bad socket state (EFSM) -- ",
+        warn "Requeuing message on bad socket state (EFSM) -- ".
              "your app is probably misusing a socket!";
         $self->_zsock_buf->unshift($msg); 
-        $poe_kernel->alarm(pxz_ready => Time::HiRes::time + 0.1);
+        $poe_kernel->delay(pxz_ready => 0.1);
         return
       }
       $send_error = $maybe_fatal->errstr;
