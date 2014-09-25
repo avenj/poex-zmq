@@ -390,6 +390,7 @@ sub _pxz_nb_write {
     # FIXME tests:
     if (blessed $maybe_fatal) {
       my $errno = $maybe_fatal->errno;
+
       if ($errno == EAGAIN || $errno == EINTR) {
         $self->_zsock_buf->unshift($msg);
         $poe_kernel->delay(pxz_ready => 0.1);
@@ -401,6 +402,7 @@ sub _pxz_nb_write {
         $poe_kernel->delay(pxz_ready => 0.1);
         return
       }
+
       $send_error = $maybe_fatal->errstr;
       last WRITE
     } else {
