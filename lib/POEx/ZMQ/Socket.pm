@@ -620,6 +620,8 @@ Set context option values.
 
 See L<POEx::ZMQ::FFI::Context/set_ctx_opt> & L<zmq_ctx_set(3)>
 
+Returns the invocant.
+
 =head3 get_socket_opt
 
   my $last_endpt = $sock->get_sock_opt( ZMQ_LAST_ENDPOINT );
@@ -636,6 +638,8 @@ Set socket option values.
 
 See L<POEx::ZMQ::FFI::Socket/set_sock_opt> & L<zmq_setsockopt(3)>.
 
+Returns the invocant.
+
 =head3 bind
 
   $sock->bind( @endpoints );
@@ -643,6 +647,8 @@ See L<POEx::ZMQ::FFI::Socket/set_sock_opt> & L<zmq_setsockopt(3)>.
 Call a L<zmq_bind(3)> for one or more specified endpoints.
 
 A L</bind_added> event is emitted for each added endpoint.
+
+Returns the invocant.
 
 =head3 unbind
 
@@ -652,6 +658,8 @@ Call a L<zmq_unbind(3)> for one or more specified endpoints.
 
 A L</bind_removed> event is emitted for each removed endpoint.
 
+Returns the invocant.
+
 =head3 connect
 
   $sock->connect( @endpoints );
@@ -659,6 +667,8 @@ A L</bind_removed> event is emitted for each removed endpoint.
 Call a L<zmq_bind(3)> for one or more specified endpoints.
 
 A L</connect_added> event is emitted for each added endpoint.
+
+Returns the invocant.
 
 =head3 disconnect
 
@@ -668,6 +678,8 @@ Call a L<zmq_disconnect(3)> for one or more specified endpoints.
 
 A L</disconnect_issued> event is emitted for each removed endpoint.
 
+Returns the invocant.
+
 =head3 send
 
   $sock->send( $msg, $flags );
@@ -676,6 +688,8 @@ Send a single-part message (without blocking).
 
 Sending will not block, regardless of the typical behavior of the ZeroMQ
 socket. See L</max_queue_size> for details on queuing behavior.
+
+Returns the invocant.
 
 =head3 send_multipart
 
@@ -687,6 +701,8 @@ Send a multi-part message.
 
 Applies the same application-side queuing behavior as L</send>; see
 L</max_queue_size>.
+
+Returns the invocant.
 
 =head2 ACCEPTED EVENTS
 
