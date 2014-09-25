@@ -1,5 +1,21 @@
 Revision history for Perl module POEx-ZMQ
 
+0.004001 2014-09-25
+
+  - Delay write retries on EAGAIN/EINTR/EFSM
+
+  - Fix $async_socket->set_socket_opt to return $async_socket
+
+  - Cache FFI objects for a given libzmq
+
+  - Track upstream ZMQ::FFI; use a larger max message size
+
+  - Track upstream ZMQ::FFI; apply flags to each part of a multipart send
+
+  - Minor optimizations & bugfixes
+
+  - Minor test expansion
+
 0.003001 2014-08-16
 
   - Add SSH tunnel example script from deprecated POEx-ZMQ3 dist
