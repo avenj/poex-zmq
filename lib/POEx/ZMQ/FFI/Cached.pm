@@ -34,3 +34,9 @@ sub clear {
 }
 
 1;
+
+=pod
+
+=for Pod::Coverage .*
+
+=cut
