@@ -28,7 +28,6 @@ POE::Session->create(
 
       check_if_done
 
-      do_subscribe
       start_publishing
 
       zmq_recv
@@ -49,20 +48,24 @@ sub _start {
 
   $_[HEAP]->{subX} = $zmq->socket( type => ZMQ_SUB )
     ->start
-    ->connect($endpt);
+    ->connect($endpt)
+    ->set_sock_opt(ZMQ_SUBSCRIBE, '');
   $_[HEAP]->{subY} = $zmq->socket( type => ZMQ_SUB )
     ->start
-    ->connect($endpt);
+    ->connect($endpt)
+    ->set_sock_opt(ZMQ_SUBSCRIBE, '');
 
   # delay publishing to wait for slow subscribers
-  $_[KERNEL]->yield( 'do_subscribe' );
-  $_[KERNEL]->delay( start_publishing => 0.3 );
-
-  # FIXME HWM tests? publish against HWM & delay subscriber
+  $_[KERNEL]->delay( start_publishing => 0.5 );
 }
 
 sub check_if_done {
-  if ($Got->keys->count == $Expected->keys->count) {
+  my $done = !! $Got->keys->count == $Expected->keys->count
+    && $Got->{'subscriber got message'}
+         == $Expected->{'subscriber got message'}
+  ;
+
+  if ($done) {
     $_[HEAP]->{$_}->stop for qw/subX subY pub/;
     $_[KERNEL]->alarm_remove_all;
   } else {
@@ -73,10 +76,6 @@ sub check_if_done {
 sub timeout {
   $_[KERNEL]->alarm_remove_all;
   fail "Timed out!"; diag explain $Got; exit 1
-}
-
-sub do_subscribe {
-  $_[HEAP]->{$_}->set_sock_opt(ZMQ_SUBSCRIBE, '') for qw/subX subY/;
 }
 
 sub start_publishing {
