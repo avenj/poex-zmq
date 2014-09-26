@@ -265,7 +265,7 @@ sub DEMOLISH {
 
 
 our $KnownTypes = hash;
-$KnownTypes->set( $_ => 'int' ) for (
+$KnownTypes->set( $_, 'int' ) for (
   ZMQ_BACKLOG,            #
   ZMQ_CONFLATE,           # 4.0
   ZMQ_DELAY_ATTACH_ON_CONNECT,
@@ -296,11 +296,11 @@ $KnownTypes->set( $_ => 'int' ) for (
   ZMQ_SNDBUF,             #
   ZMQ_XPUB_VERBOSE,       #
 );
-$KnownTypes->set( $_ => 'uint64' ) for (
+$KnownTypes->set( $_, 'uint64' ) for (
   ZMQ_AFFINITY,           #
   ZMQ_MAXMSGSIZE,         #
 );
-$KnownTypes->set( $_ => 'binary' ) for (
+$KnownTypes->set( $_, 'binary' ) for (
   ZMQ_IDENTITY,           #
   ZMQ_SUBSCRIBE,          #
   ZMQ_UNSUBSCRIBE,        #
@@ -309,7 +309,7 @@ $KnownTypes->set( $_ => 'binary' ) for (
   ZMQ_CURVE_SERVERKEY,    # 4.0
   ZMQ_TCP_ACCEPT_FILTER,  #
 );
-$KnownTypes->set( $_ => 'string' ) for (
+$KnownTypes->set( $_, 'string' ) for (
   ZMQ_LAST_ENDPOINT,      #
   ZMQ_PLAIN_USERNAME,     # 4.0
   ZMQ_PLAIN_PASSWORD,     # 4.0

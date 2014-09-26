@@ -138,7 +138,7 @@ sub _pxz_emitter_started {
 
   if ($self->ipv6) {
     $self->set_sock_opt(
-      $self->context->get_zmq_version->string =~ /^(4|3.3)/ ?
+      $self->context->get_zmq_version->string =~ /^(4|3\.3)/ ?
         (ZMQ_IPV6, 1) : (ZMQ_IPV4ONLY, 0)
     )
   }
@@ -215,7 +215,6 @@ sub _px_connect { $_[OBJECT]->connect(@_[ARG0 .. $#_]) }
 
 sub disconnect {
   my $self = shift;
-  
   for my $endpt (@_) {
     $self->zsock->disconnect($_);
     $self->emit( disconnect_issued => $endpt )
@@ -234,14 +233,14 @@ sub _message_not_sendable {
   my $action = $self->max_queue_action;
 
   if (reftype $action eq 'CODE') {
-    my $buf = (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) ? $msg
+    my $bufitem = (blessed $msg && $msg->isa('POEx::ZMQ::Buffered')) ? $msg
       : POEx::ZMQ::Buffered->new(
         item_type => ($is_multipart ? 'multipart' : 'single'),
         item      => $msg,
         ( defined $flags ? (flags => $flags) : () ),
       );
 
-    if ( $action->($buf, $self->_zsock_buf) ) {
+    if ( $action->($bufitem, $self->_zsock_buf) ) {
       # coderef action can return true to cause an event check ->
       $self->yield('pxz_ready')
     }
