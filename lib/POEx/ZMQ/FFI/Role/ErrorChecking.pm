@@ -48,7 +48,7 @@ sub _build_ffi {
 sub errno  { $_[0]->err_handler->zmq_errno }
 sub errstr { $_[0]->err_handler->zmq_strerror( $_[1] // $_[0]->errno ) }
 
-sub _build_zmq_error {
+sub _create_zmq_error {
   my ($self, $call) = @_;
   my $errno  = $self->errno;
   my $errstr = $self->errstr($errno);
@@ -60,22 +60,22 @@ sub _build_zmq_error {
 }
 
 sub throw_zmq_error {
-  $_[0]->_build_zmq_error(@_[1 .. $#_])->throw
+  $_[0]->_create_zmq_error(@_[1 .. $#_])->throw
 }
 
 sub throw_if_error {
   confess "Expected function name and return code"
-    unless defined $_[1] and defined $_[2];
+    unless defined $_[2];
   $_[0]->throw_zmq_error($_[1]) if $_[2] == -1;
   $_[0]
 }
 
 sub warn_if_error {
   confess "Expected function name and return code"
-    unless defined $_[1] and defined $_[2];
+    unless defined $_[2];
 
   if ($_[2] == -1) {
-    my $err = $_[0]->_build_zmq_error($_[1]);
+    my $err = $_[0]->_create_zmq_error($_[1]);
     cluck $err . "\n";
     return
   }

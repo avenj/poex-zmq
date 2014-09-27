@@ -383,7 +383,8 @@ sub _pxz_nb_write {
   my $send_error;
   WRITE: until ($self->_zsock_buf->is_empty || $send_error) {
     my $maybe_fatal;
-    my $msg = $self->_zsock_buf->shift;
+
+    my $msg = $self->_zsock_buf->get(0);
     my $flags = $msg->flags | ZMQ_DONTWAIT;
 
     try {
@@ -392,6 +393,7 @@ sub _pxz_nb_write {
       } elsif ($msg->item_type eq 'multipart') {
         $self->zsock->send_multipart( $msg->item, $msg->flags );
       }
+      $self->_zsock_buf->shift;
     } catch {
       $maybe_fatal = $_
     };
@@ -403,13 +405,11 @@ sub _pxz_nb_write {
       my $errno = $maybe_fatal->errno;
 
       if ($errno == EAGAIN || $errno == EINTR) {
-        $self->_zsock_buf->unshift($msg);
         $poe_kernel->delay(pxz_ready => 0.1);
         return
       } elsif ($errno == EFSM) {
         warn "Requeuing message on bad socket state (EFSM) -- ".
              "your app is probably misusing a socket!";
-        $self->_zsock_buf->unshift($msg); 
         $poe_kernel->delay(pxz_ready => 0.1);
         return
       }
@@ -427,7 +427,10 @@ sub _pxz_nb_write {
   $self->yield('pxz_ready');
 }
 
-# FIXME monitor support
+# FIXME monitor support needs a look,
+#  also changed upstream somewheres along the way
+#
+# basic outline:
 #  - FFI::Socket method that calls zmq_socket_monitor
 #  - spawn a child POEx::ZMQ::Socket for our side of ZMQ_PAIR,
 #     give it a special event prefix
