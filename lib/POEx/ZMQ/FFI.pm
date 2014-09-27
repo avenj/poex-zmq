@@ -20,8 +20,12 @@ sub find_soname {
   my ($class) = @_;
 
   state $search = array( qw/
-    libzmq.so.3 libzmq.so
-    libzmq.3.dylib libzmq.dylib
+    libzmq.so.4
+    libzmq.so.4.0.0
+    libzmq.so.3
+    libzmq.so
+    libzmq.3.dylib
+    libzmq.dylib
   / );
 
   my $soname;
