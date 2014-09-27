@@ -49,13 +49,12 @@ sub errno  { $_[0]->err_handler->zmq_errno }
 sub errstr { $_[0]->err_handler->zmq_strerror( $_[1] // $_[0]->errno ) }
 
 sub _create_zmq_error {
-  my ($self, $call) = @_;
-  my $errno  = $self->errno;
-  my $errstr = $self->errstr($errno);
+  my $errno  = $_[0]->errno;
+  my $errstr = $_[0]->errstr($errno);
   POEx::ZMQ::FFI::Error->new(
     message  => $errstr,
     errno    => $errno,
-    function => $call,
+    function => ($_[1] // confess "Missing function name"),
   ) 
 }
 
