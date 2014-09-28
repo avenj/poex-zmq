@@ -111,7 +111,7 @@ the documentation for that distribution is likely to be helpful.
 
 B<This is early-development software,> as indicated by the C<0.x> version number.
 The test suite is incomplete, bugs are sure to be lurking, documentation is
-not yet especially verbose, and the API is not completely guaranteed.  Issues
+not yet especially verbose, and the API is not I<completely> guaranteed.  Issues
 & pull requests are welcome, of course:
 L<http://www.github.com/avenj/poex-zmq>
 
@@ -156,8 +156,8 @@ application (and they may have their own respective library C<soname>).
 A forked child process must create a new L<POEx::ZMQ::FFI::Context> with its
 own set of sockets.
 
-The context object provides access to other useful functionality, such as
-library version number retrieval and CURVE key pair generation. See
+The context object provides access to other useful ZeroMQ functionality, such
+as library version number retrieval and CURVE key pair generation. See
 L<POEx::ZMQ::FFI::Context> for details.
 
 =head3 socket
