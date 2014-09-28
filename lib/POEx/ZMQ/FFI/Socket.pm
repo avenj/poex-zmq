@@ -300,6 +300,7 @@ $KnownTypes->set( $_, 'uint64' ) for (
   ZMQ_AFFINITY,           #
   ZMQ_MAXMSGSIZE,         #
 );
+# ... doesn't really matter if we differentiate here, but:
 $KnownTypes->set( $_, 'binary' ) for (
   ZMQ_IDENTITY,           #
   ZMQ_SUBSCRIBE,          #

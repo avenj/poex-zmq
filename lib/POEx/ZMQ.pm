@@ -170,6 +170,13 @@ L</context>.
 
 C<@_> is passed through to the L<POEx::ZMQ::Socket> constructor.
 
+=head1 SEE ALSO
+
+L<Convert::Z85> for encoding/decoding CURVE keys (see L<zmq_curve(7)> on
+libzmq4+).
+
+L<ZMQ::FFI> for a lower-level, non-POE interface to ZeroMQ sockets.
+
 =head1 AUTHOR
 
 Jon Portnoy <avenj@cobaltirc.org>
