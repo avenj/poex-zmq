@@ -1,5 +1,7 @@
 package POEx::ZMQ::FFI::Cached;
 
+# A simplistic way to share POEx::ZMQ::FFI::Callable objects
+
 use Carp;
 use strictures 1;
 
@@ -32,6 +34,8 @@ sub clear {
     unless defined $classtype and defined $soname;
   delete $Cache{ $classtype . $soname }
 }
+
+sub clear_all { %Cache = () }
 
 1;
 

@@ -20,5 +20,8 @@ POEx::ZMQ::FFI::Cached->clear(Foo => 'bar');
 ok scalar keys %POEx::ZMQ::FFI::Cached::Cache == 1,
   'clear ok';
 
+POEx::ZMQ::FFI::Cached->clear_all;
+ok scalar keys %POEx::ZMQ::FFI::Cached::Cache == 0,
+  'clear_all ok';
 
 done_testing
