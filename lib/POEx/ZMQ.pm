@@ -150,9 +150,15 @@ created (and preserved for use during socket creation; see L</socket>).
 If creating a new context object, C<@_> is passed through to the
 L<POEx::ZMQ::FFI::Context> constructor.
 
-The context object should be shared between sockets belonging to the same
-process -- a forked child process must create a new context with its own set
-of sockets.
+The context object should typically be shared between sockets belonging to the
+same process. However, multiple contexts may exist within the same
+application (and they may have their own respective library C<soname>).
+A forked child process must create a new L<POEx::ZMQ::FFI::Context> with its
+own set of sockets.
+
+The context object provides access to other useful functionality, such as
+library version number retrieval and CURVE key pair generation. See
+L<POEx::ZMQ::FFI::Context> for details.
 
 =head3 socket
 
@@ -166,7 +172,7 @@ L<POEx::ZMQ::FFI::Context>.
 
 If called as an object method, returns a new L<POEx::ZMQ::Socket> that uses
 the L<POEx::ZMQ::FFI::Context> object belonging to the instance; see
-L</context>.
+L</new> & L</context>.
 
 C<@_> is passed through to the L<POEx::ZMQ::Socket> constructor.
 
