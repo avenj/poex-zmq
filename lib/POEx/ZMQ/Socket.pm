@@ -325,8 +325,11 @@ sub _pxz_ready {
   #  - Try to read pending
   #    - Return if ZeroMQ has nothing queued
   #    - yield another pxz_ready if successful
-  $self->call('pxz_nb_write');
-  $self->call('pxz_nb_read');
+  $self->call('pxz_nb_write')
+    unless $self->type == ZMQ_SUB or $self->type == ZMQ_PULL;
+
+  $self->call('pxz_nb_read')
+    unless $self->type == ZMQ_PUB or $self->type == ZMQ_PUSH;
 }
 
 
@@ -365,6 +368,7 @@ sub _pxz_nb_read {
 
   confess $recv_err if $recv_err;
 
+  # yield back to check for pollin / pending sends ->
   $self->yield('pxz_ready');
 }
 
