@@ -483,6 +483,13 @@ POEx::ZMQ::FFI::Socket
 
 An object representing a ZeroMQ socket; used internally by L<POEx::ZMQ>.
 
+These are typically created by your L<POEx::ZMQ::Socket> instance and are
+accessible via the C<zsock> attribute:
+
+  my $backend = $my_sock->zsock;
+  my $sock_ptr = $backend->get_raw_socket;
+  # ... make some manual FFI::Raw calls ...
+
 This is essentially a minimalist reimplementation of Dylan Cali's L<ZMQ::FFI>;
 see L<ZMQ::FFI> for a ZeroMQ FFI implementation intended for use outside
 L<POE>.

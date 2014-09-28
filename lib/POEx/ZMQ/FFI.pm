@@ -24,6 +24,8 @@ sub find_soname {
     libzmq.so.4.0.0
     libzmq.so.3
     libzmq.so
+    
+    libzmq.4.dylib
     libzmq.3.dylib
     libzmq.dylib
   / );
@@ -156,7 +158,8 @@ want to look if you're not using L<POEx::ZMQ>).
 
   my $soname = POEx::ZMQ::FFI->find_soname;
 
-Attempts to find an appropriate C<libzmq> dynamic library; croaks on failure.
+Attempts to find an appropriate C<libzmq> dynamic library, with a preference
+for the newest known version; croaks on failure.
 
 =head3 get_version
 

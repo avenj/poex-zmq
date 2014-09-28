@@ -149,7 +149,7 @@ sub create_socket {
   )
 }
 
-sub get_zmq_version { POEx::ZMQ::FFI->get_version( shift->soname ) }
+sub get_zmq_version { POEx::ZMQ::FFI->get_version( $_[0]->soname ) }
 
 sub get_ctx_opt {
   my ($self, $opt) = @_;
@@ -201,14 +201,18 @@ POEx::ZMQ::FFI::Context - Backend ZeroMQ context objects for POEx::ZMQ
 
 =head1 SYNOPSIS
 
-  # Used internally by POEx::ZMQ
+  # Used internally by POEx::ZMQ; see below for useful methods
 
 =head1 DESCRIPTION
 
-An object representing a ZeroMQ context; used internally by L<POEx::ZMQ>.
+An object representing a ZeroMQ context.
 
-See L<ZMQ::FFI> for a ZeroMQ FFI implementation intended for use outside
-L<POE>.
+These are typically created via a higher-level mechanism (see L<POEx::ZMQ>)
+and accessible from your L<POEx::ZMQ::Socket> instance:
+
+  my $ctx = $my_sock->context;
+  my $keypair = $ctx->generate_keypair;
+  # ...
 
 =head2 ATTRIBUTES
 
