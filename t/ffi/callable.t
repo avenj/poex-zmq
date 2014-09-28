@@ -17,6 +17,8 @@ my $cl = POEx::ZMQ::FFI::Callable->new(
 
 can_ok $cl, 'funcA', 'funcB';
 
+ok !$cl->can('foobarbaz'), 'negative can ok';
+
 ok $cl->funcA, 'callable funcs ok (1)';
 ok $cl->funcB, 'callable funcs ok (2)';
 
