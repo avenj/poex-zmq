@@ -59,7 +59,7 @@ sub check_if_done {
     $_[HEAP]->{$_}->stop for qw/rtr req/;
     $_[KERNEL]->alarm_remove_all;
   } else {
-    $_[KERNEL]->delay_set( check_if_done => 0.5 );
+    $_[KERNEL]->delay_set( check_if_done => 0.2 );
   }
 }
 
