@@ -31,4 +31,9 @@ ok $methods->has_any(sub { $_ eq 'funcA' })
 my $funcA = $cl->FETCH('funcA');
 ok $funcA->call, 'FETCH ok';
 
+is_deeply
+  [ sort keys %{ $cl->EXPORT } ],
+  [ 'funcA', 'funcB' ],
+  'EXPORT ok';
+
 done_testing
