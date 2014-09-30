@@ -281,10 +281,13 @@ L</soname>.
   my $public  = $keypair->public;
   my $secret  = $keypair->secret;
 
-Produces a pair of Z85-encoded CURVE keys for use with L<zmq_curve(7)>-related
-socket options.
+Produces a Z85-encoded CURVE public/secret key pair for use with
+L<zmq_curve(7)>-related socket options.
 
-(See L<Convert::Z85> to convert these back to raw binary data.)
+(See L<Convert::Z85> if you need to convert these back to raw binary data or
+vice versa.)
+
+Dies with a stack trace if your C<libzmq> does not have CURVE support.
 
 =head2 CONSUMES
 
