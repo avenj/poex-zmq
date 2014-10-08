@@ -1,5 +1,13 @@
 Revision history for Perl module POEx-ZMQ
 
+0.005001 2014-10-08
+
+  - Add zmq_curve_keypair support via $context->generate_keypair
+
+  - Support ZeroMQ-4.x SOVERSION change
+
+  - Minor optimizations
+
 0.004001 2014-09-25
 
   - Delay write retries on EAGAIN/EINTR/EFSM

@@ -57,7 +57,7 @@ the documentation for that distribution is likely to be helpful.
 
 **This is early-development software,** as indicated by the `0.x` version number.
 The test suite is incomplete, bugs are sure to be lurking, documentation is
-not yet especially verbose, and the API is not completely guaranteed.  Issues
+not yet especially verbose, and the API is not _completely_ guaranteed.  Issues
 & pull requests are welcome, of course:
 [http://www.github.com/avenj/poex-zmq](http://www.github.com/avenj/poex-zmq)
 
@@ -96,9 +96,15 @@ created (and preserved for use during socket creation; see ["socket"](#socket)).
 If creating a new context object, `@_` is passed through to the
 [POEx::ZMQ::FFI::Context](https://metacpan.org/pod/POEx::ZMQ::FFI::Context) constructor.
 
-The context object should be shared between sockets belonging to the same
-process -- a forked child process must create a new context with its own set
-of sockets.
+The context object should typically be shared between sockets belonging to the
+same process. However, multiple contexts may exist within the same
+application (and they may have their own respective library `soname`).
+A forked child process must create a new [POEx::ZMQ::FFI::Context](https://metacpan.org/pod/POEx::ZMQ::FFI::Context) with its
+own set of sockets.
+
+The context object provides access to other useful ZeroMQ functionality, such
+as library version number retrieval and CURVE key pair generation. See
+[POEx::ZMQ::FFI::Context](https://metacpan.org/pod/POEx::ZMQ::FFI::Context) for details.
 
 ### socket
 
@@ -112,9 +118,16 @@ a provided `context` or, if missing from arguments, a freshly-created
 
 If called as an object method, returns a new [POEx::ZMQ::Socket](https://metacpan.org/pod/POEx::ZMQ::Socket) that uses
 the [POEx::ZMQ::FFI::Context](https://metacpan.org/pod/POEx::ZMQ::FFI::Context) object belonging to the instance; see
-["context"](#context).
+["new"](#new) & ["context"](#context).
 
 `@_` is passed through to the [POEx::ZMQ::Socket](https://metacpan.org/pod/POEx::ZMQ::Socket) constructor.
+
+# SEE ALSO
+
+[Convert::Z85](https://metacpan.org/pod/Convert::Z85) for encoding/decoding CURVE keys (see [zmq\_curve(7)](http://man.he.net/man7/zmq_curve) on
+libzmq4+).
+
+[ZMQ::FFI](https://metacpan.org/pod/ZMQ::FFI) for a lower-level, non-POE interface to ZeroMQ sockets.
 
 # AUTHOR
 
