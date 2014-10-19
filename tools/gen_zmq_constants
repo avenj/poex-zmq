@@ -139,7 +139,7 @@ POEx::ZMQ::Constants - ZeroMQ (3 + 4) constants for use with POEx::ZMQ
 
 ZeroMQ constant exporter for use with L<POEx::ZMQ> applications.
 
-Automatically generated from ZeroMQ version 3 & 4 headers.
+Automatically generated from (stable) ZeroMQ version 3 & 4 headers.
 
 Uses L<Exporter::Tiny>; look there for detailed import-related documentation.
 
