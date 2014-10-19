@@ -98,6 +98,33 @@ sub _build_ffi {
           )
           : ()
       ),
+
+      # FIXME tests:
+      ( $self->get_zmq_version->major >= 4
+        && $self->get_zmq_version->minor >= 1 ?
+          (
+            zmq_has => FFI::Raw->new(
+              $soname, zmq_has =>
+                FFI::Raw::int,  # <- boolean
+                FFI::Raw::str,  # -> requested capability
+            )
+          )
+          : ()
+      ),
+
+      # FIXME tests:
+      ( $self->get_zmq_version->major >= 4
+        && $self->get_zmq_version->minor >= 1 ?
+          (
+            zmq_msg_gets => FFI::Raw->new(
+              $soname, zmq_msg_gets =>
+                FFI::Raw::str,  # <- metadata property value
+                FFI::Raw::ptr,  # -> message ptr
+                FFI::Raw::str,  # -> requested property name
+            )
+          )
+          : ()
+      ),
     )
   )
 }
