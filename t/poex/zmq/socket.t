@@ -157,8 +157,9 @@ sub zmq_recv_multipart {
   $Got->set('rtr got second msg' => 1) if $content eq 'bar';
 
   # send_multipart (+ test from posted send)
+  $parts->pop;
   $_[KERNEL]->post( $_[SENDER], send_multipart =>
-    [ $id, '', 'bar' ]
+    [ $parts->all, 'bar' ]
   );
 }
 

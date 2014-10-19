@@ -425,7 +425,7 @@ sub _pxz_nb_write {
 }
 
 # FIXME monitor support needs a look,
-#  also changed upstream somewheres along the way
+#  also changed upstream in 4.1.0rc
 #
 # basic outline:
 #  - FFI::Socket method that calls zmq_socket_monitor
@@ -773,9 +773,22 @@ item.
     );
   }
 
-Emitted when a multipart message is received; C<$_[ARG0]> is a
-L<List::Objects::WithUtils::Array> array-type object containing the message
-parts.
+  # ... or with more complex routing envelopes:
+  sub zmq_recv_multipart {
+    my $parts = $_[ARG0];
+    # pop() the application-relevant body:
+    my $body = $parts->pop;
+    my $response = 'bar';
+    # Then include the envelope later:
+    $_[KERNEL]->post( $_[SENDER], send_multipart =>
+      [ $parts->all, $response ]
+    );
+  }
+
+Emitted when a multipart message is received.
+
+C<$_[ARG0]> is a L<List::Objects::WithUtils::Array> array-type object
+containing the message parts.
 
 =head1 CONSUMES
 
