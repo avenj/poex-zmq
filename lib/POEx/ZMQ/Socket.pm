@@ -482,7 +482,7 @@ POEx::ZMQ::Socket - A POE-enabled ZeroMQ socket
         # ... do work ...
         # Send a response back:
         $_[KERNEL]->post( $_[SENDER], send_multipart =>
-          $id, '', $response
+          [ $id, '', $response ]
         );
       },
     },
@@ -778,8 +778,7 @@ item.
     my $parts = $_[ARG0];
     # pop() the application-relevant body:
     my $body = $parts->pop;
-    my $response = 'bar';
-    # Then include the envelope later:
+    # Then include the envelope (including empty delimiter msg) later:
     $_[KERNEL]->post( $_[SENDER], send_multipart =>
       [ $parts->all, $response ]
     );
