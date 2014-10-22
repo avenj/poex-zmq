@@ -693,7 +693,7 @@ Returns the invocant.
 =head3 send_multipart
 
   $sock->send_multipart( [ @parts ], $flags );
-  # For example, a ROUTER sending to $id ->
+  # A ROUTER sending to $id ->
   $rtr->send_multipart( [ $id, '', $msg ], $flags );
 
 Send a multi-part message.
