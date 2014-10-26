@@ -170,6 +170,9 @@ sub set_ctx_opt {
 sub generate_keypair {
   my ($self) = @_;
 
+  carp __PACKAGE__."::generate_keypair is deprecated and will be removed!\n",
+       "Use Crypt::ZCert instead.";
+
   unless ($self->_ffi->can('zmq_curve_keypair')) {
     confess "Cannot generate key pair; missing zmq_curve_keypair support"
   }
@@ -194,6 +197,8 @@ sub generate_keypair {
 =pod
 
 =for Pod::Coverage has_(?:threads|max_sockets)
+
+=for Pod::Coverage generate_keypair
 
 =head1 NAME
 
@@ -274,20 +279,6 @@ calls (used internally by L<POEx::ZMQ::FFI::Socket> objects).
 
 Returns the L<POEx::ZMQ::FFI/get_version> struct-like object for the current
 L</soname>.
-
-=head3 generate_keypair
-
-  my $keypair = $ctx->generate_keypair;
-  my $public  = $keypair->public;
-  my $secret  = $keypair->secret;
-
-Produces a Z85-encoded CURVE public/secret key pair for use with
-L<zmq_curve(7)>-related socket options.
-
-(See L<Convert::Z85> if you need to convert these back to raw binary data or
-vice versa.)
-
-Dies with a stack trace if your C<libzmq> does not have CURVE support.
 
 =head2 CONSUMES
 

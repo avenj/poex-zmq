@@ -44,14 +44,4 @@ cmp_ok $ctx->get_ctx_opt(ZMQ_IO_THREADS), '==', 3,
 # get_raw_context
 ok $ctx->get_raw_context > -1, 'get_raw_context ok';
 
-# generate_keypair
-# FIXME need a consistent way to determine if we have CURVE support or not
-# in the meantime here's a pretty useless test:
-my $kpair;
-eval {; $kpair = $ctx->generate_keypair };
-if (!$@) {
-  cmp_ok length($kpair->public), '==', 40, 'pubkey is 40 chrs';
-  cmp_ok length($kpair->secret), '==', 40, 'seckey is 40 chrs';
-}
-
 done_testing
