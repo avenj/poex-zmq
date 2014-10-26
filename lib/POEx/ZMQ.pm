@@ -180,6 +180,11 @@ C<@_> is passed through to the L<POEx::ZMQ::Socket> constructor.
 
 =head1 SEE ALSO
 
+L<Text::ZPL> for ZeroMQ Property Language support.
+
+L<Crypt::ZCert> for ZeroMQ4+ CURVE certificate management & key pair
+generation.
+
 L<Convert::Z85> for encoding/decoding CURVE keys (see L<zmq_curve(7)> on
 libzmq4+).
 
