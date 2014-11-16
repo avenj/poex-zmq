@@ -126,6 +126,11 @@ the [POEx::ZMQ::FFI::Context](https://metacpan.org/pod/POEx::ZMQ::FFI::Context) 
 
 # SEE ALSO
 
+[Text::ZPL](https://metacpan.org/pod/Text::ZPL) for ZeroMQ Property Language support.
+
+[Crypt::ZCert](https://metacpan.org/pod/Crypt::ZCert) for ZeroMQ4+ CURVE certificate management & key pair
+generation.
+
 [Convert::Z85](https://metacpan.org/pod/Convert::Z85) for encoding/decoding CURVE keys (see [zmq\_curve(7)](http://man.he.net/man7/zmq_curve) on
 libzmq4+).
 
