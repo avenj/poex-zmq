@@ -125,11 +125,11 @@ $SIG{ALRM} = sub { die "Test timed out!" };
     'ZMQ_FD == fileno(socket->get_handle)';
   undef $fh;
 
-  # unbind
-  # FIXME
-
-  # disconnect
-  # FIXME
+  # disconnect (throws on error)
+  $req->disconnect($endpt);
+  # unbind (throws on error)
+  $router->unbind($endpt);
+  pass "disconnect and unbind didn't throw";
 }
 
 pass "Nobody croaked after object destruction";
