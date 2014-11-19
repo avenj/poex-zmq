@@ -23,9 +23,6 @@ my @posixonly = qw/
 /;
 
 # FIXME
-#  Pull in the POSIX consts not included in zmq.h, such as EAGAIN and EINTR
-
-# FIXME
 #  Better define parser.
 #  We should be able to handle ( FOO | BAR ) etc,
 #  so we can get ZMQ_EVENT_ALL in particular.
@@ -63,10 +60,6 @@ sub parse_consts {
     my ($orig, $add) = $val =~ /\((\w+) \+ (\d+)\)/;
     warn "Adding $add to $orig for $sym";
     $errconst{$sym} = $const{$orig} + $add;
-    # FIXME these need to be handled differently ..
-    #  build a separate %errconst hash and handle it separately
-    #  should probably be a compile-time constant def that checks if
-    #  POSIX::$const is defined and uses the zmq.h const if not
 
   }
 }
