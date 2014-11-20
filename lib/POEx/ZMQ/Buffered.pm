@@ -37,11 +37,18 @@ has flags => (
 
 =head1 NAME
 
-POEx::ZMQ::Buffered
+POEx::ZMQ::Buffered - A message internally queued on a POEx::ZMQ::Socket
 
 =head1 SYNOPSIS
 
-  # Used internally by POEx::ZMQ
+  use POEx::ZMQ;
+  my $zsock = POEx::ZMQ->socket(type => ZMQ_ROUTER);
+  # ...
+  my @waiting = $zsock->get_buffered_items->all;
+  for my $msg (@waiting) {
+    my $contents = $msg->item;
+    ...
+  }
 
 =head1 DESCRIPTION
 
