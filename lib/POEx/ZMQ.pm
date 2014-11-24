@@ -111,12 +111,6 @@ general.
 Each ZeroMQ socket is an event emitter powered by L<MooX::Role::POE::Emitter>;
 the documentation for that distribution is likely to be helpful.
 
-B<This is early-development software,> as indicated by the C<0.x> version number.
-The test suite is incomplete, bugs are sure to be lurking, documentation is
-not yet especially verbose, and the API is not I<completely> guaranteed.  Issues
-& pull requests are welcome, of course:
-L<http://www.github.com/avenj/poex-zmq>
-
 If you are not using L<POE>, try L<ZMQ::FFI> for an excellent loop-agnostic
 ZeroMQ implementation.
 
@@ -177,6 +171,11 @@ the L<POEx::ZMQ::FFI::Context> object belonging to the instance; see
 L</new> & L</context>.
 
 C<@_> is passed through to the L<POEx::ZMQ::Socket> constructor.
+
+=head1 KNOWN BUGS
+
+Dumps core upon process exit on FreeBSD before C<10.x>. Do not know why and
+have not debugged, but patches welcome? ;-)
 
 =head1 SEE ALSO
 

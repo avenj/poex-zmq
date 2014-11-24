@@ -787,7 +787,12 @@ item.
 Emitted when a multipart message is received.
 
 C<$_[ARG0]> is a L<List::Objects::WithUtils::Array> array-type object
-containing the message parts.
+containing the message parts. This makes basic handling tasks easy, such as
+splitting multipart bodies and the routing envelope on an empty part
+delimiter:
+
+  my $envelope = $parts->items_before(sub { $_ eq '' });
+  my $content  = $parts->items_after(sub { $_ eq '' });
 
 =head1 CONSUMES
 
