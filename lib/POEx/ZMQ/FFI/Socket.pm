@@ -196,8 +196,8 @@ sub _build_ffi {
           FFI::Raw::ptr,  # -> socket ptr
       ),
 
-      memcpy => FFI::Raw->new(
-        undef, memcpy =>
+      memmove => FFI::Raw->new(
+        undef, memmove =>
           FFI::Raw::ptr,  # <- dest ptr
           FFI::Raw::ptr,  # -> dest buf ptr
           FFI::Raw::ptr,  # -> src
@@ -444,7 +444,7 @@ sub recv {
 
   if ($zmsg_len) {
     my $content_ptr  = FFI::Raw::memptr($zmsg_len);
-    $ffi->memcpy( $content_ptr, $ffi->zmq_msg_data($zmsg_ptr), $zmsg_len );
+    $ffi->memmove( $content_ptr, $ffi->zmq_msg_data($zmsg_ptr), $zmsg_len );
     $ffi->zmq_msg_close($zmsg_ptr);
     return $content_ptr->tostr($zmsg_len);
   } else {
