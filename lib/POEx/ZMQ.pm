@@ -179,6 +179,18 @@ have not debugged, but patches welcome? ;-)
 
 =head1 SEE ALSO
 
+L<POEx::ZMQ::Socket>
+
+L<POEx::ZMQ::Constants>
+
+L<POEx::ZMQ::Types>
+
+L<POEx::ZMQ::FFI::Socket>
+
+L<POEx::ZMQ::FFI::Context>
+
+L<POEx::ZMQ::FFI>
+
 L<Text::ZPL> for ZeroMQ Property Language support.
 
 L<Crypt::ZCert> for ZeroMQ4+ CURVE certificate management & key pair

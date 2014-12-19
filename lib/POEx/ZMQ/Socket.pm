@@ -447,8 +447,8 @@ POEx::ZMQ::Socket - A POE-enabled ZeroMQ socket
 
 =head1 SYNOPSIS
 
-  # An example ZMQ_ROUTER socket ->
   use POE;
+  # Imports POEx::ZMQ::Socket and POEx::ZMQ::Constants ->
   use POEx::ZMQ;
 
   POE::Session->create(
@@ -471,18 +471,19 @@ POEx::ZMQ::Socket - A POE-enabled ZeroMQ socket
       },
 
       zmq_recv_multipart => sub {
-        # ROUTER got message from REQ;
+        # ROUTER got message from REQ / DEALER
         # parts are available as a List::Objects::WithUtils::Array ->
         my $parts = $_[ARG0];
 
         # ROUTER receives [ IDENTITY, NULL, MSG .. ]:
-        my ($id, undef, $content) = $parts->all;
+        my $route = $parts->items_before(sub { $_ eq '' });
+        my $body  = $parts->items_after(sub { $_ eq '' });
 
         my $response;
         # ... do work ...
         # Send a response back:
         $_[KERNEL]->post( $_[SENDER], send_multipart =>
-          [ $id, '', $response ]
+          [ $route->all, '', $response ]
         );
       },
     },
@@ -793,6 +794,10 @@ delimiter:
 
   my $envelope = $parts->items_before(sub { $_ eq '' });
   my $content  = $parts->items_after(sub { $_ eq '' });
+  # ... returning a reply later:
+  $zsock->send_multipart(
+    [ $envelope->all, '', @parts ]
+  );
 
 =head1 CONSUMES
 

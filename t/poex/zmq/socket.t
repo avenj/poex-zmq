@@ -20,7 +20,6 @@ my $Expected = hash(
   'got bind_added'        => 1,
   'rtr got 3 items'       => 1,
   'rtr got id'            => 1,
-  'null part empty'       => 1,
   'multipart body ok'     => 1,
   'single-part body ok'   => 1,
   'rtr got second msg'    => 1,
@@ -150,16 +149,15 @@ sub zmq_recv_multipart {
 
   $Got->set('rtr got 3 items' => 1) if $parts->count == 3;
 
-  my ($id, $nul, $content) = $parts->all;
-  $Got->set('rtr got id' => 1) if defined $id;
-  $Got->set('null part empty' => 1) if $nul eq '';
-  $Got->set('multipart body ok' => 1) if $content eq 'foo';
-  $Got->set('rtr got second msg' => 1) if $content eq 'bar';
+  my $route = $parts->items_before(sub { $_ eq '' });
+  my $content = $parts->items_after(sub { $_ eq '' });
+  $Got->set('rtr got id' => 1) if $route->has_any;
+  $Got->set('multipart body ok' => 1) if $content->head eq 'foo';
+  $Got->set('rtr got second msg' => 1) if $content->head eq 'bar';
 
   # send_multipart (+ test from posted send)
-  $parts->pop;
   $_[KERNEL]->post( $_[SENDER], send_multipart =>
-    [ $parts->all, 'bar' ]
+    [ $route->all, '', 'bar' ]
   );
 }
 
