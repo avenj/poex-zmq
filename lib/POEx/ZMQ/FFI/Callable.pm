@@ -26,8 +26,7 @@ sub can {
   }
   return unless exists $self->{$method};
   sub {
-    my ($self) = @_;
-    if (my $sub = $self->SUPER::can($method)) {
+    if (my $sub = $_[0]->SUPER::can($method)) {
       goto $sub
     }
     $AUTOLOAD = $method;
