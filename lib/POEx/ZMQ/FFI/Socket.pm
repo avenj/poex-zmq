@@ -76,8 +76,9 @@ sub _build_ffi {
   my ($self) = @_;
   my $soname = $self->soname;
 
-  my $ffi = POEx::ZMQ::FFI::Cached->get(Socket => $soname);
-  return $ffi if defined $ffi;
+  if (my $ffi = POEx::ZMQ::FFI::Cached->get(Socket => $soname)) {
+    return $ffi
+  }
 
   POEx::ZMQ::FFI::Cached->set(
     Socket => $soname => POEx::ZMQ::FFI::Callable->new(
