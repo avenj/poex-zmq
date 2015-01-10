@@ -324,10 +324,8 @@ sub get_sock_opt {
   my ($self, $opt, $type) = @_;
   my ($val, $ptr, $len);
 
-  unless (defined $type) {
-    $type = $self->known_type_for_opt($opt)
-      // confess "No return type specified and none known to us (opt $opt)"
-  }
+  $type //= $self->known_type_for_opt($opt)
+        // confess "No return type specified and none known to us (opt $opt)";
 
   if ($type eq 'binary' || $type eq 'string') {
     $ptr = FFI::Raw::memptr( OPTVAL_MAXLEN );

@@ -80,6 +80,8 @@ $SIG{ALRM} = sub { die "Test timed out!" };
   # known_type_for_opt
   cmp_ok $router->known_type_for_opt(ZMQ_IPV6), 'eq', 'int',
     'known_type_for_opt int ok';
+  cmp_ok $router->known_type_for_opt(ZMQ_PLAIN_SERVER), 'eq', 'int',
+    'known_type_for_opt int ok';
   cmp_ok $router->known_type_for_opt(ZMQ_AFFINITY), 'eq', 'uint64',
     'known_type_for_opt uint64 ok';
   cmp_ok $router->known_type_for_opt(ZMQ_IDENTITY), 'eq', 'binary',
