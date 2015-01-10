@@ -57,12 +57,6 @@ general.
 Each ZeroMQ socket is an event emitter powered by [MooX::Role::POE::Emitter](https://metacpan.org/pod/MooX::Role::POE::Emitter);
 the documentation for that distribution is likely to be helpful.
 
-**This is early-development software,** as indicated by the `0.x` version number.
-The test suite is incomplete, bugs are sure to be lurking, documentation is
-not yet especially verbose, and the API is not _completely_ guaranteed.  Issues
-& pull requests are welcome, of course:
-[http://www.github.com/avenj/poex-zmq](http://www.github.com/avenj/poex-zmq)
-
 If you are not using [POE](https://metacpan.org/pod/POE), try [ZMQ::FFI](https://metacpan.org/pod/ZMQ::FFI) for an excellent loop-agnostic
 ZeroMQ implementation.
 
@@ -124,7 +118,24 @@ the [POEx::ZMQ::FFI::Context](https://metacpan.org/pod/POEx::ZMQ::FFI::Context) 
 
 `@_` is passed through to the [POEx::ZMQ::Socket](https://metacpan.org/pod/POEx::ZMQ::Socket) constructor.
 
+# KNOWN BUGS
+
+Dumps core upon process exit on FreeBSD before `10.x`. Do not know why and
+have not debugged, but patches welcome? ;-)
+
 # SEE ALSO
+
+[POEx::ZMQ::Socket](https://metacpan.org/pod/POEx::ZMQ::Socket)
+
+[POEx::ZMQ::Constants](https://metacpan.org/pod/POEx::ZMQ::Constants)
+
+[POEx::ZMQ::Types](https://metacpan.org/pod/POEx::ZMQ::Types)
+
+[POEx::ZMQ::FFI::Socket](https://metacpan.org/pod/POEx::ZMQ::FFI::Socket)
+
+[POEx::ZMQ::FFI::Context](https://metacpan.org/pod/POEx::ZMQ::FFI::Context)
+
+[POEx::ZMQ::FFI](https://metacpan.org/pod/POEx::ZMQ::FFI)
 
 [Text::ZPL](https://metacpan.org/pod/Text::ZPL) for ZeroMQ Property Language support.
 

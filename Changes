@@ -1,5 +1,11 @@
 Revision history for Perl module POEx-ZMQ
 
+0.005004 2015-01-10
+
+  - Documentation improvements
+
+  - Minor optimizations
+
 0.005003 2014-11-20
 
   - Deprecate $ctx->generate_keypair in favor of Crypt::ZCert
