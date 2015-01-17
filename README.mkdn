@@ -31,11 +31,12 @@ POEx::ZMQ - Asynchronous ZeroMQ sockets for POE
           # Handle the usual ZeroMQ message framing scheme by capturing
           # prefixed identities including empty message delimiter, followed
           # by our message body:
-          my ($envelope, $body) = $parts->tail;
+          my $envelope = $parts->items_before(sub { $_ eq '' });
+          my $content  = $parts->items_after(sub { $_ eq '' });
 
           # $_[SENDER] was the ROUTER socket, send a response back to origin:
           $_[KERNEL]->post( $_[SENDER], send_multipart =>
-            [ $envelope, 'foo' ]
+            [ $envelope, '', 'foo' ]
           );
         },
       },

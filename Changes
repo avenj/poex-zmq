@@ -1,5 +1,9 @@
 Revision history for Perl module POEx-ZMQ
 
+0.005005 2015-01-17
+
+  - POD fix
+
 0.005004 2015-01-10
 
   - Documentation improvements
