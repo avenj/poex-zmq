@@ -39,7 +39,7 @@ Maximum zmg_msg_t_size plus wiggle room.
 =cut
 
 sub OPTVAL_MAXLEN () { 256 }
-sub ZMQ_MSG_SIZE  () { 96 }
+sub ZMQ_MSG_SIZE  () { 128 }
 
 
 use Moo; use MooX::late;
@@ -415,7 +415,7 @@ sub unbind {
 sub send {
   my $len = bytes::length($_[1]);
   $_[0]->throw_if_error( zmq_send =>
-    $_[0]->_ffi->zmq_send( $_[0]->_socket_ptr, $_[1], $len, ($_[2] // 0 ) )
+    $_[0]->_ffi->zmq_send( $_[0]->_socket_ptr, $_[1], $len, ($_[2] // 0) )
   )
 }
 
