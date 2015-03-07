@@ -1,6 +1,6 @@
 package POEx::ZMQ;
 
-use strictures 1;
+use strictures 2;
 
 use Scalar::Util 'blessed';
 

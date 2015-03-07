@@ -1,6 +1,6 @@
 package POEx::ZMQ::FFI::Error;
 
-use strictures 1;
+use strictures 2;
 
 
 use Moo; use MooX::late;

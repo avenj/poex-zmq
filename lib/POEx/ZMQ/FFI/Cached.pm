@@ -3,7 +3,7 @@ package POEx::ZMQ::FFI::Cached;
 # A simplistic way to share POEx::ZMQ::FFI::Callable objects
 
 use Carp;
-use strictures 1;
+use strictures 2;
 
 use Scalar::Util 'blessed';
 

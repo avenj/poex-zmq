@@ -2,7 +2,7 @@ package POEx::ZMQ::FFI::Callable;
 
 use Carp ();
 use Scalar::Util ();
-use strictures 1;
+use strictures 2;
 
 =for Pod::Coverage .*
 

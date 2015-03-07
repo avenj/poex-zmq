@@ -1,7 +1,7 @@
 package POEx::ZMQ::Buffered;
 
 use Carp;
-use strictures 1;
+use strictures 2;
 
 use List::Objects::Types  -types;
 use Types::Standard       -types;

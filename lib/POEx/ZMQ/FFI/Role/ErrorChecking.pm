@@ -2,7 +2,7 @@ package POEx::ZMQ::FFI::Role::ErrorChecking;
 
 use v5.10;
 use Carp 'cluck', 'confess';
-use strictures 1;
+use strictures 2;
 
 use POEx::ZMQ::FFI::Cached;
 use POEx::ZMQ::FFI::Callable;

@@ -1,7 +1,7 @@
 package POEx::ZMQ::FFI::Context;
 
 use Carp;
-use strictures 1;
+use strictures 2;
 
 use List::Objects::WithUtils;
 

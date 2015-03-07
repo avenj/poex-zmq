@@ -2,7 +2,7 @@ package POEx::ZMQ::FFI::Socket;
 
 use v5.10;
 use Carp;
-use strictures 1;
+use strictures 2;
 
 require bytes;
 require IO::Handle;

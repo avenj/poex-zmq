@@ -1,6 +1,6 @@
 requires "perl" => "5.016";
 
-requires "strictures"     => "1";
+requires "strictures"     => "2";
 requires "POSIX"          => "0";
 requires "Time::HiRes"    => "0";
 
