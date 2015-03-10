@@ -1,5 +1,13 @@
 Revision history for Perl module POEx-ZMQ
 
+0.005006 2015-03-09
+
+  - Support for ARRAY-type objects in send_multipart
+
+  - Bump ZMQ_MSG_SIZE to 128 (tracking upstream ZMQ::FFI)
+
+  - 'use strictures 2;' for saner fatal warnings behavior
+
 0.005005 2015-01-17
 
   - POD fix
