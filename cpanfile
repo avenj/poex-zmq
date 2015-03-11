@@ -8,8 +8,11 @@ requires "Exporter::Tiny" => "0";
 requires "Import::Into"   => "0";
 requires "Try::Tiny"      => "0";
 
-requires "Math::Int64"    => "0";
 requires "FFI::Raw"       => "0";
+
+requires "Math::Int64"    => "0";
+# See upstream zmq-ffi GH#14:
+requires "Math::BigInt"   => "1.997";
 
 requires "List::Objects::WithUtils" => "2.016";
 requires "List::Objects::Types"     => "1.002";
