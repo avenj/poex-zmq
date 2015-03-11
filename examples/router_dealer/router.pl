@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Simplistic ROUTER
+# Simplistic ROUTER; responds to commands from included 'dealer.pl' example
 
 use v5.10;
 use strictures 1;
@@ -17,7 +17,9 @@ POE::Session->create(
         ->new(type => ZMQ_ROUTER)
         ->start
         ->bind($endpt);
+      say "ROUTER listening on '$endpt' . . .";
     },
+
     zmq_recv_multipart => sub {
       my $parts = $_[ARG0];
       my $envelope = $parts->items_before(sub { $_ eq '' });

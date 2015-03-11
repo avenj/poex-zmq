@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+# Simplistic DEALER; talks to included 'router.pl' example
+
 use v5.10;
 use strictures 1;
 
@@ -11,17 +13,20 @@ use POEx::ZMQ;
 POE::Session->create(
   inline_states => +{
     _start => sub {
-      $_[HEAP]->{dlr} = POEx::ZMQ::Socket->new(type => ZMQ_DEALER)->start;
-      $_[HEAP]->{dlr}->connect($endpt);
+      $_[HEAP]->{dlr} = POEx::ZMQ::Socketi
+        ->new(type => ZMQ_DEALER)
+        ->start
+        ->connect($endpt);
+
       $_[KERNEL]->delay( send_request => 1 );
       $_[KERNEL]->delay( timeout => 60 );
+
+      say "DEALER connecting to '$endpt' . . . ";
     },
 
     send_request => sub {
       my $x = $_[ARG0] //= 0;
-      $_[HEAP]->{dlr}->send_multipart(
-        [ '', 'FOO', ++$x ]
-      );
+      $_[HEAP]->{dlr}->send_multipart( [ '', 'FOO', ++$x ] );
       $_[KERNEL]->delay( send_request => 1, $x );
     },
 
