@@ -1,7 +1,9 @@
 #!/usr/bin/env perl
+
+# Simplistic ROUTER
+
 use v5.10;
 use strictures 1;
-use Data::Dumper;
 
 my $endpt = $ARGV[0] || 'tcp://127.0.0.1:5600';
 
@@ -20,8 +22,13 @@ POE::Session->create(
       my $parts = $_[ARG0];
       my $envelope = $parts->items_before(sub { $_ eq '' });
       my $body     = $parts->items_after(sub { $_ eq '' });
+      my ($cmd, $id) = @$body;
 
-      say "Received message body: ".Dumper($body);
+      say "Received message '$cmd', ID '$id'";
+
+      $_[HEAP]->{rtr}->send_multipart(
+        [ $envelope->all, '', 'BAR', $id ]
+      );
     },
   },
 );
