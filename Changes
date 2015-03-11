@@ -1,5 +1,11 @@
 Revision history for Perl module POEx-ZMQ
 
+0.005007 2015-03-11
+
+  - Improved ROUTER/DEALER examples
+
+  - Depend on Math::BigInt 1.997+ (tracking upstream ZMQ::FFI)
+
 0.005006 2015-03-09
 
   - Support for ARRAY-type objects in send_multipart
